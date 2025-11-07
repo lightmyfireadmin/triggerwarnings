@@ -1,0 +1,932 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trigger Warnings - Watch with Confidence</title>
+    <meta name="description" content="Community-powered trigger warnings for streaming content. Real-time detection, photosensitivity protection, and customizable alerts for safer viewing.">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #667eea;
+            --primary-dark: #5568d3;
+            --secondary: #764ba2;
+            --accent: #f093fb;
+            --text-dark: #1a202c;
+            --text-light: #4a5568;
+            --bg-light: #f7fafc;
+            --bg-white: #ffffff;
+            --success: #48bb78;
+            --warning: #ed8936;
+            --danger: #f56565;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            line-height: 1.6;
+            color: var(--text-dark);
+            overflow-x: hidden;
+        }
+
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            padding: 120px 20px 80px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+            opacity: 0.1;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            font-weight: 800;
+            margin-bottom: 20px;
+            line-height: 1.2;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .hero-subtitle {
+            font-size: 1.5rem;
+            margin-bottom: 40px;
+            opacity: 0.95;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .cta-buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 16px 32px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background: white;
+            color: var(--primary);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+        }
+
+        .btn-secondary {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: 2px solid white;
+            backdrop-filter: blur(10px);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255,255,255,0.3);
+            transform: translateY(-2px);
+        }
+
+        /* Features Section */
+        .features {
+            padding: 80px 20px;
+            background: var(--bg-light);
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: var(--text-dark);
+        }
+
+        .section-subtitle {
+            text-align: center;
+            font-size: 1.2rem;
+            color: var(--text-light);
+            margin-bottom: 60px;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 40px;
+            margin-top: 60px;
+        }
+
+        .feature-card {
+            background: white;
+            padding: 40px;
+            border-radius: 16px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.07);
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 24px rgba(0,0,0,0.15);
+            border-color: var(--primary);
+        }
+
+        .feature-icon {
+            font-size: 3rem;
+            margin-bottom: 20px;
+        }
+
+        .feature-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            color: var(--text-dark);
+        }
+
+        .feature-description {
+            color: var(--text-light);
+            line-height: 1.7;
+        }
+
+        /* How It Works */
+        .how-it-works {
+            padding: 80px 20px;
+            background: white;
+        }
+
+        .steps {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 40px;
+            margin-top: 60px;
+        }
+
+        .step {
+            text-align: center;
+        }
+
+        .step-number {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin: 0 auto 20px;
+        }
+
+        .step-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 12px;
+        }
+
+        .step-description {
+            color: var(--text-light);
+        }
+
+        /* Platforms */
+        .platforms {
+            padding: 80px 20px;
+            background: var(--bg-light);
+        }
+
+        .platform-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 30px;
+            margin-top: 60px;
+        }
+
+        .platform {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            transition: all 0.3s ease;
+        }
+
+        .platform:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+        }
+
+        .platform-logo {
+            font-size: 2.5rem;
+            margin-bottom: 12px;
+        }
+
+        .platform-name {
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+        /* FAQ */
+        .faq {
+            padding: 80px 20px;
+            background: white;
+        }
+
+        .faq-list {
+            max-width: 800px;
+            margin: 60px auto 0;
+        }
+
+        .faq-item {
+            background: var(--bg-light);
+            margin-bottom: 20px;
+            border-radius: 12px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .faq-question {
+            padding: 24px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            user-select: none;
+        }
+
+        .faq-question:hover {
+            background: #e2e8f0;
+        }
+
+        .faq-icon {
+            font-size: 1.5rem;
+            transition: transform 0.3s ease;
+        }
+
+        .faq-item.active .faq-icon {
+            transform: rotate(45deg);
+        }
+
+        .faq-answer {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+            padding: 0 24px;
+            color: var(--text-light);
+        }
+
+        .faq-item.active .faq-answer {
+            max-height: 500px;
+            padding: 0 24px 24px;
+        }
+
+        /* Stats */
+        .stats {
+            padding: 60px 20px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 40px;
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 3rem;
+            font-weight: 800;
+            margin-bottom: 8px;
+        }
+
+        .stat-label {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        /* Footer */
+        .footer {
+            padding: 60px 20px;
+            background: var(--text-dark);
+            color: white;
+            text-align: center;
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 30px;
+            justify-content: center;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .footer-link {
+            color: white;
+            text-decoration: none;
+            opacity: 0.8;
+            transition: opacity 0.3s ease;
+        }
+
+        .footer-link:hover {
+            opacity: 1;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+
+            .hero-subtitle {
+                font-size: 1.2rem;
+            }
+
+            .section-title {
+                font-size: 2rem;
+            }
+
+            .cta-buttons {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+            }
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .fade-in-up {
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        /* Badge */
+        .badge {
+            display: inline-block;
+            padding: 6px 12px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 20px;
+            font-size: 0.9rem;
+            margin-bottom: 20px;
+            backdrop-filter: blur(10px);
+        }
+
+        .tag {
+            display: inline-block;
+            padding: 4px 12px;
+            background: var(--primary);
+            color: white;
+            border-radius: 12px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-right: 8px;
+            margin-bottom: 8px;
+        }
+
+        .tag.success {
+            background: var(--success);
+        }
+
+        .tag.warning {
+            background: var(--warning);
+        }
+
+        .tag.danger {
+            background: var(--danger);
+        }
+    </style>
+</head>
+<body>
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <div class="badge">⚡ Real-Time Detection • 100% Private • Community-Powered</div>
+            <h1 class="fade-in-up">Watch with Confidence</h1>
+            <p class="hero-subtitle fade-in-up">
+                Get advance warnings for sensitive content while streaming. Powered by community data and intelligent real-time detection.
+            </p>
+            <div class="cta-buttons fade-in-up">
+                <a href="#" class="btn btn-primary">Install for Chrome</a>
+                <a href="#features" class="btn btn-secondary">Learn More</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats -->
+    <section class="stats">
+        <div class="container">
+            <div class="stats-grid">
+                <div>
+                    <div class="stat-number">105K+</div>
+                    <div class="stat-label">Movies & Shows</div>
+                </div>
+                <div>
+                    <div class="stat-number">28</div>
+                    <div class="stat-label">Trigger Categories</div>
+                </div>
+                <div>
+                    <div class="stat-number">7</div>
+                    <div class="stat-label">Platforms Supported</div>
+                </div>
+                <div>
+                    <div class="stat-number">100%</div>
+                    <div class="stat-label">Privacy Protected</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features -->
+    <section class="features" id="features">
+        <div class="container">
+            <h2 class="section-title">Comprehensive Protection</h2>
+            <p class="section-subtitle">
+                Multiple layers of detection ensure you're protected, whether you're watching popular movies or brand new releases.
+            </p>
+
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">🗄️</div>
+                    <h3 class="feature-title">Community Database</h3>
+                    <p class="feature-description">
+                        Access 105,000+ movies and shows with trigger warnings sourced from DoesTheDogDie.com and IMDb Parental Guide. Community-verified and continuously updated.
+                    </p>
+                    <div style="margin-top: 16px;">
+                        <span class="tag success">85% Accuracy</span>
+                        <span class="tag">No Setup</span>
+                    </div>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">💬</div>
+                    <h3 class="feature-title">Subtitle Analysis</h3>
+                    <p class="feature-description">
+                        Real-time subtitle scanning detects trigger keywords as you watch. Works on ANY content with captions - no database entry needed. 120+ keywords across all categories.
+                    </p>
+                    <div style="margin-top: 16px;">
+                        <span class="tag success">Real-Time</span>
+                        <span class="tag warning">Requires Captions</span>
+                    </div>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">⚡</div>
+                    <h3 class="feature-title">Photosensitivity Detection</h3>
+                    <p class="feature-description">
+                        Algorithmic flash detection protects users with photosensitive epilepsy. WCAG 2.1 compliant. Detects rapid flashing (>3 flashes/second) automatically.
+                    </p>
+                    <div style="margin-top: 16px;">
+                        <span class="tag danger">Critical</span>
+                        <span class="tag success">Always On</span>
+                    </div>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">🎯</div>
+                    <h3 class="feature-title">Customizable Profiles</h3>
+                    <p class="feature-description">
+                        Create multiple profiles for different situations. Choose which categories you want warnings for, adjust timing, position, and appearance.
+                    </p>
+                    <div style="margin-top: 16px;">
+                        <span class="tag">Multi-Profile</span>
+                        <span class="tag">Per-Category</span>
+                    </div>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">🔐</div>
+                    <h3 class="feature-title">100% Private</h3>
+                    <p class="feature-description">
+                        All processing happens locally in your browser. No tracking, no viewing history collection, no personal data sent to servers. Your privacy is guaranteed.
+                    </p>
+                    <div style="margin-top: 16px;">
+                        <span class="tag success">No Tracking</span>
+                        <span class="tag success">Local Only</span>
+                    </div>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">👥</div>
+                    <h3 class="feature-title">Community-Powered</h3>
+                    <p class="feature-description">
+                        Submit warnings for content you watch. Vote on accuracy. Help build a comprehensive database that benefits everyone.
+                    </p>
+                    <div style="margin-top: 16px;">
+                        <span class="tag">Voting System</span>
+                        <span class="tag">Open Data</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works -->
+    <section class="how-it-works">
+        <div class="container">
+            <h2 class="section-title">How It Works</h2>
+            <p class="section-subtitle">
+                Get started in seconds. No account required, no configuration needed.
+            </p>
+
+            <div class="steps">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <h3 class="step-title">Install Extension</h3>
+                    <p class="step-description">
+                        Add the extension to Chrome with one click. No signup or configuration required.
+                    </p>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <h3 class="step-title">Choose Categories</h3>
+                    <p class="step-description">
+                        Select which trigger categories you want to be warned about. Create multiple profiles if needed.
+                    </p>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <h3 class="step-title">Watch Content</h3>
+                    <p class="step-description">
+                        Navigate to any supported platform and start watching. Warnings appear automatically.
+                    </p>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">4</div>
+                    <h3 class="step-title">Stay Informed</h3>
+                    <p class="step-description">
+                        Get advance warnings with customizable lead time. Skip, mute, or prepare as needed.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Platforms -->
+    <section class="platforms">
+        <div class="container">
+            <h2 class="section-title">Supported Platforms</h2>
+            <p class="section-subtitle">
+                Works seamlessly with all major streaming services
+            </p>
+
+            <div class="platform-grid">
+                <div class="platform">
+                    <div class="platform-logo">🔴</div>
+                    <div class="platform-name">Netflix</div>
+                </div>
+                <div class="platform">
+                    <div class="platform-logo">▶️</div>
+                    <div class="platform-name">YouTube</div>
+                </div>
+                <div class="platform">
+                    <div class="platform-logo">📦</div>
+                    <div class="platform-name">Prime Video</div>
+                </div>
+                <div class="platform">
+                    <div class="platform-logo">🟢</div>
+                    <div class="platform-name">Hulu</div>
+                </div>
+                <div class="platform">
+                    <div class="platform-logo">✨</div>
+                    <div class="platform-name">Disney+</div>
+                </div>
+                <div class="platform">
+                    <div class="platform-logo">⚪</div>
+                    <div class="platform-name">Max (HBO)</div>
+                </div>
+                <div class="platform">
+                    <div class="platform-logo">🦚</div>
+                    <div class="platform-name">Peacock</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ -->
+    <section class="faq" id="faq">
+        <div class="container">
+            <h2 class="section-title">Frequently Asked Questions</h2>
+
+            <div class="faq-list">
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFaq(this)">
+                        <span>What trigger categories are supported?</span>
+                        <span class="faq-icon">+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>We support 28 trigger categories including: Violence, Gore, Blood, Sexual Assault, Sex/Nudity, Self-Harm, Suicide, Substance Abuse (Drugs/Alcohol), Murder, Torture, Domestic Violence, Child Abuse, Animal Cruelty, Vomit, Medical Procedures, Eating Disorders, Flashing Lights, Spiders/Snakes, Swear Words, Racial Violence, LGBTQ+ Phobia, Natural Disasters, Religious Trauma, Jump Scares, Cannibalism, Dead Bodies/Body Horror, Children Screaming, and Detonations/Bombs.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFaq(this)">
+                        <span>How does real-time subtitle analysis work?</span>
+                        <span class="faq-icon">+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>When you enable subtitles/captions, our extension reads the text in real-time and scans for 120+ trigger keywords. When a match is found, you get a warning 5 seconds before that moment in the video. This works on ANY content, even if it's not in our database. All processing happens locally in your browser - no data is sent to servers.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFaq(this)">
+                        <span>Is my viewing data collected or tracked?</span>
+                        <span class="faq-icon">+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p><strong>Absolutely not.</strong> We take privacy seriously. All detection happens locally in your browser. We don't collect viewing history, personal information, or track what you watch. The extension only queries our database for trigger warnings based on video IDs, and all real-time analysis (subtitle scanning, photosensitivity detection) runs entirely on your device. We never see your video content.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFaq(this)">
+                        <span>What is photosensitivity detection?</span>
+                        <span class="faq-icon">+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Photosensitivity detection protects users with photosensitive epilepsy by automatically detecting rapid flashing in video content. Using WCAG 2.1 guidelines, we analyze video frames for luminance changes and alert you before sequences with more than 3 flashes per second. This feature is always active (you can't disable it) because it's critical for health and safety. It uses less than 2% CPU and processes everything locally.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFaq(this)">
+                        <span>What if a movie/show isn't in your database?</span>
+                        <span class="faq-icon">+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>That's the beauty of our multi-layered approach! Even if content isn't in our database:</p>
+                        <ul style="margin-top: 12px; padding-left: 20px;">
+                            <li><strong>Subtitle Analysis</strong> will still detect triggers if you have captions enabled</li>
+                            <li><strong>Photosensitivity Detection</strong> always runs, protecting against rapid flashing</li>
+                            <li><strong>You can submit warnings</strong> while watching to help future viewers</li>
+                        </ul>
+                        <p style="margin-top: 12px;">This means the extension provides value even for brand new releases!</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFaq(this)">
+                        <span>Can I customize which warnings I see?</span>
+                        <span class="faq-icon">+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Yes! You have complete control:</p>
+                        <ul style="margin-top: 12px; padding-left: 20px;">
+                            <li><strong>Category Selection:</strong> Choose which of the 28 categories you want warnings for</li>
+                            <li><strong>Multiple Profiles:</strong> Create different profiles for different situations (e.g., "Alone" vs "With Family")</li>
+                            <li><strong>Lead Time:</strong> Adjust how early you get warnings (5-60 seconds)</li>
+                            <li><strong>Banner Position:</strong> Choose where warnings appear (4 corners)</li>
+                            <li><strong>Spoiler-Free Mode:</strong> Hide exact timestamps to avoid spoilers</li>
+                            <li><strong>Visual Settings:</strong> Customize font size, transparency, and duration</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFaq(this)">
+                        <span>How accurate are the warnings?</span>
+                        <span class="faq-icon">+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Accuracy varies by detection method:</p>
+                        <ul style="margin-top: 12px; padding-left: 20px;">
+                            <li><strong>Database (DTDD):</strong> ~85% accurate - community-verified with voting</li>
+                            <li><strong>Database (IMDb):</strong> ~75% accurate - community-sourced</li>
+                            <li><strong>Subtitle Analysis:</strong> 70-90% - depends on keyword clarity</li>
+                            <li><strong>Photosensitivity:</strong> ~95% - algorithmic detection is very reliable</li>
+                        </ul>
+                        <p style="margin-top: 12px;">You can vote on warnings to help improve accuracy, and we use confidence scores to filter low-quality submissions.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFaq(this)">
+                        <span>Does this slow down my streaming?</span>
+                        <span class="faq-icon">+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>No! Performance impact is minimal:</p>
+                        <ul style="margin-top: 12px; padding-left: 20px;">
+                            <li><strong>CPU Usage:</strong> Less than 3% total (subtitle analysis <1%, photosensitivity <2%)</li>
+                            <li><strong>Memory:</strong> Less than 10MB</li>
+                            <li><strong>Network:</strong> Only initial database query (~50KB), then everything is local</li>
+                            <li><strong>Video Quality:</strong> No impact - we don't touch the video stream</li>
+                        </ul>
+                        <p style="margin-top: 12px;">Most users won't notice any performance difference.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFaq(this)">
+                        <span>Can I contribute warnings?</span>
+                        <span class="faq-icon">+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Absolutely! Community contributions are essential. You can:</p>
+                        <ul style="margin-top: 12px; padding-left: 20px;">
+                            <li><strong>Submit New Warnings:</strong> Click the popup icon while watching and add timestamps for triggers</li>
+                            <li><strong>Vote on Accuracy:</strong> Use Helper Mode buttons (Confirm ✓ / Wrong ✕) on existing warnings</li>
+                            <li><strong>Add Descriptions:</strong> Provide context without spoilers</li>
+                            <li><strong>Auto-Moderation:</strong> Warnings with high votes get auto-approved</li>
+                        </ul>
+                        <p style="margin-top: 12px;">Your contributions help thousands of other users!</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFaq(this)">
+                        <span>Why doesn't it work with [specific platform]?</span>
+                        <span class="faq-icon">+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>We currently support 7 major platforms: Netflix, YouTube, Prime Video, Hulu, Disney+, Max (HBO), and Peacock. If your platform isn't supported:</p>
+                        <ul style="margin-top: 12px; padding-left: 20px;">
+                            <li>Each platform requires custom integration to detect video players and extract IDs</li>
+                            <li>We prioritize platforms based on user demand</li>
+                            <li>Submit a feature request on our GitHub to vote for new platforms</li>
+                        </ul>
+                        <p style="margin-top: 12px;">We're continuously adding support for more platforms!</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFaq(this)">
+                        <span>What browsers are supported?</span>
+                        <span class="faq-icon">+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Currently, we support:</p>
+                        <ul style="margin-top: 12px; padding-left: 20px;">
+                            <li><strong>Chrome:</strong> ✅ Full support (recommended)</li>
+                            <li><strong>Edge:</strong> ✅ Full support (Chromium-based)</li>
+                            <li><strong>Brave:</strong> ✅ Full support (Chromium-based)</li>
+                            <li><strong>Firefox:</strong> 🔄 Coming soon</li>
+                            <li><strong>Safari:</strong> 🔄 Planned</li>
+                        </ul>
+                        <p style="margin-top: 12px;">Any Chromium-based browser should work with the Chrome version.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFaq(this)">
+                        <span>Is this extension free?</span>
+                        <span class="faq-icon">+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p><strong>Yes, completely free!</strong> This is an open-source project designed to make streaming safer for everyone. There are no premium features, no paywalls, and no subscriptions. We'll never charge for core functionality.</p>
+                        <p style="margin-top: 12px;">If you find it useful, you can support development by:</p>
+                        <ul style="margin-top: 8px; padding-left: 20px;">
+                            <li>Contributing warnings to the database</li>
+                            <li>Voting on warning accuracy</li>
+                            <li>Sharing with friends who might benefit</li>
+                            <li>Contributing code on GitHub (it's open source!)</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFaq(this)">
+                        <span>What data sources power the warnings?</span>
+                        <span class="faq-icon">+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>We use multiple high-quality sources:</p>
+                        <ul style="margin-top: 12px; padding-left: 20px;">
+                            <li><strong>DoesTheDogDie.com API:</strong> 100,000+ titles with 60+ categories, community-voted</li>
+                            <li><strong>IMDb Parental Guide:</strong> 5,000+ titles with severity ratings</li>
+                            <li><strong>User Submissions:</strong> Community-contributed warnings with voting</li>
+                            <li><strong>Real-Time Detection:</strong> Subtitle and photosensitivity analysis</li>
+                        </ul>
+                        <p style="margin-top: 12px;">Combined, this gives us 105,000+ database entries plus real-time coverage for everything else!</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-links">
+                <a href="https://github.com/lightmyfireadmin/triggerwarnings" class="footer-link">GitHub</a>
+                <a href="#" class="footer-link">Documentation</a>
+                <a href="#" class="footer-link">Privacy Policy</a>
+                <a href="#" class="footer-link">Report Issue</a>
+                <a href="#" class="footer-link">Contribute</a>
+            </div>
+            <p style="opacity: 0.7; margin-top: 20px;">
+                Open source project • Made with ❤️ for safer streaming
+            </p>
+            <p style="opacity: 0.5; font-size: 0.9rem; margin-top: 12px;">
+                © 2025 Trigger Warnings Extension • All rights reserved
+            </p>
+        </div>
+    </footer>
+
+    <script>
+        function toggleFaq(element) {
+            const faqItem = element.parentElement;
+            const wasActive = faqItem.classList.contains('active');
+
+            // Close all FAQ items
+            document.querySelectorAll('.faq-item').forEach(item => {
+                item.classList.remove('active');
+            });
+
+            // Open clicked item if it wasn't already active
+            if (!wasActive) {
+                faqItem.classList.add('active');
+            }
+        }
+
+        // Smooth scroll for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Add fade-in animation on scroll
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -100px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.feature-card, .step, .platform').forEach(el => {
+            el.style.opacity = '0';
+            el.style.transform = 'translateY(30px)';
+            el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+            observer.observe(el);
+        });
+    </script>
+</body>
+</html>
