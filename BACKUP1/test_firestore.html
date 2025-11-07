@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Firestore Test & AppCheck Debug Token Generator</title>
+    <style>
+        body { font-family: sans-serif; padding: 20px; line-height: 1.6; }
+        button { padding: 10px 15px; font-size: 1em; cursor: pointer; margin: 10px 0;}
+        button:disabled { cursor: not-allowed; opacity: 0.6; }
+        pre { white-space: pre-wrap; word-wrap: break-word; border: 1px solid #ccc; padding: 10px; max-height: 400px; overflow-y: scroll; background-color: #f8f8f8; margin-top: 10px; }
+        code { background-color: #eee; padding: 2px 5px; border-radius: 3px; font-family: monospace; }
+        .highlight { color: #d9534f; font-weight: bold; }
+        .token-info { color: #0275d8; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <h1>Firestore Test & AppCheck Debug Token Generator</h1>
+    <p>
+        This page initializes Firebase Auth, Firestore, and App Check using your configuration.
+    </p>
+    <p class="highlight">
+        ACTION REQUIRED:
+        <ol>
+            <li><strong class="highlight">REPLACE RECAPTCHA KEY:</strong> Edit this HTML file and replace <code>YOUR_RECAPTCHA_ENTERPRISE_SITE_KEY</code> below with your actual Site Key from Google Cloud Console -> reCAPTCHA Enterprise.</li>
+            <li><strong class="highlight">OPEN DEVTOOLS FIRST:</strong> Open your browser's Developer Console (usually F12) <span style="text-decoration: underline;">before</span> loading or refreshing this page.</li>
+            <li><strong class="highlight">FIND THE TOKEN:</strong> Look for a log message in the console starting with <code class="token-info">App Check debug token:</code>. It will be a long string of letters, numbers, and symbols.</li>
+            <li><strong class="highlight">COPY & PASTE:</strong> Copy the <span style="text-decoration: underline;">entire token string</span> (without surrounding quotes if any).</li>
+            <li><strong class="highlight">UPDATE offscreen.js:</strong> Paste the copied token into the <code>DEBUG_TOKEN</code> constant in your <code>offscreen.js</code> file, replacing the placeholder.</li>
+             <li><strong class="highlight">ADD TO FIREBASE CONSOLE:</strong> Go to Firebase Console -> App Check -> Apps -> (Your Web App) -> Manage debug tokens. Click "Add debug token", paste the token, give it a name (e.g., "My Dev PC"), and save.</li>
+        </ol>
+    </p>
+    <hr>
+    <button id="writeButton" type="button" disabled>Perform Test Write to /test_writes</button>
+    <hr>
+    <h2>Logs:</h2>
+    <pre id="logs">Loading Firebase and App Check... Check DevTools Console for Debug Token!</pre>
+
+    <script type="module">
+        // --- Firebase Imports ---
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
+        import { getFirestore, collection, addDoc, serverTimestamp, setLogLevel } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
+        import { getAuth, signInAnonymously, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js';
+        import { initializeAppCheck, ReCaptchaEnterpriseProvider } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app-check.js'; // Keep ReCaptcha for potential prod testing
+
+        // --- Firebase Configuration (YOUR VALUES INSERTED) ---
+        const firebaseConfig = {
+            apiKey: "AIzaSyAHRbDa7Q-JyEdaJS2Tx0CLrx_BfEes5yE", // Your value inserted
+            authDomain: "trigger-warnings-netflix.firebaseapp.com", // Your value inserted
+            projectId: "trigger-warnings-netflix", // Your value inserted
+            // --- Note: storageBucket below might differ slightly from console ---
+            // --- Firebase console often shows .appspot.com, but SDK might use .firebasestorage.app ---
+            // --- Use the one provided by the Firebase SDK config snippet IF DIFFERENT ---
+            storageBucket: "trigger-warnings-netflix.appspot.com", // Using .appspot.com based on your offscreen.js config. Adjust if needed.
+            messagingSenderId: "452403864964", // Your value inserted
+            appId: "1:452403864964:web:b8f6cf0884249fe49569d1" // Your value inserted
+        };
+        // --- !!! IMPORTANT: REPLACE THIS RECAPTCHA KEY !!! ---
+        const recaptchaKey = "6Ld6uhIrAAAAAHbR16FaSQaNf7-dzFPbtOBjaJCw"; // <<< REPLACE
+
+        // --- Rest of the script ---
+        let db;
+        let auth;
+        let appCheck;
+        let currentUserId = null;
+        const logsElement = document.getElementById('logs');
+        const writeButton = document.getElementById('writeButton');
+
+        function log(message, isError = false) {
+            console.log("TEST PAGE:", message);
+            if (logsElement) {
+                 const line = document.createElement('div');
+                 line.textContent = message;
+                 if (isError) line.style.color = 'red';
+                 logsElement.appendChild(line);
+                 logsElement.scrollTop = logsElement.scrollHeight; // Auto-scroll
+            }
+        }
+
+        async function initialize() {
+            log("Initializing Firebase...");
+            try {
+                // --- Tell App Check to generate a debug token ---
+                log("Setting self.FIREBASE_APPCHECK_DEBUG_TOKEN = true;");
+                self.FIREBASE_APPCHECK_DEBUG_TOKEN = true;
+                log("FLAG SET. Open Console NOW if you haven't. Look for 'App Check debug token:' message after App Check init.");
+                // ------------------------------------------------
+
+                log("Initializing Firebase App...");
+                const app = initializeApp(firebaseConfig);
+                log("Firebase App Initialized.");
+
+                 // --- Initialize App Check ---
+                 try {
+                      log("Initializing App Check...");
+                      if (!recaptchaKey || recaptchaKey === "YOUR_RECAPTCHA_ENTERPRISE_SITE_KEY") {
+                           throw new Error("ReCaptcha Enterprise Key not set in test_firestore.html");
+                      }
+                      appCheck = initializeAppCheck(app, {
+                           provider: new ReCaptchaEnterpriseProvider(recaptchaKey),
+                           isTokenAutoRefreshEnabled: true
+                      });
+                      log("App Check Initialized (Provider set). ** CHECK CONSOLE FOR DEBUG TOKEN NOW! **");
+                 } catch (appCheckError) {
+                      log(`App Check Init FAILED: ${appCheckError.message}`, true);
+                      console.error("App Check Init Error:", appCheckError);
+                      log("-> Firestore operations might fail if rules require App Check.");
+                 }
+                 // -------------------------------------------------------
+
+                log("Initializing Firestore and Auth...");
+                db = getFirestore(app);
+                auth = getAuth(app);
+                log("Firestore & Auth Initialized. Setting up Auth Listener...");
+
+                onAuthStateChanged(auth, (user) => {
+                    if (user) {
+                        currentUserId = user.uid;
+                        log(`Auth OK: Signed in Anonymously. UID: ${currentUserId}`);
+                        if (writeButton) writeButton.disabled = false;
+                    } else {
+                        currentUserId = null;
+                        if (writeButton) writeButton.disabled = true;
+                        log("Auth: Not signed in. Attempting anonymous sign-in...");
+                        signInAnonymously(auth).catch(error => {
+                            log(`Auth ERROR: Anonymous sign-in failed: ${error.code} - ${error.message}`, true);
+                            console.error("Sign-in error:", error);
+                        });
+                    }
+                });
+
+                log("Initialization sequence complete.");
+
+            } catch (e) {
+                log(`FATAL: Firebase Init Failed: ${e.message}`, true);
+                console.error("Firebase Init Error:", e);
+                if (writeButton) writeButton.disabled = true;
+            }
+        }
+
+        async function performTestWrite() {
+            if (!db) { log("ERROR: Firestore DB not initialized.", true); return; }
+            if (!currentUserId) { log("ERROR: User not authenticated. Cannot write.", true); return; }
+            log("Attempting test write to /test_writes collection...");
+            if (writeButton) writeButton.disabled = true;
+            try {
+                const docRef = await addDoc(collection(db, "test_writes"), {
+                    testData: "Hello from HTML Test Page!",
+                    userId: currentUserId,
+                    timestamp: serverTimestamp(),
+                    userAgent: navigator.userAgent
+                });
+                log(`SUCCESS: Test write completed. Doc ID: ${docRef.id}`);
+                alert("Test Write Succeeded! Check Firestore console.");
+            } catch (error) {
+                log(`ERROR during test write: ${error.code} - ${error.message}`, true);
+                console.error("Test Write Error:", error);
+                if (error.code === 'permission-denied') {
+                    log("-> PERMISSION DENIED. Check Firestore rules and ensure App Check is enforced and your debug token is added/valid, or that the page is served from an allowed domain.", true);
+                    alert(`Test Write FAILED: Permission Denied.\nDetails: ${error.message}\n\nCheck Rules & App Check (Debug Token / Enforcement).`);
+                } else {
+                    alert(`Test Write FAILED: ${error.code}\n${error.message}`);
+                }
+            } finally {
+                if (writeButton && currentUserId) writeButton.disabled = false;
+            }
+        }
+
+        // --- Run ---
+        if(writeButton) writeButton.addEventListener('click', performTestWrite);
+        initialize();
+
+    </script>
+</body>
+</html>

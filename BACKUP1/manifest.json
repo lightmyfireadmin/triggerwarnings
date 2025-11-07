@@ -1,0 +1,55 @@
+{
+  "manifest_version": 3,
+  "name": "__MSG_extensionName__",
+  "description": "__MSG_extensionDescription__",
+  "version": "0.9.0",
+  "default_locale": "en",
+  "options_page": "options.html",
+  "permissions": [
+    "storage",
+    "tabs",
+    "activeTab",
+    "offscreen",
+    "alarms" 
+  ],
+  "host_permissions": [
+    "*://*.netflix.com/watch/*"
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "__MSG_extensionName__",
+    "default_icon": { "16": "images/icon16.png", "48": "images/icon48.png", "128": "images/icon128.png" }
+  },
+  "icons": {
+    "16": "images/icon16.png",
+    "48": "images/icon48.png",
+    "128": "images/icon128.png"
+  },
+  "content_scripts": [
+    {
+      "matches": ["*://*.netflix.com/watch/*"],
+      "js": ["content.js"],
+      "css": ["warning-banner.css"],
+      "run_at": "document_idle"
+    }
+  ],
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  },
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'self'; connect-src 'self' https://*.supabase.co https://*.supabase.io;"
+  },
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "audio/warning.mp3",
+        "images/icon48.png",
+        "_locales/*/*.json",
+        "offscreen.html",
+        "offscreen-bundle.js"
+      ],
+      "matches": ["<all_urls>"]
+    }
+  ]
+}
