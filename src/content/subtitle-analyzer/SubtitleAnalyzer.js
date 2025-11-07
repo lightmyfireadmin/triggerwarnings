@@ -106,6 +106,16 @@ export class SubtitleAnalyzer {
     }
     /**
      * Initialize subtitle tracking for a video element
+     *
+     * Track Selection Priority:
+     * 1. Currently showing English subtitles (user has English on)
+     * 2. Currently showing subtitles in any language (user has subs on)
+     * 3. Available English subtitle track (will enable in hidden mode)
+     * 4. Any available subtitle track in any language (will enable in hidden mode)
+     *
+     * Note: Keyword matching is currently English-only. Non-English subtitles
+     * will be analyzed but may have reduced detection rates. Future enhancement
+     * could include multilingual keyword dictionaries.
      */
     initialize(video) {
         // Try to get active text track
@@ -114,27 +124,44 @@ export class SubtitleAnalyzer {
             logger.debug('No subtitle tracks found');
             return;
         }
-        // Find active or first available track
+        // Find best available track (prefer English, then any language)
         let activeTrack = null;
+        let englishTrack = null;
+        let anyTrack = null;
         for (let i = 0; i < tracks.length; i++) {
             const track = tracks[i];
-            if (track.kind === 'subtitles' || track.kind === 'captions') {
-                if (track.mode === 'showing') {
-                    activeTrack = track;
-                    break;
-                }
-                else if (!activeTrack) {
-                    activeTrack = track;
-                }
+            if (track.kind !== 'subtitles' && track.kind !== 'captions') {
+                continue; // Skip non-subtitle tracks
+            }
+            const language = track.language.toLowerCase();
+            const isEnglish = language.startsWith('en'); // Matches 'en', 'en-US', 'en-GB', etc.
+            // Priority 1: Currently showing English track
+            if (track.mode === 'showing' && isEnglish) {
+                activeTrack = track;
+                break;
+            }
+            // Priority 2: Currently showing track (any language)
+            if (track.mode === 'showing' && !activeTrack) {
+                activeTrack = track;
+            }
+            // Priority 3: English track (not showing)
+            if (isEnglish && !englishTrack) {
+                englishTrack = track;
+            }
+            // Priority 4: Any available track
+            if (!anyTrack) {
+                anyTrack = track;
             }
         }
-        if (!activeTrack) {
+        // Use best available track
+        const selectedTrack = activeTrack || englishTrack || anyTrack;
+        if (!selectedTrack) {
             logger.debug('No subtitle tracks available');
             return;
         }
-        this.textTrack = activeTrack;
+        this.textTrack = selectedTrack;
         this.attachListeners();
-        logger.info('Initialized with track:', activeTrack.label);
+        logger.info(`Initialized with track: ${selectedTrack.label || 'Untitled'} (${selectedTrack.language || 'unknown'})`);
     }
     /**
      * Attach listeners to subtitle cues

@@ -23,6 +23,16 @@ export declare class SubtitleAnalyzer {
     private buildKeywordDictionary;
     /**
      * Initialize subtitle tracking for a video element
+     *
+     * Track Selection Priority:
+     * 1. Currently showing English subtitles (user has English on)
+     * 2. Currently showing subtitles in any language (user has subs on)
+     * 3. Available English subtitle track (will enable in hidden mode)
+     * 4. Any available subtitle track in any language (will enable in hidden mode)
+     *
+     * Note: Keyword matching is currently English-only. Non-English subtitles
+     * will be analyzed but may have reduced detection rates. Future enhancement
+     * could include multilingual keyword dictionaries.
      */
     initialize(video: HTMLVideoElement): void;
     /**
