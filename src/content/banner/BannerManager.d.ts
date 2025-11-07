@@ -12,8 +12,13 @@ export declare class BannerManager {
     private onIgnoreThisTimeCallback;
     private onIgnoreForVideoCallback;
     private onVoteCallback;
+    private position;
+    private fontSize;
+    private transparency;
+    private spoilerFreeMode;
     constructor(provider: IStreamingProvider);
     initialize(): Promise<void>;
+    private loadProfileSettings;
     showWarning(warning: ActiveWarning): void;
     hideWarning(warningId: string): void;
     private updateBanner;

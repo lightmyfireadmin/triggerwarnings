@@ -4,6 +4,7 @@
  */
 import { createContainer, injectContainer } from '@shared/utils/dom';
 import { createLogger } from '@shared/utils/logger';
+import browser from 'webextension-polyfill';
 import Banner from './Banner.svelte';
 const logger = createLogger('BannerManager');
 export class BannerManager {
@@ -14,11 +15,18 @@ export class BannerManager {
     onIgnoreThisTimeCallback = null;
     onIgnoreForVideoCallback = null;
     onVoteCallback = null;
+    // Banner settings
+    position = 'top-right';
+    fontSize = 16;
+    transparency = 85;
+    spoilerFreeMode = false;
     constructor(provider) {
         this.provider = provider;
     }
     async initialize() {
         logger.info('Initializing banner manager...');
+        // Load profile settings
+        await this.loadProfileSettings();
         // Create container for banner
         this.container = createContainer('tw-banner-container', 'tw-banner-root');
         // Inject into DOM
@@ -32,9 +40,51 @@ export class BannerManager {
                 onIgnoreThisTime: (warningId) => this.handleIgnoreThisTime(warningId),
                 onIgnoreForVideo: (categoryKey) => this.handleIgnoreForVideo(categoryKey),
                 onVote: (warningId, voteType) => this.handleVote(warningId, voteType),
+                position: this.position,
+                fontSize: this.fontSize,
+                transparency: this.transparency,
+                spoilerFreeMode: this.spoilerFreeMode,
             },
         });
+        // Listen for profile changes
+        browser.runtime.onMessage.addListener((message) => {
+            if (message.type === 'PROFILE_CHANGED') {
+                this.loadProfileSettings();
+            }
+        });
         logger.info('Banner manager initialized');
+    }
+    async loadProfileSettings() {
+        try {
+            const response = await browser.runtime.sendMessage({
+                type: 'GET_ACTIVE_PROFILE',
+            });
+            if (response.success && response.data) {
+                const profile = response.data;
+                this.position = profile.display.position;
+                this.fontSize = profile.display.fontSize;
+                this.transparency = profile.display.transparency;
+                this.spoilerFreeMode = profile.display.spoilerFreeMode;
+                // Update banner if already mounted
+                if (this.bannerComponent) {
+                    this.bannerComponent.$set({
+                        position: this.position,
+                        fontSize: this.fontSize,
+                        transparency: this.transparency,
+                        spoilerFreeMode: this.spoilerFreeMode,
+                    });
+                }
+                logger.debug('Profile settings loaded:', {
+                    position: this.position,
+                    fontSize: this.fontSize,
+                    transparency: this.transparency,
+                    spoilerFreeMode: this.spoilerFreeMode,
+                });
+            }
+        }
+        catch (error) {
+            logger.error('Failed to load profile settings:', error);
+        }
     }
     showWarning(warning) {
         logger.debug('Showing warning:', warning.id, warning.categoryKey);

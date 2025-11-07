@@ -16,20 +16,72 @@
   let error = '';
   let success = false;
 
-  async function handleSubmit() {
-    if (!selectedCategory || !videoId) {
-      error = 'Please select a category and ensure you are watching a video';
-      return;
+  const MAX_DESCRIPTION_LENGTH = 500;
+  const MIN_WARNING_DURATION = 1; // seconds
+  const MAX_WARNING_DURATION = 600; // 10 minutes
+
+  function validateForm(): string | null {
+    // Check category
+    if (!selectedCategory) {
+      return 'Please select a trigger category';
     }
 
-    if (startTime >= endTime) {
-      error = 'End time must be after start time';
+    // Check video ID
+    if (!videoId) {
+      return 'Cannot submit - no video detected. Please refresh the page.';
+    }
+
+    // Check time range validity
+    if (startTime < 0) {
+      return 'Start time cannot be negative';
+    }
+
+    if (endTime <= startTime) {
+      return 'End time must be after start time';
+    }
+
+    const duration = endTime - startTime;
+    if (duration < MIN_WARNING_DURATION) {
+      return `Warning must be at least ${MIN_WARNING_DURATION} second(s) long`;
+    }
+
+    if (duration > MAX_WARNING_DURATION) {
+      return `Warning cannot be longer than ${Math.floor(MAX_WARNING_DURATION / 60)} minutes`;
+    }
+
+    // Check description length
+    if (description.trim().length > MAX_DESCRIPTION_LENGTH) {
+      return `Description must be ${MAX_DESCRIPTION_LENGTH} characters or less`;
+    }
+
+    // Check confidence
+    if (confidence < 0 || confidence > 100) {
+      return 'Confidence must be between 0 and 100';
+    }
+
+    return null;
+  }
+
+  function sanitizeDescription(text: string): string {
+    return text
+      .trim()
+      .replace(/\s+/g, ' ') // Replace multiple spaces with single space
+      .substring(0, MAX_DESCRIPTION_LENGTH); // Enforce max length
+  }
+
+  async function handleSubmit() {
+    // Validate form
+    const validationError = validateForm();
+    if (validationError) {
+      error = validationError;
       return;
     }
 
     try {
       submitting = true;
       error = '';
+
+      const sanitizedDescription = sanitizeDescription(description);
 
       const response = await browser.runtime.sendMessage({
         type: 'SUBMIT_WARNING',
@@ -38,7 +90,7 @@
           categoryKey: selectedCategory,
           startTime,
           endTime,
-          description: description.trim() || undefined,
+          description: sanitizedDescription || undefined,
           confidence,
         },
       });
@@ -63,6 +115,14 @@
     const secs = Math.floor(seconds % 60);
     return `${mins}:${String(secs).padStart(2, '0')}`;
   }
+
+  // Real-time character count
+  $: descriptionLength = description.trim().length;
+  $: descriptionValid = descriptionLength <= MAX_DESCRIPTION_LENGTH;
+
+  // Real-time duration calculation
+  $: warningDuration = endTime - startTime;
+  $: durationValid = warningDuration >= MIN_WARNING_DURATION && warningDuration <= MAX_WARNING_DURATION;
 </script>
 
 <div class="submit-warning">
@@ -118,15 +178,36 @@
         </div>
       </div>
 
+      <!-- Duration feedback -->
+      <div class="duration-feedback" class:valid={durationValid} class:invalid={!durationValid}>
+        Duration: {warningDuration} seconds
+        {#if !durationValid}
+          {#if warningDuration < MIN_WARNING_DURATION}
+            (too short - minimum {MIN_WARNING_DURATION}s)
+          {:else}
+            (too long - maximum {MAX_WARNING_DURATION}s)
+          {/if}
+        {/if}
+      </div>
+
       <!-- Description -->
       <div class="form-group">
-        <label for="description">Description (optional)</label>
+        <div class="label-with-count">
+          <label for="description">Description (optional)</label>
+          <span class="char-count" class:warning={descriptionLength > MAX_DESCRIPTION_LENGTH * 0.9} class:error={!descriptionValid}>
+            {descriptionLength}/{MAX_DESCRIPTION_LENGTH}
+          </span>
+        </div>
         <textarea
           id="description"
           bind:value={description}
           placeholder="Brief description of the content..."
           rows="3"
+          maxlength={MAX_DESCRIPTION_LENGTH + 50}
         ></textarea>
+        {#if !descriptionValid}
+          <span class="validation-error">Description is too long</span>
+        {/if}
       </div>
 
       <!-- Confidence -->
@@ -344,5 +425,50 @@
     margin: 8px 0 0 0;
     color: #6c757d;
     font-size: 14px;
+  }
+
+  /* Validation feedback styles */
+  .label-with-count {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .char-count {
+    font-size: 12px;
+    color: #6c757d;
+    font-weight: normal;
+  }
+
+  .char-count.warning {
+    color: #ff9800;
+  }
+
+  .char-count.error {
+    color: #dc2626;
+    font-weight: 600;
+  }
+
+  .duration-feedback {
+    font-size: 12px;
+    padding: 6px 10px;
+    border-radius: 4px;
+    margin-top: -8px;
+  }
+
+  .duration-feedback.valid {
+    color: #28a745;
+    background: #d4edda;
+  }
+
+  .duration-feedback.invalid {
+    color: #dc2626;
+    background: #fee;
+  }
+
+  .validation-error {
+    font-size: 12px;
+    color: #dc2626;
+    margin-top: 4px;
   }
 </style>

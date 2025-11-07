@@ -1,10 +1,12 @@
 /**
  * Supabase client for backend communication
+ * With comprehensive error handling, retry logic, and offline detection
  */
 import type { Warning, WarningSubmission } from '@shared/types/Warning.types';
 export declare class SupabaseClient {
     private static instance;
     private static userId;
+    private static initializationPromise;
     /**
      * Initialize the Supabase client
      */
@@ -21,6 +23,26 @@ export declare class SupabaseClient {
      * Get the current user ID
      */
     static getUserId(): string;
+    /**
+     * Check if user is online
+     */
+    private static checkOnlineStatus;
+    /**
+     * Sleep for specified milliseconds
+     */
+    private static sleep;
+    /**
+     * Calculate exponential backoff delay
+     */
+    private static getRetryDelay;
+    /**
+     * Retry wrapper for database operations
+     */
+    private static withRetry;
+    /**
+     * Check if error should not be retried
+     */
+    private static isNonRetryableError;
     /**
      * Fetch triggers for a specific video
      */

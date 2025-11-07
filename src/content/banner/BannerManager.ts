@@ -5,8 +5,10 @@
 
 import type { IStreamingProvider } from '@shared/types/Provider.types';
 import type { ActiveWarning } from '@shared/types/Warning.types';
+import type { Profile, BannerPosition } from '@shared/types/Profile.types';
 import { createContainer, injectContainer } from '@shared/utils/dom';
 import { createLogger } from '@shared/utils/logger';
+import browser from 'webextension-polyfill';
 import Banner from './Banner.svelte';
 
 const logger = createLogger('BannerManager');
@@ -21,12 +23,21 @@ export class BannerManager {
   private onIgnoreForVideoCallback: ((categoryKey: string) => void) | null = null;
   private onVoteCallback: ((warningId: string, voteType: 'up' | 'down') => void) | null = null;
 
+  // Banner settings
+  private position: BannerPosition = 'top-right';
+  private fontSize: number = 16;
+  private transparency: number = 85;
+  private spoilerFreeMode: boolean = false;
+
   constructor(provider: IStreamingProvider) {
     this.provider = provider;
   }
 
   async initialize(): Promise<void> {
     logger.info('Initializing banner manager...');
+
+    // Load profile settings
+    await this.loadProfileSettings();
 
     // Create container for banner
     this.container = createContainer('tw-banner-container', 'tw-banner-root');
@@ -43,10 +54,56 @@ export class BannerManager {
         onIgnoreThisTime: (warningId: string) => this.handleIgnoreThisTime(warningId),
         onIgnoreForVideo: (categoryKey: string) => this.handleIgnoreForVideo(categoryKey),
         onVote: (warningId: string, voteType: 'up' | 'down') => this.handleVote(warningId, voteType),
+        position: this.position,
+        fontSize: this.fontSize,
+        transparency: this.transparency,
+        spoilerFreeMode: this.spoilerFreeMode,
       },
     });
 
+    // Listen for profile changes
+    browser.runtime.onMessage.addListener((message) => {
+      if (message.type === 'PROFILE_CHANGED') {
+        this.loadProfileSettings();
+      }
+    });
+
     logger.info('Banner manager initialized');
+  }
+
+  private async loadProfileSettings(): Promise<void> {
+    try {
+      const response = await browser.runtime.sendMessage({
+        type: 'GET_ACTIVE_PROFILE',
+      });
+
+      if (response.success && response.data) {
+        const profile: Profile = response.data;
+        this.position = profile.display.position;
+        this.fontSize = profile.display.fontSize;
+        this.transparency = profile.display.transparency;
+        this.spoilerFreeMode = profile.display.spoilerFreeMode;
+
+        // Update banner if already mounted
+        if (this.bannerComponent) {
+          this.bannerComponent.$set({
+            position: this.position,
+            fontSize: this.fontSize,
+            transparency: this.transparency,
+            spoilerFreeMode: this.spoilerFreeMode,
+          });
+        }
+
+        logger.debug('Profile settings loaded:', {
+          position: this.position,
+          fontSize: this.fontSize,
+          transparency: this.transparency,
+          spoilerFreeMode: this.spoilerFreeMode,
+        });
+      }
+    } catch (error) {
+      logger.error('Failed to load profile settings:', error);
+    }
   }
 
   showWarning(warning: ActiveWarning): void {

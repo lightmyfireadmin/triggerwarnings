@@ -1,5 +1,6 @@
 <script lang="ts">
   import type { ActiveWarning } from '@shared/types/Warning.types';
+  import type { BannerPosition } from '@shared/types/Profile.types';
   import { TRIGGER_CATEGORIES } from '@shared/constants/categories';
   import { formatCountdown, formatTimeRange } from '@shared/utils/time';
   import { onMount, onDestroy } from 'svelte';
@@ -8,6 +9,12 @@
   export let onIgnoreThisTime: (warningId: string) => void;
   export let onIgnoreForVideo: (categoryKey: string) => void;
   export let onVote: (warningId: string, voteType: 'up' | 'down') => void;
+
+  // Profile settings
+  export let position: BannerPosition = 'top-right';
+  export let fontSize: number = 16;
+  export let transparency: number = 85;
+  export let spoilerFreeMode: boolean = false;
 
   let visible = false;
   let currentWarning: ActiveWarning | null = null;
@@ -58,6 +65,28 @@
       onVote(currentWarning.id, voteType);
     }
   }
+
+  // Get position styles
+  function getPositionStyles(pos: BannerPosition): string {
+    switch (pos) {
+      case 'top-left':
+        return 'top: 20px; left: 20px; right: auto;';
+      case 'top-right':
+        return 'top: 20px; right: 20px; left: auto;';
+      case 'bottom-left':
+        return 'bottom: 20px; left: 20px; right: auto; top: auto;';
+      case 'bottom-right':
+        return 'bottom: 20px; right: 20px; left: auto; top: auto;';
+      default:
+        return 'top: 20px; right: 20px; left: auto;';
+    }
+  }
+
+  // Calculate opacity from transparency percentage
+  $: bannerOpacity = transparency / 100;
+
+  // Calculate base font size multiplier
+  $: fontMultiplier = fontSize / 16; // 16px is base
 </script>
 
 {#if visible && currentWarning}
@@ -65,6 +94,7 @@
     class="tw-banner"
     class:tw-banner-active={currentWarning.isActive}
     class:tw-banner-upcoming={!currentWarning.isActive}
+    style="{getPositionStyles(position)} opacity: {bannerOpacity}; font-size: {fontSize}px;"
   >
     <div class="tw-banner-content">
       <!-- Icon -->
@@ -82,28 +112,36 @@
           {/if}
           <strong>{getCategoryInfo(currentWarning).name}</strong>
         </div>
-        <div class="tw-banner-time">
-          {formatTimeRange(currentWarning.startTime, currentWarning.endTime)}
-        </div>
+        {#if !spoilerFreeMode}
+          <div class="tw-banner-time">
+            {formatTimeRange(currentWarning.startTime, currentWarning.endTime)}
+          </div>
+        {:else}
+          <div class="tw-banner-time">
+            Duration: {currentWarning.endTime - currentWarning.startTime}s
+          </div>
+        {/if}
       </div>
 
       <!-- Actions -->
       <div class="tw-banner-actions">
-        <!-- Vote buttons (for active warnings) -->
+        <!-- Helper Mode buttons (for active warnings) -->
         {#if currentWarning.isActive}
           <button
-            class="tw-banner-btn tw-banner-btn-icon"
-            title="Accurate warning"
+            class="tw-banner-btn tw-banner-btn-confirm"
+            title="Confirm this warning is accurate"
             on:click={() => handleVote('up')}
           >
-            👍
+            <span class="tw-banner-btn-text">Confirm</span>
+            <span class="tw-banner-btn-icon-inline">✓</span>
           </button>
           <button
-            class="tw-banner-btn tw-banner-btn-icon"
-            title="Inaccurate warning"
+            class="tw-banner-btn tw-banner-btn-refute"
+            title="This warning is wrong"
             on:click={() => handleVote('down')}
           >
-            👎
+            <span class="tw-banner-btn-text">Wrong</span>
+            <span class="tw-banner-btn-icon-inline">✕</span>
           </button>
           <div class="tw-banner-divider"></div>
         {/if}
@@ -140,12 +178,12 @@
 <style>
   .tw-banner {
     position: fixed;
-    top: 20px;
-    right: 20px;
+    /* Position is set via inline style from profile settings */
     max-width: 500px;
     z-index: 999999;
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
     animation: tw-slide-in 0.3s ease-out;
+    transition: opacity 0.2s ease;
   }
 
   @keyframes tw-slide-in {
@@ -256,6 +294,44 @@
     background: white;
     transform: translateY(-1px);
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  }
+
+  /* Helper Mode buttons */
+  .tw-banner-btn-confirm {
+    background: rgba(76, 175, 80, 0.9);
+    color: white;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .tw-banner-btn-confirm:hover {
+    background: rgb(76, 175, 80);
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(76, 175, 80, 0.4);
+  }
+
+  .tw-banner-btn-refute {
+    background: rgba(244, 67, 54, 0.9);
+    color: white;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .tw-banner-btn-refute:hover {
+    background: rgb(244, 67, 54);
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(244, 67, 54, 0.4);
+  }
+
+  .tw-banner-btn-text {
+    font-size: 0.9em;
+  }
+
+  .tw-banner-btn-icon-inline {
+    font-size: 1.1em;
+    font-weight: bold;
   }
 
   .tw-banner-close {
