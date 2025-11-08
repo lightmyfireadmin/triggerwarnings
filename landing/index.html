@@ -6,6 +6,20 @@
     <title>Trigger Warnings - Watch with Confidence</title>
     <meta name="description" content="Community-powered trigger warnings for streaming content. Real-time detection, photosensitivity protection, and customizable alerts for safer viewing.">
 
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://lightmyfireadmin.github.io/triggerwarnings/">
+    <meta property="og:title" content="Trigger Warnings - Watch with Confidence">
+    <meta property="og:description" content="Get advance warnings for sensitive content while streaming. 27 categories, 7 platforms, real-time detection. 100% private.">
+    <meta property="og:image" content="https://lightmyfireadmin.github.io/triggerwarnings/images/social-preview.png">
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://lightmyfireadmin.github.io/triggerwarnings/">
+    <meta property="twitter:title" content="Trigger Warnings - Watch with Confidence">
+    <meta property="twitter:description" content="Get advance warnings for sensitive content while streaming. 27 categories, 7 platforms, real-time detection. 100% private.">
+    <meta property="twitter:image" content="https://lightmyfireadmin.github.io/triggerwarnings/images/twitter-card.png">
+
     <style>
         * {
             margin: 0;
@@ -42,6 +56,25 @@
             text-align: center;
             position: relative;
             overflow: hidden;
+        }
+
+        .hero-logo {
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 30px;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .hero-logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            filter: drop-shadow(0 4px 12px rgba(0,0,0,0.2));
         }
 
         .hero::before {
@@ -171,6 +204,12 @@
         .feature-icon {
             font-size: 3rem;
             margin-bottom: 20px;
+        }
+
+        .feature-icon img {
+            width: 64px;
+            height: 64px;
+            object-fit: contain;
         }
 
         .feature-title {
@@ -450,6 +489,9 @@
     <!-- Hero Section -->
     <section class="hero">
         <div class="container">
+            <div class="hero-logo">
+                <img src="images/hero-logo.png" alt="Trigger Warnings Logo">
+            </div>
             <div class="badge">⚡ Real-Time Detection • 100% Private • Community-Powered</div>
             <h1 class="fade-in-up">Watch with Confidence</h1>
             <p class="hero-subtitle fade-in-up">
@@ -496,7 +538,9 @@
 
             <div class="features-grid">
                 <div class="feature-card">
-                    <div class="feature-icon">🗄️</div>
+                    <div class="feature-icon">
+                        <img src="images/features/database.png" alt="Database icon">
+                    </div>
                     <h3 class="feature-title">Community Database</h3>
                     <p class="feature-description">
                         Access 5,000+ movies and shows with trigger warnings sourced from IMDb Parental Guide. Community submissions add more coverage every day. Submit your own warnings to help others!
@@ -508,7 +552,9 @@
                 </div>
 
                 <div class="feature-card">
-                    <div class="feature-icon">💬</div>
+                    <div class="feature-icon">
+                        <img src="images/features/real-time.png" alt="Real-time detection icon">
+                    </div>
                     <h3 class="feature-title">Subtitle Analysis</h3>
                     <p class="feature-description">
                         Real-time subtitle scanning detects trigger keywords as you watch. Works on ANY content with captions - no database entry needed. 120+ keywords across all categories.
@@ -520,7 +566,9 @@
                 </div>
 
                 <div class="feature-card">
-                    <div class="feature-icon">⚡</div>
+                    <div class="feature-icon">
+                        <img src="images/features/real-time.png" alt="Real-time detection icon">
+                    </div>
                     <h3 class="feature-title">Photosensitivity Detection</h3>
                     <p class="feature-description">
                         Algorithmic flash detection protects users with photosensitive epilepsy. WCAG 2.1 compliant. Detects rapid flashing (>3 flashes/second) automatically.
@@ -532,7 +580,9 @@
                 </div>
 
                 <div class="feature-card">
-                    <div class="feature-icon">🎯</div>
+                    <div class="feature-icon">
+                        <img src="images/features/profiles.png" alt="Profiles icon">
+                    </div>
                     <h3 class="feature-title">Customizable Profiles</h3>
                     <p class="feature-description">
                         Create multiple profiles for different situations. Choose which categories you want warnings for, adjust timing, position, and appearance.
@@ -544,7 +594,9 @@
                 </div>
 
                 <div class="feature-card">
-                    <div class="feature-icon">🔐</div>
+                    <div class="feature-icon">
+                        <img src="images/features/privacy.png" alt="Privacy icon">
+                    </div>
                     <h3 class="feature-title">100% Private</h3>
                     <p class="feature-description">
                         All processing happens locally in your browser. No tracking, no viewing history collection, no personal data sent to servers. Your privacy is guaranteed.
@@ -556,7 +608,9 @@
                 </div>
 
                 <div class="feature-card">
-                    <div class="feature-icon">👥</div>
+                    <div class="feature-icon">
+                        <img src="images/features/community.png" alt="Community icon">
+                    </div>
                     <h3 class="feature-title">Community-Powered</h3>
                     <p class="feature-description">
                         Submit warnings for content you watch. Vote on accuracy. Help build a comprehensive database that benefits everyone.

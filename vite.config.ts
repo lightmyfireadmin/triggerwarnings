@@ -35,6 +35,7 @@ export default defineConfig({
       '@background': path.resolve(__dirname, './src/background'),
       '@popup': path.resolve(__dirname, './src/popup'),
       '@options': path.resolve(__dirname, './src/options'),
+      '@assets': path.resolve(__dirname, './src/assets'),
     },
   },
   build: {
