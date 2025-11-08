@@ -19,8 +19,11 @@ jobs:
           node-version: '20'
           cache: 'npm'
 
+      # New step to fix the error
+      - name: Install patch-package
+        run: npm install patch-package
+
       - name: Install dependencies
-        # Use npm install instead of npm ci to avoid lockfile conflicts
         run: npm install
 
       - name: Build extension
