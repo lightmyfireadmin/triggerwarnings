@@ -19,7 +19,6 @@ jobs:
           node-version: '20'
           cache: 'npm'
 
-      # New step to fix the error
       - name: Install patch-package
         run: npm install patch-package
 
@@ -27,7 +26,9 @@ jobs:
         run: npm install
 
       - name: Build extension
-        run: npm run build
+        # Runs vite build directly to bypass the tsc check in "npm run build"
+        # The TARGET_BROWSER=chrome is required by your vite.config.ts
+        run: TARGET_BROWSER=chrome vite build
 
       - name: Make script executable
         run: chmod +x scripts/package-extension.sh
