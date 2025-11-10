@@ -65,25 +65,32 @@ export class SupabaseClient {
   }
 
   /**
-   * Sign in anonymously
+   * Sign in anonymously with timeout
    */
   private static async signInAnonymously(): Promise<void> {
     if (!this.instance) return;
 
     try {
-      const { data, error } = await this.instance.auth.signInAnonymously();
+      // Add timeout to prevent hanging
+      const signInPromise = this.instance.auth.signInAnonymously();
+      const timeoutPromise = new Promise((_, reject) =>
+        setTimeout(() => reject(new Error('Sign-in timeout after 10s')), 10000)
+      );
+
+      const { data, error } = await Promise.race([signInPromise, timeoutPromise]) as any;
 
       if (error) {
         console.error('[TW Supabase] Anonymous sign-in error:', error);
         return;
       }
 
-      if (data.user) {
+      if (data?.user) {
         this.userId = data.user.id;
         console.log('[TW Supabase] Signed in anonymously:', this.userId);
       }
     } catch (error) {
       console.error('[TW Supabase] Error signing in:', error);
+      // Extension continues to work without Supabase connection
     }
   }
 
