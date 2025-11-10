@@ -7,6 +7,7 @@ import { ProfileManager } from '../profiles/ProfileManager';
 import { CACHE_EXPIRATION_MS, VIDEO_CHECK_INTERVAL_MS } from '@shared/constants/defaults';
 import { SubtitleAnalyzer } from '../../content/subtitle-analyzer/SubtitleAnalyzer';
 import { PhotosensitivityDetector } from '../../content/photosensitivity-detector/PhotosensitivityDetector';
+import { ProtectionOverlayManager } from '../../content/protection/ProtectionOverlayManager';
 export class WarningManager {
     provider;
     profile;
@@ -24,11 +25,15 @@ export class WarningManager {
     photosensitivityDetector = null;
     enableSubtitleAnalysis = true; // Can be made configurable
     enablePhotosensitivityDetection = true;
+    // Protection system
+    protectionManager;
     onWarningCallback = null;
     onWarningEndCallback = null;
     constructor(provider) {
         this.provider = provider;
         this.profile = null; // Will be initialized in initialize()
+        // Initialize protection manager
+        this.protectionManager = new ProtectionOverlayManager(provider);
         // Initialize analyzers
         if (this.enableSubtitleAnalysis) {
             this.subtitleAnalyzer = new SubtitleAnalyzer();
@@ -246,30 +251,34 @@ export class WarningManager {
         this.onWarningEndCallback(warningId);
     }
     /**
-     * Apply warning action (mute/hide video)
+     * Apply warning protection (blackout/mute)
      */
     applyWarningAction(warning, apply) {
-        const video = this.provider.getVideoElement();
-        if (!video)
-            return;
-        const action = this.profile.categoryActions[warning.categoryKey] || 'warn';
+        // Get protection type for this warning
+        const protectionType = this.getProtectionType(warning.categoryKey);
         if (apply) {
-            if (action === 'mute' || action === 'mute-and-hide') {
-                video.muted = true;
-            }
-            if (action === 'hide' || action === 'mute-and-hide') {
-                video.style.opacity = '0';
-            }
+            // Apply protection
+            this.protectionManager.applyProtection(warning.id, protectionType, warning.categoryKey, warning.description || '');
         }
         else {
-            // Restore video state
-            if (action === 'mute' || action === 'mute-and-hide') {
-                video.muted = false;
-            }
-            if (action === 'hide' || action === 'mute-and-hide') {
-                video.style.opacity = '1';
+            // Remove protection
+            this.protectionManager.removeProtection(warning.id);
+        }
+    }
+    /**
+     * Get protection type for a category
+     * Checks per-category override first, then falls back to default
+     */
+    getProtectionType(categoryKey) {
+        // Check for per-category override
+        if (this.profile.categoryProtections && categoryKey in this.profile.categoryProtections) {
+            const override = this.profile.categoryProtections[categoryKey];
+            if (override) {
+                return override;
             }
         }
+        // Fall back to default protection
+        return this.profile.defaultProtection || 'none';
     }
     /**
      * Handle media change
@@ -280,6 +289,8 @@ export class WarningManager {
         this.activeWarnings.clear();
         this.ignoredTriggersThisSession.clear();
         this.ignoredCategoriesForVideo.clear();
+        // Clear all active protections
+        this.protectionManager.removeAllProtections();
         // Fetch new warnings
         await this.fetchWarnings(media.id);
     }
@@ -291,6 +302,8 @@ export class WarningManager {
         if (this.activeWarnings.has(warningId)) {
             this.activeWarnings.delete(warningId);
             this.triggerWarningEnd(warningId);
+            // Remove protection
+            this.protectionManager.removeProtection(warningId);
         }
     }
     /**
@@ -303,6 +316,8 @@ export class WarningManager {
             if (warning.categoryKey === categoryKey && this.activeWarnings.has(warning.id)) {
                 this.activeWarnings.delete(warning.id);
                 this.triggerWarningEnd(warning.id);
+                // Remove protection
+                this.protectionManager.removeProtection(warning.id);
             }
         }
     }
@@ -323,6 +338,10 @@ export class WarningManager {
      */
     dispose() {
         this.stopMonitoring();
+        // Dispose protection manager
+        if (this.protectionManager) {
+            this.protectionManager.dispose();
+        }
         // Dispose detectors
         if (this.subtitleAnalyzer) {
             this.subtitleAnalyzer.dispose();

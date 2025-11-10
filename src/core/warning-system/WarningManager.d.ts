@@ -18,6 +18,7 @@ export declare class WarningManager {
     private photosensitivityDetector;
     private enableSubtitleAnalysis;
     private enablePhotosensitivityDetection;
+    private protectionManager;
     private onWarningCallback;
     private onWarningEndCallback;
     constructor(provider: IStreamingProvider);
@@ -62,9 +63,14 @@ export declare class WarningManager {
      */
     private triggerWarningEnd;
     /**
-     * Apply warning action (mute/hide video)
+     * Apply warning protection (blackout/mute)
      */
     private applyWarningAction;
+    /**
+     * Get protection type for a category
+     * Checks per-category override first, then falls back to default
+     */
+    private getProtectionType;
     /**
      * Handle media change
      */

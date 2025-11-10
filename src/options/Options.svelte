@@ -105,6 +105,23 @@
     await updateProfile({ soundEnabled: !activeProfile.soundEnabled });
   }
 
+  async function updateDefaultProtection(protection: string) {
+    await updateProfile({ defaultProtection: protection });
+  }
+
+  async function updateCategoryProtection(categoryKey: string, protection: string | null) {
+    if (!activeProfile) return;
+
+    const newProtections = { ...activeProfile.categoryProtections };
+    if (protection === null) {
+      delete newProtections[categoryKey];
+    } else {
+      newProtections[categoryKey] = protection;
+    }
+
+    await updateProfile({ categoryProtections: newProtections });
+  }
+
   async function switchProfile(profileId: string) {
     try {
       await browser.runtime.sendMessage({
@@ -376,6 +393,105 @@
               </button>
             </div>
           </div>
+
+          <h2 class="section-title" style="margin-top: 48px;">🛡️ Protection Settings</h2>
+          <p class="section-description">
+            Choose what happens during active trigger warnings (after the lead time has passed)
+          </p>
+
+          <!-- Default Protection -->
+          <div class="setting-group">
+            <label class="setting-label">Default Protection</label>
+            <p class="setting-hint">This will apply to all triggers unless you set a category-specific override below</p>
+            <div class="protection-selector">
+              <button
+                class="protection-btn"
+                class:active={activeProfile.defaultProtection === 'none'}
+                on:click={() => updateDefaultProtection('none')}
+              >
+                <div class="protection-icon">👁️</div>
+                <div class="protection-info">
+                  <div class="protection-name">None</div>
+                  <div class="protection-desc">Show warning banner only</div>
+                </div>
+              </button>
+              <button
+                class="protection-btn"
+                class:active={activeProfile.defaultProtection === 'blackout'}
+                on:click={() => updateDefaultProtection('blackout')}
+              >
+                <div class="protection-icon">⬛</div>
+                <div class="protection-info">
+                  <div class="protection-name">Blackout</div>
+                  <div class="protection-desc">Hide video content</div>
+                </div>
+              </button>
+              <button
+                class="protection-btn"
+                class:active={activeProfile.defaultProtection === 'mute'}
+                on:click={() => updateDefaultProtection('mute')}
+              >
+                <div class="protection-icon">🔇</div>
+                <div class="protection-info">
+                  <div class="protection-name">Mute</div>
+                  <div class="protection-desc">Mute audio only</div>
+                </div>
+              </button>
+              <button
+                class="protection-btn"
+                class:active={activeProfile.defaultProtection === 'both'}
+                on:click={() => updateDefaultProtection('both')}
+              >
+                <div class="protection-icon">🛡️</div>
+                <div class="protection-info">
+                  <div class="protection-name">Both</div>
+                  <div class="protection-desc">Blackout + mute</div>
+                </div>
+              </button>
+            </div>
+          </div>
+
+          <!-- Category-Specific Protections -->
+          <details class="advanced-section" style="margin-top: 24px;">
+            <summary class="advanced-summary">
+              <span class="advanced-title">⚙️ Per-Category Overrides</span>
+              <span class="advanced-hint">(Optional)</span>
+            </summary>
+            <div class="advanced-content">
+              <p class="section-description">
+                Set different protection levels for specific categories. Leave as "Use Default" to use the default protection setting above.
+              </p>
+              <div class="category-protections">
+                {#each CATEGORY_KEYS as categoryKey}
+                  {@const category = TRIGGER_CATEGORIES[categoryKey]}
+                  {@const enabled = isCategoryEnabled(categoryKey)}
+                  {#if enabled}
+                    {@const currentProtection = activeProfile.categoryProtections?.[categoryKey] || null}
+                    <div class="category-protection-item">
+                      <div class="category-protection-header">
+                        <span class="category-protection-icon">{category.icon}</span>
+                        <span class="category-protection-name">{category.name}</span>
+                      </div>
+                      <select
+                        class="protection-select"
+                        value={currentProtection || 'default'}
+                        on:change={(e) => {
+                          const value = e.currentTarget.value;
+                          updateCategoryProtection(categoryKey, value === 'default' ? null : value);
+                        }}
+                      >
+                        <option value="default">Use Default</option>
+                        <option value="none">None (Warning only)</option>
+                        <option value="blackout">Blackout</option>
+                        <option value="mute">Mute</option>
+                        <option value="both">Both</option>
+                      </select>
+                    </div>
+                  {/if}
+                {/each}
+              </div>
+            </div>
+          </details>
         </section>
         {/if}
 
@@ -831,5 +947,180 @@
     border-color: #667eea;
     background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
     color: #667eea;
+  }
+
+  /* Protection Selector */
+  .protection-selector {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 12px;
+    margin-top: 12px;
+  }
+
+  .protection-btn {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px;
+    border: 2px solid #dee2e6;
+    border-radius: 12px;
+    background: white;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: left;
+  }
+
+  .protection-btn:hover {
+    border-color: #667eea;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.15);
+  }
+
+  .protection-btn.active {
+    border-color: #667eea;
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+  }
+
+  .protection-icon {
+    font-size: 24px;
+    line-height: 1;
+  }
+
+  .protection-info {
+    flex: 1;
+  }
+
+  .protection-name {
+    font-weight: 600;
+    color: #2d3748;
+    margin-bottom: 4px;
+  }
+
+  .protection-desc {
+    font-size: 13px;
+    color: #6c757d;
+  }
+
+  /* Advanced Section */
+  .advanced-section {
+    border: 2px solid #e9ecef;
+    border-radius: 12px;
+    padding: 0;
+    background: white;
+  }
+
+  .advanced-summary {
+    padding: 16px 20px;
+    cursor: pointer;
+    list-style: none;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    user-select: none;
+    font-weight: 500;
+    color: #495057;
+  }
+
+  .advanced-summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .advanced-summary::before {
+    content: '▶';
+    margin-right: 8px;
+    transition: transform 0.2s;
+  }
+
+  .advanced-section[open] .advanced-summary::before {
+    transform: rotate(90deg);
+  }
+
+  .advanced-title {
+    font-size: 16px;
+  }
+
+  .advanced-hint {
+    font-size: 13px;
+    color: #6c757d;
+    font-weight: normal;
+  }
+
+  .advanced-content {
+    padding: 0 20px 20px;
+    border-top: 1px solid #e9ecef;
+  }
+
+  /* Category Protections */
+  .category-protections {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 16px;
+  }
+
+  .category-protection-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 16px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    gap: 16px;
+  }
+
+  .category-protection-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex: 1;
+  }
+
+  .category-protection-icon {
+    font-size: 20px;
+    line-height: 1;
+  }
+
+  .category-protection-name {
+    font-weight: 500;
+    color: #2d3748;
+  }
+
+  .protection-select {
+    padding: 8px 12px;
+    border: 1px solid #dee2e6;
+    border-radius: 6px;
+    background: white;
+    cursor: pointer;
+    font-size: 14px;
+    color: #495057;
+    transition: border-color 0.2s;
+    min-width: 160px;
+  }
+
+  .protection-select:hover {
+    border-color: #667eea;
+  }
+
+  .protection-select:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .protection-selector {
+      grid-template-columns: 1fr;
+    }
+
+    .category-protection-item {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 12px;
+    }
+
+    .protection-select {
+      width: 100%;
+    }
   }
 </style>
