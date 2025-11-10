@@ -301,7 +301,7 @@ materialized_views AS (
   WHERE schemaname = 'public'
 )
 
--- COMBINE ALL RESULTS
+-- COMBINE ALL RESULTS (INCLUDING SUMMARY AS FIRST ROWS)
 SELECT
   section,
   object_name,
@@ -312,7 +312,20 @@ SELECT
   detail_5 as "Info/Definition",
   sort_order
 FROM (
-  SELECT * FROM tables_cols
+  -- Add summary as special section that sorts first
+  SELECT
+    '0_SUMMARY' as section,
+    'Database Overview' as object_name,
+    'Total Tables: ' || (SELECT COUNT(DISTINCT table_name) FROM information_schema.tables WHERE table_schema = 'public')::text as detail_1,
+    'Total Columns: ' || (SELECT COUNT(*) FROM information_schema.columns WHERE table_schema = 'public')::text as detail_2,
+    'RLS Policies: ' || (SELECT COUNT(*) FROM pg_policies WHERE schemaname = 'public')::text as detail_3,
+    'Indexes: ' || (SELECT COUNT(*) FROM pg_indexes WHERE schemaname = 'public')::text as detail_4,
+    'Functions: ' || (SELECT COUNT(*) FROM pg_proc p JOIN pg_namespace n ON p.pronamespace = n.oid WHERE n.nspname = 'public' AND p.prokind = 'f')::text ||
+    ' | Triggers: ' || (SELECT COUNT(*) FROM information_schema.triggers WHERE trigger_schema = 'public')::text ||
+    ' | Enums: ' || (SELECT COUNT(*) FROM pg_type t JOIN pg_catalog.pg_namespace n ON n.oid = t.typnamespace WHERE n.nspname = 'public' AND t.typtype = 'e')::text as detail_5,
+    0 as sort_order
+
+  UNION ALL SELECT * FROM tables_cols
   UNION ALL SELECT * FROM primary_keys
   UNION ALL SELECT * FROM foreign_keys
   UNION ALL SELECT * FROM unique_constraints
@@ -332,16 +345,3 @@ FROM (
   UNION ALL SELECT * FROM materialized_views
 ) combined
 ORDER BY section, object_name, sort_order;
-
--- SUMMARY STATISTICS
-SELECT
-  '=' as "=========",
-  'SUMMARY' as "Section",
-  '=========' as "=========",
-  (SELECT COUNT(DISTINCT table_name) FROM information_schema.tables WHERE table_schema = 'public') as "Total Tables",
-  (SELECT COUNT(*) FROM information_schema.columns WHERE table_schema = 'public') as "Total Columns",
-  (SELECT COUNT(*) FROM pg_policies WHERE schemaname = 'public') as "RLS Policies",
-  (SELECT COUNT(*) FROM pg_indexes WHERE schemaname = 'public') as "Indexes",
-  (SELECT COUNT(*) FROM pg_proc p JOIN pg_namespace n ON p.pronamespace = n.oid WHERE n.nspname = 'public' AND p.prokind = 'f') as "Functions",
-  (SELECT COUNT(*) FROM information_schema.triggers WHERE trigger_schema = 'public') as "Triggers",
-  (SELECT COUNT(*) FROM pg_type t JOIN pg_catalog.pg_namespace n ON n.oid = t.typnamespace WHERE n.nspname = 'public' AND t.typtype = 'e') as "Enums";
