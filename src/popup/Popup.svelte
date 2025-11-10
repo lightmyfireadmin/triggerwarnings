@@ -318,14 +318,15 @@
 <style>
   .popup {
     width: 320px;
-    min-height: 400px;
+    max-height: 600px;
+    overflow-y: auto;
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
     background: #f8f9fa;
   }
 
   .popup-header {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    padding: 20px;
+    padding: 16px;
     color: white;
   }
 
@@ -346,11 +347,15 @@
   }
 
   .popup-content {
-    padding: 16px;
+    padding: 12px;
   }
 
   .popup-section {
-    margin-bottom: 20px;
+    margin-bottom: 16px;
+  }
+
+  .popup-section:last-of-type {
+    margin-bottom: 8px;
   }
 
   .section-header {
@@ -467,7 +472,7 @@
 
   .btn {
     width: 100%;
-    padding: 12px 20px;
+    padding: 10px 16px;
     border: none;
     border-radius: 8px;
     font-size: 14px;
