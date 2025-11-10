@@ -8,6 +8,7 @@ import { SupabaseClient } from '@core/api/SupabaseClient';
 import { ProfileManager } from '@core/profiles/ProfileManager';
 import { StorageAdapter } from '@core/storage/StorageAdapter';
 import { isSupportedPlatform } from '@shared/utils/platformDetection';
+import { DEFAULT_PROFILE } from '@shared/constants/defaults';
 import type {
   Message,
   MessageResponse,
@@ -71,8 +72,24 @@ async function handleMessage(
       }
 
       case 'GET_ACTIVE_PROFILE': {
-        const profile = await ProfileManager.getActive();
-        return { success: true, data: profile } as ProfileResponse;
+        try {
+          console.log('[TW Background] Getting active profile...');
+          const profile = await ProfileManager.getActive();
+          console.log('[TW Background] Active profile retrieved:',profile?.name);
+          return { success: true, data: profile } as ProfileResponse;
+        } catch (error) {
+          console.error('[TW Background] Error getting active profile:', error);
+          // Return a minimal default profile so popup doesn't hang
+          return {
+            success: true,
+            data: {
+              id: 'emergency_profile',
+              ...DEFAULT_PROFILE,
+              createdAt: new Date(),
+              updatedAt: new Date(),
+            },
+          } as ProfileResponse;
+        }
       }
 
       case 'SET_ACTIVE_PROFILE': {
@@ -108,8 +125,16 @@ async function handleMessage(
       }
 
       case 'GET_ALL_PROFILES': {
-        const profiles = await ProfileManager.getAll();
-        return { success: true, data: profiles } as ProfilesResponse;
+        try {
+          console.log('[TW Background] Getting all profiles...');
+          const profiles = await ProfileManager.getAll();
+          console.log('[TW Background] Retrieved', profiles.length, 'profiles');
+          return { success: true, data: profiles } as ProfilesResponse;
+        } catch (error) {
+          console.error('[TW Background] Error getting profiles:', error);
+          // Return empty array so popup doesn't hang
+          return { success: true, data: [] } as ProfilesResponse;
+        }
       }
 
       case 'SUBMIT_FEEDBACK': {
