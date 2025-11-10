@@ -16,7 +16,7 @@ export declare class SupabaseClient {
      */
     private static getInstance;
     /**
-     * Sign in anonymously
+     * Sign in anonymously with timeout
      */
     private static signInAnonymously;
     /**

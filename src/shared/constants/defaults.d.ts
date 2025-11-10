@@ -19,8 +19,8 @@ export declare const DEFAULT_DISPLAY_SETTINGS: {
 };
 export declare const DEFAULT_PROFILE: Omit<Profile, 'id' | 'createdAt' | 'updatedAt'>;
 export declare const CACHE_EXPIRATION_MS: number;
-export declare const SUPABASE_URL = "https://qasvqvtoyrucrwshojzd.supabase.co";
-export declare const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFhc3ZxdnRveXJ1Y3J3c2hvanpkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzY0NTExOTUsImV4cCI6MjA1MjAyNzE5NX0.VRbNtqkWYcBIUeJVlXDEwL90q06BFm5t0KVaXe6pB44";
+export declare const SUPABASE_URL = "https://rzkynplgzcxlaecxlylm.supabase.co";
+export declare const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJ6a3lucGxnemN4bGFlY3hseWxtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjI3MjE2OTAsImV4cCI6MjA3ODI5NzY5MH0.24lj8QXRK-FS8uQQRtA4H--laEDosdGBCGXnmmnWg_8";
 export declare const AUTO_APPROVE_THRESHOLD = 3;
 export declare const AUTO_REJECT_THRESHOLD = -5;
 export declare const VIDEO_CHECK_INTERVAL_MS = 250;

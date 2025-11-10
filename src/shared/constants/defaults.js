@@ -30,8 +30,8 @@ export const DEFAULT_PROFILE = {
 // Cache expiration time (5 minutes)
 export const CACHE_EXPIRATION_MS = 5 * 60 * 1000;
 // Supabase configuration
-export const SUPABASE_URL = 'https://qasvqvtoyrucrwshojzd.supabase.co';
-export const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFhc3ZxdnRveXJ1Y3J3c2hvanpkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzY0NTExOTUsImV4cCI6MjA1MjAyNzE5NX0.VRbNtqkWYcBIUeJVlXDEwL90q06BFm5t0KVaXe6pB44';
+export const SUPABASE_URL = 'https://rzkynplgzcxlaecxlylm.supabase.co';
+export const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJ6a3lucGxnemN4bGFlY3hseWxtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjI3MjE2OTAsImV4cCI6MjA3ODI5NzY5MH0.24lj8QXRK-FS8uQQRtA4H--laEDosdGBCGXnmmnWg_8';
 // Auto-approval thresholds
 export const AUTO_APPROVE_THRESHOLD = 3;
 export const AUTO_REJECT_THRESHOLD = -5;

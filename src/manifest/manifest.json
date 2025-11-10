@@ -24,7 +24,7 @@
     "*://*.max.com/*",
     "*://*.peacocktv.com/*",
     "*://*.youtube.com/*",
-    "*://*.supabase.co/*"
+    "https://rzkynplgzcxlaecxlylm.supabase.co/*"
   ],
   "background": {
     "service_worker": "src/background/index.ts",
@@ -112,6 +112,6 @@
     }
   ],
   "content_security_policy": {
-    "extension_pages": "script-src 'self'; object-src 'self'; connect-src 'self' https://*.supabase.co https://*.supabase.io"
+    "extension_pages": "script-src 'self'; object-src 'self'; connect-src 'self' https://rzkynplgzcxlaecxlylm.supabase.co"
   }
 }

@@ -26,10 +26,13 @@ async function initialize(): Promise<void> {
   console.log('[TW Background] Initializing...');
 
   try {
-    // Initialize Supabase
-    await SupabaseClient.initialize();
+    // Initialize Supabase in the background (non-blocking)
+    // Extension should work even if Supabase is unavailable
+    SupabaseClient.initialize()
+      .then(() => console.log('[TW Background] Supabase connected'))
+      .catch((error) => console.warn('[TW Background] Supabase unavailable:', error));
 
-    // Ensure default profile exists
+    // Ensure default profile exists (uses local storage, doesn't need Supabase)
     await ProfileManager.getActive();
 
     // Set up keepalive alarm (every 1 minute)
