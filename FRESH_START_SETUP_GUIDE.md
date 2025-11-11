@@ -86,6 +86,12 @@ DELETE FROM trigger_votes WHERE trigger_id IN (
 DELETE FROM triggers WHERE video_id = 'ZKCmFcMR2tU' AND platform = 'youtube';
 
 -- =====================================================
+-- DISABLE USER PROFILE TRIGGER TEMPORARILY
+-- (Since we're inserting test data without real users)
+-- =====================================================
+ALTER TABLE triggers DISABLE TRIGGER increment_submissions_on_trigger_insert;
+
+-- =====================================================
 -- SEED TRIGGERS FOR TEST VIDEO
 -- =====================================================
 
@@ -101,6 +107,7 @@ INSERT INTO triggers (
   confidence_level,
   status,
   score,
+  submitted_by,
   created_at
 ) VALUES
 (
@@ -114,6 +121,7 @@ INSERT INTO triggers (
   85,
   'approved',
   12,
+  NULL,
   NOW() - INTERVAL '7 days'
 ),
 (
@@ -127,6 +135,7 @@ INSERT INTO triggers (
   90,
   'approved',
   8,
+  NULL,
   NOW() - INTERVAL '6 days'
 );
 
@@ -142,6 +151,7 @@ INSERT INTO triggers (
   confidence_level,
   status,
   score,
+  submitted_by,
   created_at
 ) VALUES
 (
@@ -155,6 +165,7 @@ INSERT INTO triggers (
   80,
   'approved',
   15,
+  NULL,
   NOW() - INTERVAL '5 days'
 ),
 (
@@ -168,6 +179,7 @@ INSERT INTO triggers (
   75,
   'approved',
   6,
+  NULL,
   NOW() - INTERVAL '5 days'
 );
 
@@ -183,6 +195,7 @@ INSERT INTO triggers (
   confidence_level,
   status,
   score,
+  submitted_by,
   created_at
 ) VALUES
 (
@@ -196,6 +209,7 @@ INSERT INTO triggers (
   95,
   'approved',
   20,
+  NULL,
   NOW() - INTERVAL '4 days'
 );
 
@@ -211,6 +225,7 @@ INSERT INTO triggers (
   confidence_level,
   status,
   score,
+  submitted_by,
   created_at
 ) VALUES
 (
@@ -224,6 +239,7 @@ INSERT INTO triggers (
   88,
   'approved',
   18,
+  NULL,
   NOW() - INTERVAL '3 days'
 ),
 (
@@ -237,6 +253,7 @@ INSERT INTO triggers (
   92,
   'approved',
   14,
+  NULL,
   NOW() - INTERVAL '3 days'
 );
 
@@ -252,6 +269,7 @@ INSERT INTO triggers (
   confidence_level,
   status,
   score,
+  submitted_by,
   created_at
 ) VALUES
 (
@@ -265,6 +283,7 @@ INSERT INTO triggers (
   82,
   'approved',
   9,
+  NULL,
   NOW() - INTERVAL '2 days'
 );
 
@@ -280,6 +299,7 @@ INSERT INTO triggers (
   confidence_level,
   status,
   score,
+  submitted_by,
   created_at
 ) VALUES
 (
@@ -293,6 +313,7 @@ INSERT INTO triggers (
   90,
   'approved',
   5,
+  NULL,
   NOW() - INTERVAL '2 days'
 ),
 (
@@ -306,6 +327,7 @@ INSERT INTO triggers (
   88,
   'approved',
   7,
+  NULL,
   NOW() - INTERVAL '1 day'
 );
 
@@ -321,6 +343,7 @@ INSERT INTO triggers (
   confidence_level,
   status,
   score,
+  submitted_by,
   created_at
 ) VALUES
 (
@@ -334,6 +357,7 @@ INSERT INTO triggers (
   91,
   'approved',
   16,
+  NULL,
   NOW() - INTERVAL '1 day'
 );
 
@@ -349,6 +373,7 @@ INSERT INTO triggers (
   confidence_level,
   status,
   score,
+  submitted_by,
   created_at
 ) VALUES
 (
@@ -362,6 +387,7 @@ INSERT INTO triggers (
   79,
   'approved',
   4,
+  NULL,
   NOW() - INTERVAL '12 hours'
 );
 
@@ -377,6 +403,7 @@ INSERT INTO triggers (
   confidence_level,
   status,
   score,
+  submitted_by,
   created_at
 ) VALUES
 (
@@ -390,6 +417,7 @@ INSERT INTO triggers (
   86,
   'approved',
   11,
+  NULL,
   NOW() - INTERVAL '6 hours'
 );
 
@@ -405,6 +433,7 @@ INSERT INTO triggers (
   confidence_level,
   status,
   score,
+  submitted_by,
   created_at
 ) VALUES
 (
@@ -418,6 +447,7 @@ INSERT INTO triggers (
   83,
   'approved',
   10,
+  NULL,
   NOW() - INTERVAL '3 hours'
 );
 
@@ -433,6 +463,7 @@ INSERT INTO triggers (
   confidence_level,
   status,
   score,
+  submitted_by,
   created_at
 ) VALUES
 (
@@ -446,8 +477,14 @@ INSERT INTO triggers (
   70,
   'pending',
   0,
+  NULL,
   NOW() - INTERVAL '1 hour'
 );
+
+-- =====================================================
+-- RE-ENABLE USER PROFILE TRIGGER
+-- =====================================================
+ALTER TABLE triggers ENABLE TRIGGER increment_submissions_on_trigger_insert;
 
 -- =====================================================
 -- VERIFICATION QUERY
@@ -465,6 +502,15 @@ SELECT
 FROM triggers
 WHERE video_id = 'ZKCmFcMR2tU' AND platform = 'youtube'
 ORDER BY start_time;
+
+-- Display summary
+SELECT
+  COUNT(*) FILTER (WHERE status = 'approved') as approved_count,
+  COUNT(*) FILTER (WHERE status = 'pending') as pending_count,
+  COUNT(*) as total_count
+FROM triggers
+WHERE video_id = 'ZKCmFcMR2tU' AND platform = 'youtube';
+
 ```
 
 ### Step 3: Click "Run" or Press Ctrl+Enter
