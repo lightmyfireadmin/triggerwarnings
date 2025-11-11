@@ -59,8 +59,9 @@ CREATE POLICY "Moderators can read all feedback"
 -- 2. ADD MISSING VIEW: recent_approved_triggers
 -- =====================================================
 
--- Drop view if exists (can't ALTER views, must recreate)
-DROP VIEW IF EXISTS recent_approved_triggers;
+-- Drop view if exists with CASCADE (removes dependent objects)
+-- This is necessary because PostgreSQL can't ALTER VIEW column structure
+DROP VIEW IF EXISTS recent_approved_triggers CASCADE;
 
 CREATE VIEW recent_approved_triggers AS
 SELECT * FROM triggers
