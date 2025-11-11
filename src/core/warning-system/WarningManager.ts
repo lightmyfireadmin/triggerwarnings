@@ -70,7 +70,12 @@ export class WarningManager {
     // Load active profile
     this.profile = await ProfileManager.getActive();
     console.log(`[TW WarningManager] ✅ Profile loaded: "${this.profile.name}" with ${this.profile.enabledCategories.length} enabled categories`);
-    console.log('[TW WarningManager] Enabled categories:', this.profile.enabledCategories);
+    console.log('[TW WarningManager] 📋 Enabled categories:', this.profile.enabledCategories);
+
+    if (this.profile.enabledCategories.length === 0) {
+      console.warn('[TW WarningManager] ⚠️ WARNING: No categories enabled in profile! All warnings will be filtered out.');
+      console.warn('[TW WarningManager] Please enable trigger categories in settings to see warnings.');
+    }
 
     // Get current media
     const media = await this.provider.getCurrentMedia();
@@ -80,6 +85,7 @@ export class WarningManager {
     }
 
     console.log(`[TW WarningManager] 🎬 Media detected: ${media.id} - "${media.title || 'Unknown'}"`);
+    console.log(`[TW WarningManager] Platform: ${this.provider.name}`);
 
     // Fetch warnings for this media
     await this.fetchWarnings(media.id);
@@ -99,6 +105,7 @@ export class WarningManager {
     // Listen for profile changes
     StorageAdapter.onChange('activeProfileId', async () => {
       this.profile = await ProfileManager.getActive();
+      console.log('[TW WarningManager] 🔄 Profile changed, refilteting warnings...');
       this.refilterWarnings();
     });
 
@@ -187,15 +194,26 @@ export class WarningManager {
     const allWarnings = await SupabaseClient.getTriggers(videoId);
     console.log(`[TW WarningManager] 📦 Received ${allWarnings.length} total warnings from backend`);
 
+    if (allWarnings.length === 0) {
+      console.warn('[TW WarningManager] ⚠️ No triggers found in database for this video');
+      console.warn('[TW WarningManager] 💡 Tip: You can add triggers using the extension popup or overlay');
+    } else {
+      console.log('[TW WarningManager] 📊 All categories in database:', [...new Set(allWarnings.map(w => w.categoryKey))].join(', '));
+      console.log('[TW WarningManager] 📊 All trigger times:', allWarnings.map(w => `${w.categoryKey}: ${Math.floor(w.startTime)}s-${Math.floor(w.endTime)}s`));
+    }
+
     // Filter by profile
     this.warnings = this.filterWarningsByProfile(allWarnings);
     console.log(`[TW WarningManager] ✅ Filtered to ${this.warnings.length} warnings based on profile`);
 
     if (this.warnings.length > 0) {
-      console.log('[TW WarningManager] Warning categories:', this.warnings.map(w => w.categoryKey));
-      console.log('[TW WarningManager] Warning times:', this.warnings.map(w => `${Math.floor(w.startTime)}s-${Math.floor(w.endTime)}s`));
-    } else {
-      console.log('[TW WarningManager] ℹ️ No warnings match the current profile settings');
+      console.log('[TW WarningManager] 🎯 Active warning categories:', this.warnings.map(w => w.categoryKey));
+      console.log('[TW WarningManager] 🎯 Active warning times:', this.warnings.map(w => `${w.categoryKey}: ${Math.floor(w.startTime)}s-${Math.floor(w.endTime)}s`));
+    } else if (allWarnings.length > 0) {
+      console.warn('[TW WarningManager] ⚠️ Triggers exist in database but none match your enabled categories!');
+      console.warn('[TW WarningManager] 💡 Database has these categories:', [...new Set(allWarnings.map(w => w.categoryKey))].join(', '));
+      console.warn('[TW WarningManager] 💡 Your profile has these enabled:', this.profile.enabledCategories.join(', '));
+      console.warn('[TW WarningManager] 💡 Enable matching categories in settings to see warnings');
     }
 
     // Update both caches

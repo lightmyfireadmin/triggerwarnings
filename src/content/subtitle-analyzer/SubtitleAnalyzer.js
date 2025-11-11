@@ -130,10 +130,16 @@ export class SubtitleAnalyzer {
     initialize(video) {
         this.video = video;
         const tracks = video.textTracks;
-        logger.info(`[SubtitleAnalyzer] Initializing with ${tracks.length} text tracks`);
+        logger.info(`[TW SubtitleAnalyzer] 🎬 Initializing with ${tracks.length} text tracks`);
         if (tracks.length === 0) {
-            logger.info('[SubtitleAnalyzer] ❌ No subtitle tracks found - analysis disabled');
+            logger.info('[TW SubtitleAnalyzer] ❌ No subtitle tracks found - subtitle-based analysis disabled');
+            logger.info('[TW SubtitleAnalyzer] 💡 Trigger warnings will only appear from database submissions');
             return;
+        }
+        // Log all available tracks for debugging
+        for (let i = 0; i < tracks.length; i++) {
+            const track = tracks[i];
+            logger.debug(`[TW SubtitleAnalyzer] 📋 Track ${i}: ${track.label || 'Untitled'} (${track.language || 'unknown'}) [${track.kind}]`);
         }
         // Find English track for analyzer (independent of user choice)
         let englishTrack = null;
@@ -157,10 +163,11 @@ export class SubtitleAnalyzer {
         // Select track for analyzer
         const selectedTrack = englishTrack || fallbackTrack;
         if (!selectedTrack) {
-            logger.info('[SubtitleAnalyzer] ❌ No usable subtitle tracks available');
+            logger.info('[TW SubtitleAnalyzer] ❌ No usable subtitle tracks available');
+            logger.info('[TW SubtitleAnalyzer] 💡 Trigger warnings will only appear from database submissions');
             return;
         }
-        logger.info(`[SubtitleAnalyzer] ✅ Subtitles found - Track: ${selectedTrack.label || 'Untitled'} (${selectedTrack.language || 'unknown'})`);
+        logger.info(`[TW SubtitleAnalyzer] ✅ Subtitles found - Track: ${selectedTrack.label || 'Untitled'} (${selectedTrack.language || 'unknown'})`);
         // Determine if we need translation
         this.sourceLanguage = selectedTrack.language || 'en';
         this.needsTranslation = !this.sourceLanguage.toLowerCase().startsWith('en');
@@ -168,12 +175,12 @@ export class SubtitleAnalyzer {
         this.attachListeners();
         const trackInfo = `${selectedTrack.label || 'Untitled'} (${this.sourceLanguage})`;
         if (this.needsTranslation) {
-            logger.info(`Initialized with non-English track: ${trackInfo} - Translation enabled`);
+            logger.info(`[TW SubtitleAnalyzer] 🌐 Initialized with non-English track: ${trackInfo} - Translation enabled`);
             // Start prefetching translations
             this.startPrefetching();
         }
         else {
-            logger.info(`Initialized with English track: ${trackInfo}`);
+            logger.info(`[TW SubtitleAnalyzer] ✅ Initialized with English track: ${trackInfo} - Real-time analysis active`);
         }
     }
     /**
@@ -186,7 +193,7 @@ export class SubtitleAnalyzer {
         this.textTrack.addEventListener('cuechange', () => {
             this.analyzeCues();
         });
-        logger.debug('Listeners attached');
+        logger.debug('[TW SubtitleAnalyzer] 🔗 Listeners attached - monitoring subtitle cues');
     }
     /**
      * Start prefetching translations ahead of playback
@@ -213,11 +220,18 @@ export class SubtitleAnalyzer {
         if (!this.textTrack || !this.textTrack.activeCues)
             return;
         const cues = Array.from(this.textTrack.activeCues);
+        if (cues.length === 0) {
+            return; // No active cues to analyze
+        }
+        logger.debug(`[TW SubtitleAnalyzer] 📝 Analyzing ${cues.length} active cue(s) at ${Math.floor(cues[0].startTime)}s`);
         for (const cue of cues) {
             let textToAnalyze = cue.text;
+            logger.debug(`[TW SubtitleAnalyzer] 📝 Cue text: "${cue.text}"`);
             // Translate if needed
             if (this.needsTranslation) {
+                logger.debug(`[TW SubtitleAnalyzer] 🌐 Translating from ${this.sourceLanguage} to English...`);
                 textToAnalyze = await this.translator.translateText(cue.text, this.sourceLanguage);
+                logger.debug(`[TW SubtitleAnalyzer] 🌐 Translated: "${textToAnalyze}"`);
             }
             this.analyzeText(textToAnalyze, cue.startTime, cue.endTime);
         }
