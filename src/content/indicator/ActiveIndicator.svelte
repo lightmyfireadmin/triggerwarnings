@@ -145,9 +145,9 @@
     flex-wrap: wrap;
     gap: 8px;
     padding: 8px 12px;
-    background: linear-gradient(135deg, rgba(139, 92, 246, 0.95) 0%, rgba(168, 85, 247, 0.95) 100%);
+    background: linear-gradient(135deg, rgba(109, 40, 217, 0.95) 0%, rgba(138, 43, 226, 0.95) 100%);
     border-radius: 20px;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 4px 16px rgba(109, 40, 217, 0.4);
     backdrop-filter: blur(10px);
     color: white;
     transition: all 0.3s ease;
