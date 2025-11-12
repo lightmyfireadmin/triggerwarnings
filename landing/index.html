@@ -3359,7 +3359,7 @@
             <div class="hero-content">
                 <div class="hero-text">
                     <div class="hero-logo">
-                        <img src="images/icon128.png" alt="Trigger Warnings Logo">
+                        <img src="images/hero-logo.png" alt="Trigger Warnings Logo">
                     </div>
                     <div class="badge">⚡ Real-Time Detection • 100% Private • Community-Powered</div>
                     <h1>Watch Anything, Safely</h1>
@@ -5410,7 +5410,7 @@
         document.head.appendChild(algoStyle);
 
         // Scroll-triggered animations for Algorithm 3.0 sections
-        const observerOptions = {
+        const algoObserverOptions = {
             threshold: 0.1,
             rootMargin: '0px 0px -50px 0px'
         };
@@ -5422,7 +5422,7 @@
                     entry.target.style.transform = 'translateY(0)';
                 }
             });
-        }, observerOptions);
+        }, algoObserverOptions);
 
         // Apply fade-in animations to all sections with the class
         document.addEventListener('DOMContentLoaded', () => {
