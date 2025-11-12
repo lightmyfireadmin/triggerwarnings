@@ -20,6 +20,11 @@
     <meta property="twitter:description" content="Block what you don't want to see. Enjoy what you do. 5-10 seconds advance warning, 28 categories, 100% private.">
     <meta property="twitter:image" content="https://lightmyfireadmin.github.io/triggerwarnings/images/twitter-card.png">
 
+    <!-- Google Fonts - Inter for modern, clean typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;600;700&display=swap" rel="stylesheet">
+
     <style>
         /* ═══════════════════════════════════════════════════════════════ */
         /* RESET & FOUNDATIONS */
@@ -263,21 +268,22 @@
             align-items: center;
             gap: 8px;
             margin-bottom: 24px;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
         }
 
         .title-main {
             font-size: 4rem;
-            font-weight: 300;
+            font-weight: 200;
             line-height: 1.1;
-            letter-spacing: -0.02em;
+            letter-spacing: -0.03em;
             text-shadow: 0 2px 8px rgba(0,0,0,0.12);
         }
 
         .title-sub {
             font-size: 2rem;
             font-weight: 300;
-            opacity: 0.9;
-            letter-spacing: 0.05em;
+            opacity: 0.92;
+            letter-spacing: 0.02em;
             text-shadow: 0 2px 8px rgba(0,0,0,0.12);
         }
 
@@ -771,263 +777,147 @@
         }
 
         /* ═══════════════════════════════════════════════════════════════ */
-        /* HERO HELPER MODE DEMO */
+        /* HERO VISUAL - Protection Shield */
         /* ═══════════════════════════════════════════════════════════════ */
 
-        .helper-mode-demo-hero {
-            position: relative;
-        }
-
-        .hero-demo-container {
-            display: flex;
-            flex-direction: column;
-            gap: 24px;
-        }
-
-        .hero-demo-screen {
-            background: rgba(255, 255, 255, 0.08);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 2px solid rgba(255, 255, 255, 0.15);
-            border-radius: 20px;
-            padding: 32px;
-            position: relative;
-            min-height: 320px;
-            display: flex;
-            flex-direction: column;
-            gap: 24px;
-        }
-
-        .demo-playing-indicator {
+        .hero-visual {
             display: flex;
             align-items: center;
-            gap: 10px;
-            font-size: 0.9rem;
-            font-weight: 600;
-            opacity: 0.9;
+            justify-content: center;
         }
 
-        .playing-dot {
-            width: 8px;
-            height: 8px;
-            background: #10b981;
+        .protection-visual {
+            position: relative;
+            width: 100%;
+            max-width: 400px;
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .shield-icon {
+            font-size: 8rem;
+            position: relative;
+            z-index: 3;
+            filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.2));
+        }
+
+        .protection-layers {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 100%;
+            height: 100%;
+        }
+
+        .protection-layer {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            border: 2px solid rgba(255, 255, 255, 0.3);
             border-radius: 50%;
-            animation: pulse 2s ease-in-out infinite;
+        }
+
+        .layer-1 {
+            width: 100%;
+            height: 100%;
+        }
+
+        .layer-2 {
+            width: 75%;
+            height: 75%;
+        }
+
+        .layer-3 {
+            width: 50%;
+            height: 50%;
         }
 
         @media (prefers-reduced-motion: no-preference) {
-            @keyframes pulse {
-                0%, 100% { opacity: 1; transform: scale(1); }
-                50% { opacity: 0.5; transform: scale(0.9); }
+            .protection-layer {
+                animation: ripple 3s ease-out infinite;
+            }
+
+            .layer-1 {
+                animation-delay: 0s;
+            }
+
+            .layer-2 {
+                animation-delay: 1s;
+            }
+
+            .layer-3 {
+                animation-delay: 2s;
+            }
+
+            @keyframes ripple {
+                0% {
+                    opacity: 0.8;
+                    transform: translate(-50%, -50%) scale(0.95);
+                }
+                50% {
+                    opacity: 0.4;
+                    transform: translate(-50%, -50%) scale(1);
+                }
+                100% {
+                    opacity: 0.8;
+                    transform: translate(-50%, -50%) scale(0.95);
+                }
             }
         }
 
-        .helper-question-card {
-            background: rgba(255, 255, 255, 0.95);
-            color: var(--text-dark);
-            border-radius: 16px;
-            padding: 24px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
-            transition: opacity 0.4s ease;
+        .protection-stats-hero {
+            position: absolute;
+            bottom: -80px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            width: 100%;
+            max-width: 350px;
         }
 
-        .helper-question-header {
+        .stat-badge {
             display: flex;
             align-items: center;
             gap: 12px;
-            margin-bottom: 16px;
-        }
-
-        .helper-icon {
-            font-size: 1.5rem;
-        }
-
-        .helper-title {
-            font-weight: 700;
-            font-size: 1.05rem;
-            color: var(--primary);
-        }
-
-        .helper-question-text {
-            font-size: 1rem;
-            line-height: 1.6;
-            margin-bottom: 20px;
-            color: var(--text-dark);
-        }
-
-        .helper-question-text strong {
-            color: var(--primary);
-            font-weight: 700;
-        }
-
-        .helper-question-actions {
-            display: flex;
-            gap: 12px;
-            flex-wrap: wrap;
-            margin-bottom: 16px;
-        }
-
-        .helper-answer-btn {
-            flex: 1;
-            min-width: 80px;
-            padding: 10px 20px;
-            border-radius: 10px;
-            font-weight: 600;
-            font-size: 0.95rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            border: 2px solid;
-        }
-
-        .helper-answer-btn:focus {
-            outline: 3px solid var(--primary);
-            outline-offset: 2px;
-        }
-
-        .yes-btn {
-            background: var(--primary);
-            color: white;
-            border-color: var(--primary);
-        }
-
-        .yes-btn:hover {
-            background: var(--primary-dark);
-            transform: translateY(-2px);
-        }
-
-        .no-btn {
-            background: white;
-            color: var(--text-dark);
-            border-color: var(--text-light);
-        }
-
-        .no-btn:hover {
-            background: var(--bg-light);
-            transform: translateY(-2px);
-        }
-
-        .skip-btn {
-            background: transparent;
-            color: var(--text-light);
-            border-color: transparent;
-        }
-
-        .skip-btn:hover {
-            color: var(--text-dark);
-            background: rgba(0, 0, 0, 0.05);
-        }
-
-        .helper-privacy-note {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 0.85rem;
-            color: var(--text-light);
-            font-style: italic;
-            margin: 0;
-        }
-
-        .privacy-icon {
-            font-size: 1rem;
-        }
-
-        .hero-demo-stats {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 16px;
-            margin-top: auto;
-        }
-
-        .demo-stat-item {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 0.9rem;
-            font-weight: 600;
-            opacity: 0.9;
-        }
-
-        .demo-stat-icon {
-            font-size: 1.2rem;
-        }
-
-        .hero-demo-explanation {
-            font-size: 0.95rem;
-            line-height: 1.7;
-            opacity: 0.9;
-            margin: 0;
-        }
-
-        .hero-demo-explanation strong {
-            font-weight: 700;
-            color: white;
-        }
-
-        .hero-demo-explanation em {
-            font-style: italic;
-            color: rgba(255, 255, 255, 0.95);
-        }
-
-        .trigger-submission-note {
-            display: flex;
-            gap: 16px;
-            padding: 20px;
-            background: rgba(255, 255, 255, 0.1);
+            padding: 14px 20px;
+            background: rgba(255, 255, 255, 0.15);
             backdrop-filter: blur(10px);
             -webkit-backdrop-filter: blur(10px);
-            border-left: 4px solid rgba(255, 255, 255, 0.5);
-            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            border-radius: 16px;
+            font-size: 0.95rem;
+            font-weight: 600;
         }
 
-        .submission-note-icon {
-            font-size: 2rem;
-            flex-shrink: 0;
+        .badge-icon {
+            font-size: 1.3rem;
         }
 
-        .submission-note-content {
-            font-size: 0.9rem;
-            line-height: 1.6;
-            opacity: 0.95;
-        }
-
-        .submission-note-content strong {
-            font-weight: 700;
-            color: white;
-            display: block;
-            margin-bottom: 4px;
-        }
-
-        @media (max-width: 768px) {
-            .hero-demo-screen {
-                padding: 20px;
-                min-height: 280px;
-            }
-
-            .helper-question-card {
-                padding: 20px;
-            }
-
-            .helper-question-actions {
-                flex-direction: column;
-            }
-
-            .helper-answer-btn {
-                min-width: 100%;
-            }
-
-            .hero-demo-stats {
+        @media (max-width: 968px) {
+            .hero-content {
                 grid-template-columns: 1fr;
-                gap: 12px;
+                gap: 80px;
             }
 
-            .trigger-submission-note {
-                flex-direction: column;
-                gap: 12px;
-                padding: 16px;
+            .protection-visual {
+                max-width: 300px;
+                margin: 0 auto;
             }
 
-            .submission-note-icon {
-                font-size: 1.5rem;
+            .shield-icon {
+                font-size: 6rem;
+            }
+
+            .protection-stats-hero {
+                position: static;
+                transform: none;
+                margin-top: 40px;
             }
         }
 
@@ -1261,7 +1151,7 @@
                     <p><strong>Options:</strong></p>
                     <ul>
                         <li>Enable JavaScript to experience the full interactive demos</li>
-                        <li>Or visit our <a href="/landing/index-static.html" class="no-js-link">HTML-only version</a> with all the same information (no demos, but fully accessible)</li>
+                        <li>Or visit our <a href="index-static.html" class="no-js-link">HTML-only version</a> with all the same information (no demos, but fully accessible)</li>
                     </ul>
                 </div>
                 <p class="no-js-note">The extension itself does not require JavaScript on this page—only the demo features do.</p>
@@ -1291,7 +1181,7 @@
             <div class="hero-content">
                 <div class="hero-text">
                     <div class="hero-logo">
-                        <img src="public/images/icon128.png" alt="Trigger Warnings Shield Logo" width="128" height="128">
+                        <img src="icon128.png" alt="Trigger Warnings Shield Logo" width="128" height="128">
                     </div>
                     <h1 class="hero-main-title">
                         <span class="title-main">Trigger Warnings</span>
@@ -1329,65 +1219,27 @@
                     </p>
                 </div>
 
-                <!-- Helper Mode Demo - Interactive Questions While Watching -->
-                <div class="helper-mode-demo-hero" role="region" aria-label="Interactive demonstration of helper mode questions">
-                    <div class="hero-demo-container">
-                        <div class="hero-demo-screen">
-                            <div class="demo-playing-indicator">
-                                <div class="playing-dot"></div>
-                                <span>Watching: Stranger Things</span>
-                            </div>
-
-                            <!-- Helper Mode Question Overlay -->
-                            <div class="helper-question-card" id="heroHelperQuestion" style="opacity: 0;">
-                                <div class="helper-question-header">
-                                    <span class="helper-icon">🤝</span>
-                                    <span class="helper-title">Help Improve Detection</span>
-                                </div>
-                                <p class="helper-question-text">
-                                    Did this scene contain <strong>spiders or insects</strong>?
-                                </p>
-                                <div class="helper-question-actions">
-                                    <button class="helper-answer-btn yes-btn" onclick="answerHelperDemo('yes')" aria-label="Answer yes, scene contained spiders">
-                                        ✓ Yes
-                                    </button>
-                                    <button class="helper-answer-btn no-btn" onclick="answerHelperDemo('no')" aria-label="Answer no, scene did not contain spiders">
-                                        ✗ No
-                                    </button>
-                                    <button class="helper-answer-btn skip-btn" onclick="answerHelperDemo('skip')" aria-label="Skip this question">
-                                        Skip
-                                    </button>
-                                </div>
-                                <p class="helper-privacy-note">
-                                    <span class="privacy-icon">🔒</span>
-                                    Only for content you're monitoring. Anonymous & encrypted.
-                                </p>
-                            </div>
-
-                            <div class="hero-demo-stats">
-                                <div class="demo-stat-item">
-                                    <span class="demo-stat-icon">🎯</span>
-                                    <span class="demo-stat-text">96% Accuracy</span>
-                                </div>
-                                <div class="demo-stat-item">
-                                    <span class="demo-stat-icon">⚡</span>
-                                    <span class="demo-stat-text">5-10s Warning</span>
-                                </div>
-                                <div class="demo-stat-item">
-                                    <span class="demo-stat-icon">🛡️</span>
-                                    <span class="demo-stat-text">28 Categories</span>
-                                </div>
-                            </div>
+                <!-- Hero Visual - Protection Shield -->
+                <div class="hero-visual" role="presentation" aria-hidden="true">
+                    <div class="protection-visual">
+                        <div class="shield-icon">🛡️</div>
+                        <div class="protection-layers">
+                            <div class="protection-layer layer-1" data-label="Visual Detection"></div>
+                            <div class="protection-layer layer-2" data-label="Audio Analysis"></div>
+                            <div class="protection-layer layer-3" data-label="Subtitle Scanning"></div>
                         </div>
-
-                        <p class="hero-demo-explanation">
-                            <strong>Helper Mode (Optional):</strong> Smooth, discreet questions appear <em>only for content you're monitoring</em>. Your answers help improve the algorithm for everyone. When you contribute, the content ID is stored (anonymous & encrypted), but your viewing data never is.
-                        </p>
-
-                        <div class="trigger-submission-note">
-                            <div class="submission-note-icon">💡</div>
-                            <div class="submission-note-content">
-                                <strong>Easily add triggers while viewing:</strong> Spotted something we missed? Click the extension icon to report a new trigger. Only the content ID is stored (anonymous & encrypted) to improve detection. Your privacy remains absolute.
+                        <div class="protection-stats-hero">
+                            <div class="stat-badge">
+                                <span class="badge-icon">🎯</span>
+                                <span class="badge-text">96% Accuracy</span>
+                            </div>
+                            <div class="stat-badge">
+                                <span class="badge-icon">⚡</span>
+                                <span class="badge-text">5-10s Early Warning</span>
+                            </div>
+                            <div class="stat-badge">
+                                <span class="badge-icon">🔒</span>
+                                <span class="badge-text">100% Private</span>
                             </div>
                         </div>
                     </div>
@@ -1440,80 +1292,84 @@
     </section>
 
     <!-- ═══════════════════════════════════════════════════════════════ -->
-    <!-- LIVE CINEMA DEMO - See It In Action -->
+    <!-- SUBTITLE FLOW DEMO - See How Detection Works -->
     <!-- ═══════════════════════════════════════════════════════════════ -->
-    <section class="cinema-demo section" id="demo">
+    <section class="subtitle-detection-demo section" id="demo">
         <div class="container">
             <div class="section-header">
-                <h2 class="section-title">See It In Action</h2>
+                <h2 class="section-title">See How Detection Works</h2>
                 <p class="section-subtitle">
-                    Watch how our warning system detects and alerts you in real-time, giving you 5-10 seconds to prepare or skip ahead.
+                    Watch how our algorithm scans subtitles in real-time, detects triggers, and alerts you before sensitive content appears.
                 </p>
             </div>
 
-            <div class="cinema-container">
-                <!-- Simulated Video Player -->
-                <div class="video-player">
-                    <div class="video-screen" id="videoScreen">
-                        <div class="video-content" id="videoContent">
-                            <div class="scene-placeholder">
-                                🎬 Streaming Scene
-                            </div>
+            <div class="subtitle-demo-container">
+                <!-- Left Side: Visual Animation -->
+                <div class="subtitle-visual">
+                    <!-- Subtitle Examples -->
+                    <div class="subtitle-text-container">
+                        <div class="subtitle-line">
+                            The investigation continues as detectives search for clues.
                         </div>
-
-                        <!-- Dynamic Warning Overlay (appears when triggered) -->
-                        <div class="warning-overlay" id="warningOverlay" style="display: none;">
-                            <div class="warning-card">
-                                <div class="warning-header">
-                                    <span class="warning-icon">⚠️</span>
-                                    <span class="warning-type" id="warningType">Blood & Gore</span>
-                                </div>
-                                <div class="warning-message">
-                                    Detected in <span class="warning-countdown" id="warningCountdown">7</span> seconds
-                                </div>
-                                <div class="warning-actions">
-                                    <button class="warning-btn skip-btn" onclick="handleSkip()">Skip Ahead</button>
-                                    <button class="warning-btn continue-btn" onclick="handleContinue()">I'm Okay</button>
-                                </div>
-                            </div>
+                        <div class="subtitle-line scanning" id="scanningLine">
+                            There was <span class="keyword">blood</span> everywhere at the scene.
                         </div>
+                        <div class="subtitle-line">
+                            The forensics team documented everything carefully.
+                        </div>
+                    </div>
 
-                        <!-- Video Controls -->
-                        <div class="video-controls">
-                            <button class="play-btn" id="playBtn" onclick="toggleDemo()">
-                                <span id="playIcon">▶</span> Play Demo
-                            </button>
-                            <div class="video-progress">
-                                <div class="progress-bar">
-                                    <div class="progress-fill" id="progressFill"></div>
-                                    <div class="progress-marker warning-marker" style="left: 30%;" title="Warning trigger point"></div>
-                                </div>
-                            </div>
-                            <span class="video-time" id="videoTime">0:00 / 0:30</span>
+                    <!-- Trigger Detection Arrow (flowing animation) -->
+                    <div class="detection-arrow">
+                        <span>→</span>
+                        <span>Trigger Detected!</span>
+                        <span>→</span>
+                    </div>
+
+                    <!-- Warning Banner Output -->
+                    <div class="warning-output">
+                        <div class="warning-icon-large">🩸</div>
+                        <div class="warning-title">Blood & Gore Warning</div>
+                        <div class="warning-time">Appearing in 7 seconds</div>
+                        <div class="warning-actions-demo">
+                            <button class="demo-action-btn skip">Skip 15s</button>
+                            <button class="demo-action-btn continue">Continue</button>
                         </div>
                     </div>
                 </div>
 
-                <!-- Demo Controls -->
-                <div class="demo-controls-panel">
-                    <h3 class="demo-controls-title">Try Different Scenarios</h3>
-                    <div class="scenario-buttons">
-                        <button class="scenario-btn active" onclick="setScenario('blood')">
-                            🩸 Blood Scene
-                        </button>
-                        <button class="scenario-btn" onclick="setScenario('spider')">
-                            🕷️ Spider Appears
-                        </button>
-                        <button class="scenario-btn" onclick="setScenario('flashing')">
-                            💡 Flashing Lights
-                        </button>
-                        <button class="scenario-btn" onclick="setScenario('jumpscare')">
-                            😱 Jump Scare
-                        </button>
+                <!-- Right Side: Feature List -->
+                <div class="subtitle-features">
+                    <div class="feature-item-flow">
+                        <div class="feature-number">1</div>
+                        <div class="feature-content">
+                            <h4>Real-Time Scanning</h4>
+                            <p>Every subtitle is analyzed instantly as it appears on screen</p>
+                        </div>
                     </div>
 
-                    <div class="demo-note">
-                        <strong>100% Safe:</strong> This demo uses abstract placeholders only. No actual triggering content is shown.
+                    <div class="feature-item-flow">
+                        <div class="feature-number">2</div>
+                        <div class="feature-content">
+                            <h4>Keyword Detection</h4>
+                            <p>Our algorithm identifies trigger keywords across 28 categories</p>
+                        </div>
+                    </div>
+
+                    <div class="feature-item-flow">
+                        <div class="feature-number">3</div>
+                        <div class="feature-content">
+                            <h4>Early Warning</h4>
+                            <p>Get 7-10 seconds advance notice before sensitive content</p>
+                        </div>
+                    </div>
+
+                    <div class="feature-item-flow">
+                        <div class="feature-number">4</div>
+                        <div class="feature-content">
+                            <h4>Your Choice</h4>
+                            <p>Skip ahead, continue watching, or adjust sensitivity on the fly</p>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -1977,12 +1833,25 @@
                         </div>
                     </div>
 
+                    <div class="helper-feature-item">
+                        <span class="helper-feature-icon">💡</span>
+                        <div class="helper-feature-content">
+                            <strong>Easily Add Triggers</strong>
+                            <p>Spotted something we missed? Click the extension icon to report a new trigger. Only the content ID is stored (anonymous & encrypted) to improve detection. Your privacy remains absolute.</p>
+                        </div>
+                    </div>
+
                     <div class="helper-toggle-demo">
                         <label class="toggle-container">
                             <input type="checkbox" id="helperModeToggle" checked>
                             <span class="toggle-slider"></span>
                         </label>
                         <span class="toggle-label">Helper Mode: <strong id="helperStatus">Enabled</strong></span>
+                    </div>
+
+                    <div class="helper-how-it-appears">
+                        <h4>What Helper Mode Looks Like</h4>
+                        <p>Smooth, discreet questions appear <em>only for content you're monitoring</em>. Answer in one click or skip. When you contribute, only the content ID is stored (anonymous & encrypted)—your viewing data never is.</p>
                     </div>
                 </div>
             </div>
@@ -2013,7 +1882,7 @@
                     </div>
 
                     <div class="preview-content">
-                        <div class="sensitivity-boost-indicator" id="sensitivityBoost" style="display: none;">
+                        <div class="sensitivity-boost-indicator" id="sensitivityBoost">
                             <div class="boost-icon">🌙</div>
                             <div class="boost-content">
                                 <strong>Nighttime Mode Active</strong>
@@ -2024,24 +1893,21 @@
                         <div class="preview-setting">
                             <span class="preview-setting-label">Blood & Gore</span>
                             <div class="preview-slider">
-                                <div class="preview-slider-fill day-fill" style="width: 80%"></div>
-                                <div class="preview-slider-fill night-fill" style="width: 88%; display: none;"></div>
+                                <div class="preview-slider-fill animated-fill" id="bloodFill" data-day="80" data-night="88" style="width: 80%"></div>
                             </div>
                             <span class="preview-setting-value" id="bloodValue">High (80%)</span>
                         </div>
                         <div class="preview-setting">
                             <span class="preview-setting-label">Violence</span>
                             <div class="preview-slider">
-                                <div class="preview-slider-fill day-fill" style="width: 60%"></div>
-                                <div class="preview-slider-fill night-fill" style="width: 66%; display: none;"></div>
+                                <div class="preview-slider-fill animated-fill" id="violenceFill" data-day="60" data-night="66" style="width: 60%"></div>
                             </div>
                             <span class="preview-setting-value" id="violenceValue">Medium (60%)</span>
                         </div>
                         <div class="preview-setting">
                             <span class="preview-setting-label">Spiders</span>
                             <div class="preview-slider">
-                                <div class="preview-slider-fill day-fill" style="width: 90%"></div>
-                                <div class="preview-slider-fill night-fill" style="width: 99%; display: none;"></div>
+                                <div class="preview-slider-fill animated-fill" id="spidersFill" data-day="90" data-night="99" style="width: 90%"></div>
                             </div>
                             <span class="preview-setting-value" id="spidersValue">Very High (90%)</span>
                         </div>
@@ -2504,7 +2370,7 @@
                     <a href="/privacy.html">Privacy Policy</a>
                     <a href="/technical">Technical Details</a>
                     <a href="https://github.com/lightmyfireadmin/triggerwarnings">GitHub</a>
-                    <a href="/landing/index-static.html" style="border: 2px solid rgba(255, 255, 255, 0.3); padding: 8px 16px; border-radius: 8px;">📄 HTML-Only Version</a>
+                    <a href="index-static.html" style="border: 2px solid rgba(255, 255, 255, 0.3); padding: 8px 16px; border-radius: 8px;">📄 HTML-Only Version</a>
                 </div>
                 <div class="footer-text">
                     <p>© 2026 Trigger Warnings. Free forever. Made with care.</p>
@@ -3200,112 +3066,158 @@
             z-index: 1;
         }
 
-        /* Cinema Demo Section - Interactive Warning Demo */
-        .cinema-demo {
+        /* Subtitle Detection Demo Section */
+        .subtitle-detection-demo {
             background: var(--bg-white);
         }
 
-        .cinema-container {
-            max-width: 900px;
-            margin: 60px auto 0;
+        .subtitle-demo-container {
+            display: grid;
+            grid-template-columns: 1.2fr 1fr;
+            gap: 60px;
+            align-items: center;
+            margin-top: 60px;
         }
 
-        .video-player {
-            margin-bottom: 40px;
+        .subtitle-visual {
+            background: white;
+            border-radius: 24px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(139, 92, 246, 0.15);
         }
 
-        .video-screen {
-            position: relative;
-            background: #000;
+        .subtitle-text-container {
+            background: #f8f9fa;
             border-radius: 16px;
-            overflow: hidden;
-            box-shadow: var(--shadow-lg);
-            aspect-ratio: 16 / 9;
-        }
-
-        .video-content {
-            width: 100%;
-            height: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            padding: 24px;
+            margin-bottom: 32px;
             position: relative;
+            overflow: hidden;
         }
 
-        .scene-placeholder {
-            font-size: 3rem;
-            color: rgba(255,255,255,0.6);
+        .subtitle-line {
+            padding: 14px 16px;
+            margin: 10px 0;
+            border-radius: 10px;
+            transition: all 0.4s ease;
+            font-size: 1rem;
+            line-height: 1.5;
+            color: var(--text-dark);
         }
 
-        .warning-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.85);
-            backdrop-filter: blur(10px);
+        .subtitle-line.scanning {
+            background: rgba(139, 92, 246, 0.1);
+        }
+
+        @media (prefers-reduced-motion: no-preference) {
+            .subtitle-line.scanning {
+                animation: scanPulse 2s infinite;
+            }
+
+            @keyframes scanPulse {
+                0%, 100% {
+                    opacity: 1;
+                    background: rgba(139, 92, 246, 0.1);
+                }
+                50% {
+                    opacity: 0.7;
+                    background: rgba(139, 92, 246, 0.2);
+                }
+            }
+        }
+
+        .keyword {
+            background: rgba(239, 68, 68, 0.2);
+            color: #dc2626;
+            padding: 3px 8px;
+            border-radius: 6px;
+            font-weight: 600;
+        }
+
+        @media (prefers-reduced-motion: no-preference) {
+            .keyword {
+                animation: highlightKeyword 1s ease-out infinite;
+            }
+
+            @keyframes highlightKeyword {
+                0% {
+                    background: rgba(239, 68, 68, 0.1);
+                }
+                50% {
+                    background: rgba(239, 68, 68, 0.3);
+                }
+                100% {
+                    background: rgba(239, 68, 68, 0.1);
+                }
+            }
+        }
+
+        .detection-arrow {
             display: flex;
             align-items: center;
             justify-content: center;
-            z-index: 10;
-            animation: fadeIn 0.3s ease;
+            gap: 16px;
+            font-size: 1.8rem;
+            color: var(--primary);
+            font-weight: 700;
+            margin: 32px 0;
         }
 
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
+        @media (prefers-reduced-motion: no-preference) {
+            .detection-arrow {
+                animation: arrowBounce 1.5s infinite;
+            }
+
+            @keyframes arrowBounce {
+                0%, 100% { transform: translateY(0); }
+                50% { transform: translateY(-8px); }
+            }
         }
 
-        .warning-card {
-            background: var(--glass-bg);
-            backdrop-filter: blur(20px) saturate(180%);
-            border: 2px solid var(--glass-border);
-            border-radius: 20px;
-            padding: 32px;
-            max-width: 400px;
+        .warning-output {
+            background: var(--gradient-hero);
+            color: white;
+            padding: 28px;
+            border-radius: 16px;
             text-align: center;
-            box-shadow: var(--shadow-glow);
         }
 
-        .warning-header {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 12px;
-            margin-bottom: 16px;
+        @media (prefers-reduced-motion: no-preference) {
+            .warning-output {
+                animation: warningPulse 2s infinite;
+            }
+
+            @keyframes warningPulse {
+                0%, 100% { box-shadow: 0 10px 30px rgba(139, 92, 246, 0.3); }
+                50% { box-shadow: 0 15px 40px rgba(139, 92, 246, 0.5); }
+            }
         }
 
-        .warning-icon {
-            font-size: 2rem;
+        .warning-icon-large {
+            font-size: 3rem;
+            margin-bottom: 12px;
         }
 
-        .warning-type {
+        .warning-title {
             font-size: 1.5rem;
             font-weight: 700;
-            color: white;
+            margin-bottom: 8px;
         }
 
-        .warning-message {
+        .warning-time {
             font-size: 1.1rem;
-            color: rgba(255,255,255,0.9);
-            margin-bottom: 24px;
+            opacity: 0.95;
+            margin-bottom: 20px;
         }
 
-        .warning-countdown {
-            font-weight: 700;
-            color: var(--accent-light);
-            font-size: 1.3rem;
-        }
-
-        .warning-actions {
+        .warning-actions-demo {
             display: flex;
             gap: 12px;
             justify-content: center;
         }
 
-        .warning-btn {
-            padding: 12px 24px;
+        .demo-action-btn {
+            padding: 10px 20px;
             border-radius: 10px;
             font-weight: 600;
             font-size: 0.95rem;
@@ -3314,149 +3226,74 @@
             transition: all 0.3s ease;
         }
 
-        .skip-btn {
-            background: var(--primary);
-            color: white;
+        .demo-action-btn.skip {
+            background: white;
+            color: var(--primary);
         }
 
-        .skip-btn:hover {
-            background: var(--primary-dark);
+        .demo-action-btn.skip:hover {
             transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(139, 92, 246, 0.4);
+            box-shadow: 0 4px 12px rgba(255, 255, 255, 0.3);
         }
 
-        .continue-btn {
-            background: rgba(255,255,255,0.15);
+        .demo-action-btn.continue {
+            background: rgba(255, 255, 255, 0.2);
             color: white;
-            border: 2px solid rgba(255,255,255,0.3);
+            border: 2px solid rgba(255, 255, 255, 0.4);
         }
 
-        .continue-btn:hover {
-            background: rgba(255,255,255,0.25);
+        .demo-action-btn.continue:hover {
+            background: rgba(255, 255, 255, 0.3);
         }
 
-        .video-controls {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: linear-gradient(to top, rgba(0,0,0,0.9), transparent);
-            padding: 20px;
+        .subtitle-features {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .feature-item-flow {
+            display: flex;
+            gap: 20px;
+            align-items: flex-start;
+        }
+
+        .feature-number {
+            flex-shrink: 0;
+            width: 48px;
+            height: 48px;
+            background: var(--gradient-hero);
+            color: white;
+            border-radius: 12px;
             display: flex;
             align-items: center;
-            gap: 16px;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: 700;
         }
 
-        .play-btn {
-            background: var(--primary);
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 8px;
-            font-weight: 600;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            transition: all 0.3s ease;
-        }
-
-        .play-btn:hover {
-            background: var(--primary-dark);
-            transform: scale(1.05);
-        }
-
-        .video-progress {
-            flex: 1;
-        }
-
-        .progress-bar {
-            height: 6px;
-            background: rgba(255,255,255,0.2);
-            border-radius: 3px;
-            position: relative;
-            overflow: visible;
-        }
-
-        .progress-fill {
-            height: 100%;
-            background: var(--primary);
-            border-radius: 3px;
-            width: 0%;
-            transition: width 0.1s linear;
-        }
-
-        .progress-marker {
-            position: absolute;
-            top: -4px;
-            width: 14px;
-            height: 14px;
-            background: var(--accent);
-            border-radius: 50%;
-            transform: translateX(-50%);
-            box-shadow: 0 0 10px rgba(236, 72, 153, 0.6);
-            animation: pulse 2s ease-in-out infinite;
-        }
-
-        @media (prefers-reduced-motion: no-preference) {
-            @keyframes pulse {
-                0%, 100% { transform: translateX(-50%) scale(1); }
-                50% { transform: translateX(-50%) scale(1.2); }
-            }
-        }
-
-        .video-time {
-            color: white;
-            font-size: 0.85rem;
-            font-variant-numeric: tabular-nums;
-        }
-
-        .demo-controls-panel {
-            background: var(--gradient-glass);
-            backdrop-filter: blur(10px);
-            padding: 32px;
-            border-radius: 16px;
-            border: 2px solid rgba(139, 92, 246, 0.2);
-        }
-
-        .demo-controls-title {
-            font-size: 1.3rem;
+        .feature-content h4 {
+            font-size: 1.2rem;
             font-weight: 700;
             color: var(--text-dark);
-            margin-bottom: 20px;
-            text-align: center;
+            margin-bottom: 8px;
         }
 
-        .scenario-buttons {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 12px;
-            margin-bottom: 24px;
+        .feature-content p {
+            font-size: 1rem;
+            color: var(--text-medium);
+            line-height: 1.6;
         }
 
-        .scenario-btn {
-            padding: 14px 20px;
-            background: white;
-            border: 2px solid var(--bg-light);
-            border-radius: 12px;
-            font-weight: 600;
-            font-size: 0.95rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            color: var(--text-dark);
-        }
+        @media (max-width: 968px) {
+            .subtitle-demo-container {
+                grid-template-columns: 1fr;
+                gap: 40px;
+            }
 
-        .scenario-btn:hover {
-            border-color: var(--primary);
-            background: var(--bg-light);
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-sm);
-        }
-
-        .scenario-btn.active {
-            background: var(--primary);
-            color: white;
-            border-color: var(--primary);
+            .subtitle-visual {
+                padding: 32px;
+            }
         }
 
         /* Profile Switching Section */
@@ -3909,6 +3746,33 @@
             color: var(--primary);
         }
 
+        .helper-how-it-appears {
+            margin-top: 24px;
+            padding: 24px;
+            background: var(--bg-light);
+            border-radius: 16px;
+            border-left: 4px solid var(--primary);
+        }
+
+        .helper-how-it-appears h4 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 12px;
+        }
+
+        .helper-how-it-appears p {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: var(--text-medium);
+            margin: 0;
+        }
+
+        .helper-how-it-appears em {
+            font-style: italic;
+            color: var(--primary);
+        }
+
         /* Night Mode Section */
         .night-mode-section {
             background: var(--bg-white);
@@ -3996,7 +3860,13 @@
             border-left: 4px solid var(--primary);
             border-radius: 12px;
             margin-bottom: 24px;
+            min-height: 72px;
+            opacity: 0;
             transition: all 0.5s ease;
+        }
+
+        .mode-preview.night .sensitivity-boost-indicator {
+            opacity: 1;
         }
 
         .mode-preview.night .sensitivity-boost-indicator {
@@ -4078,14 +3948,14 @@
             position: absolute;
             top: 0;
             left: 0;
-            transition: all 0.5s ease;
+            transition: all 0.6s ease;
         }
 
-        .day-fill {
+        .animated-fill {
             background: var(--gradient-hero);
         }
 
-        .night-fill {
+        .mode-preview.night .animated-fill {
             background: linear-gradient(135deg, #a78bfa 0%, #f472b6 100%);
             box-shadow: 0 0 8px rgba(167, 139, 250, 0.5);
         }
@@ -4679,169 +4549,10 @@
         });
 
         // ═══════════════════════════════════════════════════════════════
-        // CINEMA DEMO - Interactive Warning System (Fixed for memory leaks)
+        // SUBTITLE FLOW DEMO - Animates subtitle scanning
         // ═══════════════════════════════════════════════════════════════
 
-        let demoPlaying = false;
-        let demoProgress = 0;
-        let demoInterval = null;
-        let countdownInterval = null;
-        let currentScenario = 'blood';
-        let warningShown = false;
-
-        const scenarios = {
-            'blood': { name: 'Blood & Gore', icon: '⚠️', triggerPoint: 21 },
-            'spider': { name: 'Spider Appears', icon: '🕷️', triggerPoint: 21 },
-            'flashing': { name: 'Flashing Lights', icon: '⚡', triggerPoint: 21 },
-            'jumpscare': { name: 'Jump Scare', icon: '😱', triggerPoint: 21 }
-        };
-
-        function toggleDemo() {
-            if (demoPlaying) {
-                pauseDemo();
-            } else {
-                playDemo();
-            }
-        }
-
-        function playDemo() {
-            if (demoPlaying) return; // Prevent multiple intervals
-
-            demoPlaying = true;
-            const playIcon = document.getElementById('playIcon');
-            const playBtn = document.getElementById('playBtn');
-
-            if (playIcon) playIcon.textContent = '⏸';
-            if (playBtn) playBtn.innerHTML = '<span id="playIcon">⏸</span> Pause Demo';
-
-            demoInterval = setInterval(() => {
-                demoProgress += 1;
-
-                // Update progress bar
-                const progressPercent = (demoProgress / 30) * 100;
-                const progressFill = document.getElementById('progressFill');
-                if (progressFill) progressFill.style.width = progressPercent + '%';
-
-                // Update time display
-                const currentTime = Math.floor(demoProgress);
-                const videoTime = document.getElementById('videoTime');
-                if (videoTime) videoTime.textContent = `0:${currentTime.toString().padStart(2, '0')} / 0:30`;
-
-                // Trigger warning at the appropriate point (7 seconds before trigger)
-                if (demoProgress >= scenarios[currentScenario].triggerPoint && !warningShown) {
-                    showWarning();
-                }
-
-                // End demo
-                if (demoProgress >= 30) {
-                    resetDemo();
-                }
-            }, 1000);
-        }
-
-        function pauseDemo() {
-            demoPlaying = false;
-            if (demoInterval) {
-                clearInterval(demoInterval);
-                demoInterval = null;
-            }
-            const playIcon = document.getElementById('playIcon');
-            const playBtn = document.getElementById('playBtn');
-            if (playIcon) playIcon.textContent = '▶';
-            if (playBtn) playBtn.innerHTML = '<span id="playIcon">▶</span> Play Demo';
-        }
-
-        function resetDemo() {
-            pauseDemo();
-            demoProgress = 0;
-            warningShown = false;
-
-            const progressFill = document.getElementById('progressFill');
-            const videoTime = document.getElementById('videoTime');
-
-            if (progressFill) progressFill.style.width = '0%';
-            if (videoTime) videoTime.textContent = '0:00 / 0:30';
-            hideWarning();
-        }
-
-        function showWarning() {
-            warningShown = true;
-            const overlay = document.getElementById('warningOverlay');
-            const warningType = document.getElementById('warningType');
-            const countdown = document.getElementById('warningCountdown');
-
-            if (!overlay || !warningType || !countdown) return;
-
-            warningType.textContent = scenarios[currentScenario].name;
-            overlay.style.display = 'flex';
-
-            // Clear any existing countdown interval to prevent memory leak
-            if (countdownInterval) {
-                clearInterval(countdownInterval);
-                countdownInterval = null;
-            }
-
-            let timeLeft = 7;
-            countdown.textContent = timeLeft;
-
-            countdownInterval = setInterval(() => {
-                timeLeft--;
-                countdown.textContent = timeLeft;
-                if (timeLeft <= 0) {
-                    clearInterval(countdownInterval);
-                    countdownInterval = null;
-                }
-            }, 1000);
-        }
-
-        function hideWarning() {
-            const overlay = document.getElementById('warningOverlay');
-            if (overlay) overlay.style.display = 'none';
-
-            // Clear countdown interval when hiding warning
-            if (countdownInterval) {
-                clearInterval(countdownInterval);
-                countdownInterval = null;
-            }
-        }
-
-        function handleSkip() {
-            hideWarning();
-            resetDemo();
-            // In real extension, this would skip ahead in the video
-        }
-
-        function handleContinue() {
-            hideWarning();
-            // Continue playing without warning overlay
-        }
-
-        function setScenario(scenarioName) {
-            if (!scenarios[scenarioName]) return;
-
-            currentScenario = scenarioName;
-            resetDemo();
-
-            // Update active button
-            document.querySelectorAll('.scenario-btn').forEach(btn => {
-                btn.classList.remove('active');
-                if (btn.onclick && btn.onclick.toString().includes(scenarioName)) {
-                    btn.classList.add('active');
-                }
-            });
-
-            // Update warning marker position based on scenario
-            const marker = document.querySelector('.warning-marker');
-            if (marker) {
-                marker.style.left = (scenarios[scenarioName].triggerPoint / 30 * 100) + '%';
-            }
-        }
-
-        // Clean up intervals when page is unloaded to prevent memory leaks
-        window.addEventListener('beforeunload', function() {
-            if (demoInterval) clearInterval(demoInterval);
-            if (countdownInterval) clearInterval(countdownInterval);
-        });
+        // No JavaScript needed - animations run purely on CSS for better performance and accessibility
 
         // Make the existing sliders show visual feedback
         document.addEventListener('DOMContentLoaded', function() {
@@ -4962,12 +4673,12 @@
             const preview = document.getElementById('modePreview');
             const icon = document.getElementById('modeIcon');
             const text = document.getElementById('modeText');
-            const boostIndicator = document.getElementById('sensitivityBoost');
             const warningsNum = document.getElementById('warningsNum');
 
-            // Get slider elements
-            const dayFills = document.querySelectorAll('.day-fill');
-            const nightFills = document.querySelectorAll('.night-fill');
+            // Get animated slider fills
+            const bloodFill = document.getElementById('bloodFill');
+            const violenceFill = document.getElementById('violenceFill');
+            const spidersFill = document.getElementById('spidersFill');
             const bloodValue = document.getElementById('bloodValue');
             const violenceValue = document.getElementById('violenceValue');
             const spidersValue = document.getElementById('spidersValue');
@@ -4979,11 +4690,11 @@
                 preview.classList.add('night');
                 icon.textContent = '☀️';
                 text.textContent = 'Day Mode';
-                boostIndicator.style.display = 'flex';
 
-                // Show night sensitivity bars (+10%)
-                dayFills.forEach(fill => fill.style.display = 'none');
-                nightFills.forEach(fill => fill.style.display = 'block');
+                // Animate sensitivity bars to night values (+10%)
+                if (bloodFill) bloodFill.style.width = bloodFill.dataset.night + '%';
+                if (violenceFill) violenceFill.style.width = violenceFill.dataset.night + '%';
+                if (spidersFill) spidersFill.style.width = spidersFill.dataset.night + '%';
 
                 // Update value labels to show +10%
                 bloodValue.textContent = 'High (88% +10%)';
@@ -4997,11 +4708,11 @@
                 preview.classList.remove('night');
                 icon.textContent = '🌙';
                 text.textContent = 'Night Mode';
-                boostIndicator.style.display = 'none';
 
-                // Show day sensitivity bars (normal)
-                dayFills.forEach(fill => fill.style.display = 'block');
-                nightFills.forEach(fill => fill.style.display = 'none');
+                // Animate sensitivity bars to day values (normal)
+                if (bloodFill) bloodFill.style.width = bloodFill.dataset.day + '%';
+                if (violenceFill) violenceFill.style.width = violenceFill.dataset.day + '%';
+                if (spidersFill) spidersFill.style.width = spidersFill.dataset.day + '%';
 
                 // Reset value labels
                 bloodValue.textContent = 'High (80%)';
@@ -5089,49 +4800,8 @@
                     toggle.setAttribute('aria-pressed', 'true');
                 }
             }
-
-            // Animate hero helper question appearing after delay
-            setTimeout(function() {
-                const helperQuestion = document.getElementById('heroHelperQuestion');
-                if (helperQuestion) {
-                    helperQuestion.style.opacity = '1';
-                }
-            }, 2000);
         });
 
-        // ═══════════════════════════════════════════════════════════════
-        // HERO HELPER MODE DEMO INTERACTION
-        // ═══════════════════════════════════════════════════════════════
-
-        function answerHelperDemo(answer) {
-            const helperQuestion = document.getElementById('heroHelperQuestion');
-            if (!helperQuestion) return;
-
-            // Fade out the question
-            helperQuestion.style.opacity = '0';
-
-            // After animation, show it again with a different question after delay
-            setTimeout(function() {
-                // Cycle through different trigger types
-                const questions = [
-                    'Did this scene contain <strong>spiders or insects</strong>?',
-                    'Did this scene contain <strong>blood or gore</strong>?',
-                    'Did this scene contain <strong>flashing lights</strong>?',
-                    'Did this scene contain <strong>jump scares</strong>?'
-                ];
-
-                const currentText = helperQuestion.querySelector('.helper-question-text');
-                if (currentText) {
-                    const randomQuestion = questions[Math.floor(Math.random() * questions.length)];
-                    currentText.innerHTML = randomQuestion;
-                }
-
-                // Fade back in
-                setTimeout(function() {
-                    helperQuestion.style.opacity = '1';
-                }, 100);
-            }, 2000);
-        }
         // ═══════════════════════════════════════════════════════════════
         // BACK TO TOP BUTTON - Show/Hide on Scroll
         // ═══════════════════════════════════════════════════════════════
