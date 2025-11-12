@@ -60,6 +60,12 @@ import { incrementalProcessor, type IncrementalResult } from '../performance/Inc
 import { smartCache, type CacheStats } from '../performance/SmartCache';
 import { parallelEngine, type ParallelDetectionResult, type EngineStats } from '../performance/ParallelDetectionEngine';
 
+// Algorithm 3.0 Innovations (Phase 7)
+import { contentFingerprintCache, type CachedDetectionResult } from '../storage/ContentFingerprintCache';
+import { initializeProgressiveLearning, getProgressiveLearning, type LearningStateSnapshot } from '../storage/ProgressiveLearningState';
+import { initializeCrossDeviceSync, getCrossDeviceSync, type SyncConfig } from '../storage/CrossDeviceSync';
+import { initializeUnifiedPipeline, getUnifiedPipeline, type AlgorithmDetection, type DetectionFeedback } from '../storage/UnifiedContributionPipeline';
+
 const logger = new Logger('Algorithm3Integrator');
 
 /**
@@ -230,8 +236,31 @@ export class Algorithm3Integrator {
     // Initialize adaptive threshold learner (Phase 4)
     this.adaptiveThresholdLearner = new AdaptiveThresholdLearner(profile.userId || 'default');
 
-    logger.info('[Algorithm3Integrator] 🚀 Algorithm 3.0 Integration Layer initialized (Phases 1-6)');
-    logger.info('[Algorithm3Integrator] ✅ All innovations active: Routing, Attention, Temporal, Fusion, Personalization, Hierarchical, Validation, Features, Dependencies, Adaptive Learning, Multi-Task, Few-Shot, Explainability, Incremental Processing, Smart Caching, Parallel Detection');
+    // Initialize Phase 7: Progressive Learning & Unified Contribution Pipeline
+    if (profile.userId) {
+      // Initialize progressive learning state
+      initializeProgressiveLearning(profile.userId, '3.0-phase-7');
+
+      // Initialize unified contribution pipeline (if Supabase configured)
+      if (process.env.SUPABASE_URL && process.env.SUPABASE_KEY) {
+        initializeUnifiedPipeline(
+          process.env.SUPABASE_URL,
+          process.env.SUPABASE_KEY,
+          profile.userId
+        );
+
+        // Initialize cross-device sync (opt-in)
+        initializeCrossDeviceSync(
+          process.env.SUPABASE_URL,
+          process.env.SUPABASE_KEY,
+          profile.userId,
+          { enabled: false, autoSync: false }  // Disabled by default - user must opt in
+        );
+      }
+    }
+
+    logger.info('[Algorithm3Integrator] 🚀 Algorithm 3.0 Integration Layer initialized (Phases 1-7)');
+    logger.info('[Algorithm3Integrator] ✅ All innovations active: Routing, Attention, Temporal, Fusion, Personalization, Hierarchical, Validation, Features, Dependencies, Adaptive Learning, Multi-Task, Few-Shot, Explainability, Incremental Processing, Smart Caching, Parallel Detection, Unified Contribution, Content Fingerprinting, Progressive Learning, Cross-Device Sync');
     logger.info(`[Algorithm3Integrator] Enabled categories: ${profile.enabledCategories.join(', ')}`);
   }
 
@@ -808,7 +837,11 @@ export class Algorithm3Integrator {
       explainability: explainabilityEngine.getStats(),
       incrementalProcessing: incrementalProcessor.getStats(),
       smartCache: smartCache.getStats(),
-      parallelEngine: parallelEngine.getStats()
+      parallelEngine: parallelEngine.getStats(),
+      contentFingerprinting: contentFingerprintCache.getStats(),
+      progressiveLearning: getProgressiveLearning()?.getStats() || null,
+      unifiedPipeline: getUnifiedPipeline()?.getStats() || null,
+      crossDeviceSync: getCrossDeviceSync()?.getStats() || null
     };
   }
 
@@ -826,8 +859,12 @@ export class Algorithm3Integrator {
     incrementalProcessor.clear();
     smartCache.clear();
     parallelEngine.clear();
+    contentFingerprintCache.clear();
+    getProgressiveLearning()?.clear();
+    getUnifiedPipeline()?.clear();
+    getCrossDeviceSync()?.clear();
 
-    logger.info('[Algorithm3Integrator] 🧹 Cleared all state (Phases 1-6)');
+    logger.info('[Algorithm3Integrator] 🧹 Cleared all state (Phases 1-7)');
   }
 
   /**
@@ -836,7 +873,9 @@ export class Algorithm3Integrator {
   dispose(): void {
     this.clear();
     parallelEngine.dispose();
-    logger.info('[Algorithm3Integrator] 🛑 Algorithm 3.0 Integration Layer disposed (Phases 1-6)');
+    getProgressiveLearning()?.dispose();
+    getCrossDeviceSync()?.dispose();
+    logger.info('[Algorithm3Integrator] 🛑 Algorithm 3.0 Integration Layer disposed (Phases 1-7)');
   }
 }
 
