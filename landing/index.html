@@ -37,9 +37,9 @@
             --primary-dark: #7c3aed;
             --primary-light: #a78bfa;
             --secondary: #6366f1;
-            --accent: #ec4899;
-            --accent-dark: #db2777;
-            --accent-light: #f472b6;
+            --accent: #c026d3;
+            --accent-dark: #a21caf;
+            --accent-light: #d946ef;
             --text-dark: #1e1b4b;
             --text-light: #64748b;
             --text-lighter: #94a3b8;
@@ -48,11 +48,11 @@
             --bg-white: #ffffff;
             --success: #10b981;
             --warning: #f59e0b;
-            --gradient-hero: linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%);
-            --gradient-calm: linear-gradient(135deg, #a78bfa 0%, #f472b6 100%);
-            --gradient-accent: linear-gradient(135deg, #ec4899 0%, #f59e0b 100%);
+            --gradient-hero: linear-gradient(135deg, #8b5cf6 0%, #a855f7 50%, #c026d3 100%);
+            --gradient-calm: linear-gradient(135deg, #a78bfa 0%, #c084fc 100%);
+            --gradient-accent: linear-gradient(135deg, #c026d3 0%, #9333ea 100%);
             --gradient-light: linear-gradient(135deg, #faf5ff 0%, #f8f9ff 100%);
-            --gradient-glass: linear-gradient(135deg, rgba(139, 92, 246, 0.1) 0%, rgba(236, 72, 153, 0.1) 100%);
+            --gradient-glass: linear-gradient(135deg, rgba(139, 92, 246, 0.1) 0%, rgba(192, 38, 211, 0.1) 100%);
             --shadow-sm: 0 2px 8px rgba(139, 92, 246, 0.1);
             --shadow-md: 0 4px 16px rgba(139, 92, 246, 0.15);
             --shadow-lg: 0 8px 32px rgba(139, 92, 246, 0.2);
@@ -86,6 +86,74 @@
             html {
                 scroll-behavior: smooth;
             }
+        }
+
+        /* ═══════════════════════════════════════════════════════════════ */
+        /* NO JAVASCRIPT FALLBACK BANNER */
+        /* ═══════════════════════════════════════════════════════════════ */
+
+        .no-js-banner {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+            color: white;
+            padding: 24px 20px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            z-index: 10000;
+        }
+
+        .no-js-content {
+            max-width: 800px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .no-js-content h2 {
+            font-size: 1.5rem;
+            margin-bottom: 12px;
+            font-weight: 700;
+        }
+
+        .no-js-content p {
+            font-size: 1rem;
+            line-height: 1.6;
+            margin-bottom: 16px;
+        }
+
+        .no-js-options {
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 12px;
+            padding: 16px 24px;
+            margin: 16px 0;
+            text-align: left;
+        }
+
+        .no-js-options ul {
+            margin-top: 12px;
+            margin-left: 24px;
+        }
+
+        .no-js-options li {
+            margin: 8px 0;
+            line-height: 1.6;
+        }
+
+        .no-js-link {
+            color: white;
+            text-decoration: underline;
+            font-weight: 700;
+        }
+
+        .no-js-link:hover {
+            text-decoration: none;
+        }
+
+        .no-js-note {
+            font-size: 0.9rem;
+            opacity: 0.9;
+            font-style: italic;
         }
 
         /* ═══════════════════════════════════════════════════════════════ */
@@ -177,9 +245,9 @@
         }
 
         .hero-logo {
-            width: 80px;
-            height: 80px;
-            margin-bottom: 24px;
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 24px;
         }
 
         .hero-logo img {
@@ -187,6 +255,30 @@
             height: 100%;
             object-fit: contain;
             filter: drop-shadow(0 4px 12px rgba(0,0,0,0.15));
+        }
+
+        .hero-main-title {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 24px;
+        }
+
+        .title-main {
+            font-size: 4rem;
+            font-weight: 300;
+            line-height: 1.1;
+            letter-spacing: -0.02em;
+            text-shadow: 0 2px 8px rgba(0,0,0,0.12);
+        }
+
+        .title-sub {
+            font-size: 2rem;
+            font-weight: 300;
+            opacity: 0.9;
+            letter-spacing: 0.05em;
+            text-shadow: 0 2px 8px rgba(0,0,0,0.12);
         }
 
         .hero-badge {
@@ -393,6 +485,180 @@
         }
 
         /* ═══════════════════════════════════════════════════════════════ */
+        /* LOW STIMULATION MODE TOGGLE (Top Right Hero) */
+        /* ═══════════════════════════════════════════════════════════════ */
+
+        .low-stim-toggle {
+            position: absolute;
+            top: 24px;
+            right: 24px;
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 20px;
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 2px solid rgba(255, 255, 255, 0.25);
+            border-radius: 24px;
+            color: white;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .low-stim-toggle:hover {
+            background: rgba(255, 255, 255, 0.25);
+            transform: scale(1.05);
+        }
+
+        .low-stim-toggle:focus {
+            outline: 3px solid rgba(255, 255, 255, 0.6);
+            outline-offset: 2px;
+        }
+
+        .low-stim-toggle[aria-pressed="true"] {
+            background: rgba(255, 255, 255, 0.95);
+            color: var(--primary);
+            border-color: white;
+        }
+
+        .low-stim-toggle svg {
+            width: 20px;
+            height: 20px;
+            transition: transform 0.3s ease;
+        }
+
+        .low-stim-toggle[aria-pressed="true"] svg {
+            transform: rotate(45deg);
+        }
+
+        @media (max-width: 768px) {
+            .low-stim-toggle {
+                top: 16px;
+                right: 16px;
+                padding: 10px 16px;
+                font-size: 0.85rem;
+            }
+
+            .low-stim-label {
+                display: none;
+            }
+
+            .low-stim-toggle svg {
+                width: 18px;
+                height: 18px;
+            }
+        }
+
+        /* ═══════════════════════════════════════════════════════════════ */
+        /* HERO PLATFORMS & BROWSERS INFO */
+        /* ═══════════════════════════════════════════════════════════════ */
+
+        .hero-platforms {
+            font-size: 0.95rem;
+            opacity: 0.9;
+            margin-bottom: 24px;
+            line-height: 1.6;
+        }
+
+        .platforms-label {
+            font-weight: 600;
+            margin-right: 8px;
+        }
+
+        .platform-icons {
+            display: inline;
+        }
+
+        .platform-item {
+            font-weight: 500;
+            opacity: 0.95;
+        }
+
+        .browsers-label {
+            display: inline-block;
+            margin-left: 8px;
+            opacity: 0.85;
+            font-style: italic;
+        }
+
+        @media (max-width: 768px) {
+            .hero-platforms {
+                font-size: 0.85rem;
+                line-height: 1.8;
+            }
+        }
+
+        /* ═══════════════════════════════════════════════════════════════ */
+        /* FREE FOREVER NOTE (Hero Section) */
+        /* ═══════════════════════════════════════════════════════════════ */
+
+        .free-forever-note {
+            margin-top: 24px;
+            padding: 16px 20px;
+            background: rgba(255, 255, 255, 0.12);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border-left: 4px solid rgba(255, 255, 255, 0.6);
+            border-radius: 8px;
+            font-size: 0.95rem;
+            line-height: 1.6;
+            opacity: 0.95;
+        }
+
+        .free-forever-note strong {
+            font-weight: 700;
+            color: white;
+        }
+
+        @media (max-width: 768px) {
+            .free-forever-note {
+                font-size: 0.85rem;
+                padding: 14px 16px;
+            }
+        }
+
+        /* ═══════════════════════════════════════════════════════════════ */
+        /* LOW STIMULATION MODE - Global Styles (Applied to body) */
+        /* ═══════════════════════════════════════════════════════════════ */
+
+        body.low-stimulation {
+            /* Reduce color saturation and intensity */
+            filter: saturate(0.7) brightness(0.95);
+        }
+
+        body.low-stimulation * {
+            /* Disable all animations and transitions */
+            animation-duration: 0s !important;
+            transition-duration: 0s !important;
+        }
+
+        body.low-stimulation .hero::before,
+        body.low-stimulation .hero::after {
+            /* Remove hero decorative elements */
+            opacity: 0 !important;
+        }
+
+        body.low-stimulation .glass-card::before {
+            /* Disable shimmer effects */
+            display: none !important;
+        }
+
+        body.low-stimulation .orbit-ring {
+            /* Stop orbit animations */
+            animation: none !important;
+        }
+
+        /* Ensure accessibility features still work in low stim mode */
+        body.low-stimulation :focus {
+            outline: 3px solid var(--primary) !important;
+            outline-offset: 2px !important;
+        }
+
+        /* ═══════════════════════════════════════════════════════════════ */
         /* STATS SECTION */
         /* ═══════════════════════════════════════════════════════════════ */
 
@@ -505,6 +771,400 @@
         }
 
         /* ═══════════════════════════════════════════════════════════════ */
+        /* HERO HELPER MODE DEMO */
+        /* ═══════════════════════════════════════════════════════════════ */
+
+        .helper-mode-demo-hero {
+            position: relative;
+        }
+
+        .hero-demo-container {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .hero-demo-screen {
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 2px solid rgba(255, 255, 255, 0.15);
+            border-radius: 20px;
+            padding: 32px;
+            position: relative;
+            min-height: 320px;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .demo-playing-indicator {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            opacity: 0.9;
+        }
+
+        .playing-dot {
+            width: 8px;
+            height: 8px;
+            background: #10b981;
+            border-radius: 50%;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @media (prefers-reduced-motion: no-preference) {
+            @keyframes pulse {
+                0%, 100% { opacity: 1; transform: scale(1); }
+                50% { opacity: 0.5; transform: scale(0.9); }
+            }
+        }
+
+        .helper-question-card {
+            background: rgba(255, 255, 255, 0.95);
+            color: var(--text-dark);
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+            transition: opacity 0.4s ease;
+        }
+
+        .helper-question-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .helper-icon {
+            font-size: 1.5rem;
+        }
+
+        .helper-title {
+            font-weight: 700;
+            font-size: 1.05rem;
+            color: var(--primary);
+        }
+
+        .helper-question-text {
+            font-size: 1rem;
+            line-height: 1.6;
+            margin-bottom: 20px;
+            color: var(--text-dark);
+        }
+
+        .helper-question-text strong {
+            color: var(--primary);
+            font-weight: 700;
+        }
+
+        .helper-question-actions {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-bottom: 16px;
+        }
+
+        .helper-answer-btn {
+            flex: 1;
+            min-width: 80px;
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid;
+        }
+
+        .helper-answer-btn:focus {
+            outline: 3px solid var(--primary);
+            outline-offset: 2px;
+        }
+
+        .yes-btn {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .yes-btn:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+
+        .no-btn {
+            background: white;
+            color: var(--text-dark);
+            border-color: var(--text-light);
+        }
+
+        .no-btn:hover {
+            background: var(--bg-light);
+            transform: translateY(-2px);
+        }
+
+        .skip-btn {
+            background: transparent;
+            color: var(--text-light);
+            border-color: transparent;
+        }
+
+        .skip-btn:hover {
+            color: var(--text-dark);
+            background: rgba(0, 0, 0, 0.05);
+        }
+
+        .helper-privacy-note {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.85rem;
+            color: var(--text-light);
+            font-style: italic;
+            margin: 0;
+        }
+
+        .privacy-icon {
+            font-size: 1rem;
+        }
+
+        .hero-demo-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+            margin-top: auto;
+        }
+
+        .demo-stat-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            opacity: 0.9;
+        }
+
+        .demo-stat-icon {
+            font-size: 1.2rem;
+        }
+
+        .hero-demo-explanation {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            opacity: 0.9;
+            margin: 0;
+        }
+
+        .hero-demo-explanation strong {
+            font-weight: 700;
+            color: white;
+        }
+
+        .hero-demo-explanation em {
+            font-style: italic;
+            color: rgba(255, 255, 255, 0.95);
+        }
+
+        .trigger-submission-note {
+            display: flex;
+            gap: 16px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-left: 4px solid rgba(255, 255, 255, 0.5);
+            border-radius: 12px;
+        }
+
+        .submission-note-icon {
+            font-size: 2rem;
+            flex-shrink: 0;
+        }
+
+        .submission-note-content {
+            font-size: 0.9rem;
+            line-height: 1.6;
+            opacity: 0.95;
+        }
+
+        .submission-note-content strong {
+            font-weight: 700;
+            color: white;
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        @media (max-width: 768px) {
+            .hero-demo-screen {
+                padding: 20px;
+                min-height: 280px;
+            }
+
+            .helper-question-card {
+                padding: 20px;
+            }
+
+            .helper-question-actions {
+                flex-direction: column;
+            }
+
+            .helper-answer-btn {
+                min-width: 100%;
+            }
+
+            .hero-demo-stats {
+                grid-template-columns: 1fr;
+                gap: 12px;
+            }
+
+            .trigger-submission-note {
+                flex-direction: column;
+                gap: 12px;
+                padding: 16px;
+            }
+
+            .submission-note-icon {
+                font-size: 1.5rem;
+            }
+        }
+
+        /* ═══════════════════════════════════════════════════════════════ */
+        /* SCROLL NAVIGATION BUTTONS */
+        /* ═══════════════════════════════════════════════════════════════ */
+
+        .scroll-to-categories-container {
+            display: flex;
+            justify-content: center;
+            margin-top: 48px;
+        }
+
+        .scroll-to-categories-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            padding: 16px 32px;
+            background: var(--gradient-hero);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.05rem;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 4px 16px rgba(139, 92, 246, 0.25);
+            transition: all 0.3s ease;
+        }
+
+        .scroll-to-categories-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 24px rgba(139, 92, 246, 0.35);
+        }
+
+        .scroll-to-categories-btn:focus {
+            outline: 3px solid var(--primary);
+            outline-offset: 3px;
+        }
+
+        .scroll-btn-icon {
+            font-size: 1.3rem;
+        }
+
+        .scroll-btn-arrow {
+            font-size: 1.2rem;
+            animation: bounceDown 2s ease-in-out infinite;
+        }
+
+        @media (prefers-reduced-motion: no-preference) {
+            @keyframes bounceDown {
+                0%, 100% { transform: translateY(0); }
+                50% { transform: translateY(4px); }
+            }
+        }
+
+        @media (max-width: 768px) {
+            .scroll-to-categories-btn {
+                padding: 14px 24px;
+                font-size: 0.95rem;
+            }
+
+            .scroll-btn-text {
+                display: none;
+            }
+
+            .scroll-to-categories-btn::after {
+                content: 'View All Categories';
+            }
+        }
+
+        /* Back to Top Button (Floating) */
+        .back-to-top-btn {
+            position: fixed;
+            bottom: 32px;
+            right: 32px;
+            width: 56px;
+            height: 56px;
+            background: var(--gradient-hero);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 4px 16px rgba(139, 92, 246, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 999;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(20px);
+            transition: all 0.3s ease;
+        }
+
+        .back-to-top-btn.visible {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .back-to-top-btn:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 6px 24px rgba(139, 92, 246, 0.4);
+        }
+
+        .back-to-top-btn:focus {
+            outline: 3px solid var(--primary);
+            outline-offset: 3px;
+        }
+
+        .back-to-top-btn svg {
+            width: 24px;
+            height: 24px;
+        }
+
+        @media (max-width: 768px) {
+            .back-to-top-btn {
+                bottom: 24px;
+                right: 24px;
+                width: 48px;
+                height: 48px;
+            }
+
+            .back-to-top-btn svg {
+                width: 20px;
+                height: 20px;
+            }
+        }
+
+        /* Ensure back-to-top doesn't interfere with low-stim toggle on mobile */
+        @media (max-width: 768px) {
+            .back-to-top-btn {
+                bottom: 24px;
+                right: 24px;
+            }
+        }
+
+        /* ═══════════════════════════════════════════════════════════════ */
         /* MOBILE RESPONSIVE */
         /* ═══════════════════════════════════════════════════════════════ */
 
@@ -516,6 +1176,14 @@
 
             .hero h1 {
                 font-size: 2.75rem;
+            }
+
+            .title-main {
+                font-size: 2.5rem;
+            }
+
+            .title-sub {
+                font-size: 1.5rem;
             }
 
             .hero-subtitle {
@@ -553,6 +1221,19 @@
                 font-size: 2.25rem;
             }
 
+            .title-main {
+                font-size: 2rem;
+            }
+
+            .title-sub {
+                font-size: 1.2rem;
+            }
+
+            .hero-logo {
+                width: 100px;
+                height: 100px;
+            }
+
             .section {
                 padding: 60px 0;
             }
@@ -569,69 +1250,145 @@
 </head>
 <body>
     <!-- ═══════════════════════════════════════════════════════════════ -->
+    <!-- NO JAVASCRIPT FALLBACK -->
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <noscript>
+        <div class="no-js-banner">
+            <div class="no-js-content">
+                <h2>⚠️ JavaScript Required for Interactive Demos</h2>
+                <p>This page includes interactive demonstrations that require JavaScript to function. However, you can still learn about Trigger Warnings!</p>
+                <div class="no-js-options">
+                    <p><strong>Options:</strong></p>
+                    <ul>
+                        <li>Enable JavaScript to experience the full interactive demos</li>
+                        <li>Or visit our <a href="/landing/index-static.html" class="no-js-link">HTML-only version</a> with all the same information (no demos, but fully accessible)</li>
+                    </ul>
+                </div>
+                <p class="no-js-note">The extension itself does not require JavaScript on this page—only the demo features do.</p>
+            </div>
+        </div>
+    </noscript>
+
+    <!-- ═══════════════════════════════════════════════════════════════ -->
     <!-- HERO SECTION -->
     <!-- ═══════════════════════════════════════════════════════════════ -->
     <section class="hero" role="banner">
+        <!-- Low Stimulation Mode Toggle (Top Right) -->
+        <button class="low-stim-toggle"
+                id="lowStimToggle"
+                onclick="toggleLowStimulation()"
+                aria-label="Toggle low stimulation mode to reduce colors and animations"
+                aria-pressed="false"
+                title="Low Stimulation Mode: Reduces color intensity and animation strength">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <circle cx="12" cy="12" r="5" stroke="currentColor" stroke-width="2"/>
+                <path d="M12 1v6m0 6v6m10-11h-6m-6 0H4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+            <span class="low-stim-label">Low Stimulation</span>
+        </button>
+
         <div class="container">
             <div class="hero-content">
                 <div class="hero-text">
                     <div class="hero-logo">
-                        <img src="images/hero-logo.png" alt="Trigger Warnings - Your Safety Shield">
+                        <img src="public/images/icon128.png" alt="Trigger Warnings Shield Logo" width="128" height="128">
                     </div>
+                    <h1 class="hero-main-title">
+                        <span class="title-main">Trigger Warnings</span>
+                        <span class="title-sub">for Streaming</span>
+                    </h1>
                     <div class="hero-badge" role="status" aria-label="Key features">
                         Real-Time Protection • 100% Private • Free Forever
                     </div>
-                    <h1>Take Control of Your Streaming</h1>
                     <p class="hero-subtitle">
-                        Block what you don't want to see. Enjoy what you do. Get 5-10 seconds of advance warning before sensitive content appears. Your safety. Your choice. Always private, always free.
+                        Block what you don't want to see. Enjoy what you do. Get 5-10 seconds of advance warning before sensitive content appears. <strong>Your safety. Your choice. Always private, always free.</strong>
+                    </p>
+                    <p class="hero-platforms" role="region" aria-label="Supported platforms and browsers">
+                        <span class="platforms-label">Works on:</span>
+                        <span class="platform-icons">
+                            <span class="platform-item" title="Netflix">Netflix</span> •
+                            <span class="platform-item" title="Disney+">Disney+</span> •
+                            <span class="platform-item" title="Prime Video">Prime</span> •
+                            <span class="platform-item" title="Hulu">Hulu</span> •
+                            <span class="platform-item" title="HBO Max">HBO</span> •
+                            <span class="platform-item" title="YouTube">YouTube</span> •
+                            <span class="platform-item" title="Apple TV+">Apple TV+</span>
+                        </span>
+                        <span class="browsers-label">in Chrome, Edge, Brave</span>
                     </p>
                     <div class="cta-buttons">
-                        <a href="#install" class="btn btn-primary" aria-label="Install extension for free">
-                            Get Protected - Install for Free
+                        <a href="#install" class="btn btn-primary" aria-label="Install extension completely free forever">
+                            Get Protected - 100% Free Forever
                         </a>
                         <a href="#how-it-works" class="btn btn-secondary">
                             See How It Works
                         </a>
                     </div>
+                    <p class="free-forever-note" role="status" aria-live="polite">
+                        <strong>No one should have to pay to be safe.</strong> This extension is completely free, forever. No trials, no premium tiers, no hidden costs.
+                    </p>
                 </div>
 
-                <!-- Protection Visualization -->
-                <div class="protection-visual" role="img" aria-label="Visual representation of warning protection">
-                    <div class="shield-icon">
-                        <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                            <path d="M50 10 L80 25 L80 55 Q80 75, 50 90 Q20 75, 20 55 L20 25 Z"
-                                  fill="rgba(255,255,255,0.2)"
-                                  stroke="rgba(255,255,255,0.6)"
-                                  stroke-width="2"/>
-                            <circle cx="50" cy="50" r="15" fill="rgba(255,255,255,0.4)"/>
-                        </svg>
-                    </div>
-                    <div class="protection-stats">
-                        <div class="stat-item">
-                            <span class="stat-number">96%</span>
-                            <span class="stat-label">Accuracy</span>
+                <!-- Helper Mode Demo - Interactive Questions While Watching -->
+                <div class="helper-mode-demo-hero" role="region" aria-label="Interactive demonstration of helper mode questions">
+                    <div class="hero-demo-container">
+                        <div class="hero-demo-screen">
+                            <div class="demo-playing-indicator">
+                                <div class="playing-dot"></div>
+                                <span>Watching: Stranger Things</span>
+                            </div>
+
+                            <!-- Helper Mode Question Overlay -->
+                            <div class="helper-question-card" id="heroHelperQuestion" style="opacity: 0;">
+                                <div class="helper-question-header">
+                                    <span class="helper-icon">🤝</span>
+                                    <span class="helper-title">Help Improve Detection</span>
+                                </div>
+                                <p class="helper-question-text">
+                                    Did this scene contain <strong>spiders or insects</strong>?
+                                </p>
+                                <div class="helper-question-actions">
+                                    <button class="helper-answer-btn yes-btn" onclick="answerHelperDemo('yes')" aria-label="Answer yes, scene contained spiders">
+                                        ✓ Yes
+                                    </button>
+                                    <button class="helper-answer-btn no-btn" onclick="answerHelperDemo('no')" aria-label="Answer no, scene did not contain spiders">
+                                        ✗ No
+                                    </button>
+                                    <button class="helper-answer-btn skip-btn" onclick="answerHelperDemo('skip')" aria-label="Skip this question">
+                                        Skip
+                                    </button>
+                                </div>
+                                <p class="helper-privacy-note">
+                                    <span class="privacy-icon">🔒</span>
+                                    Only for content you're monitoring. Anonymous & encrypted.
+                                </p>
+                            </div>
+
+                            <div class="hero-demo-stats">
+                                <div class="demo-stat-item">
+                                    <span class="demo-stat-icon">🎯</span>
+                                    <span class="demo-stat-text">96% Accuracy</span>
+                                </div>
+                                <div class="demo-stat-item">
+                                    <span class="demo-stat-icon">⚡</span>
+                                    <span class="demo-stat-text">5-10s Warning</span>
+                                </div>
+                                <div class="demo-stat-item">
+                                    <span class="demo-stat-icon">🛡️</span>
+                                    <span class="demo-stat-text">28 Categories</span>
+                                </div>
+                            </div>
                         </div>
-                        <div class="stat-item">
-                            <span class="stat-number">5-10s</span>
-                            <span class="stat-label">Advance Warning</span>
-                        </div>
-                        <div class="stat-item">
-                            <span class="stat-number">28</span>
-                            <span class="stat-label">Categories</span>
-                        </div>
-                    </div>
-                    <div class="protection-features">
-                        <div class="feature-badge">
-                            <span class="feature-icon" aria-hidden="true">👁️</span>
-                            <span>Visual Detection</span>
-                        </div>
-                        <div class="feature-badge">
-                            <span class="feature-icon" aria-hidden="true">👂</span>
-                            <span>Audio Analysis</span>
-                        </div>
-                        <div class="feature-badge">
-                            <span class="feature-icon" aria-hidden="true">📝</span>
-                            <span>Text Scanning</span>
+
+                        <p class="hero-demo-explanation">
+                            <strong>Helper Mode (Optional):</strong> Smooth, discreet questions appear <em>only for content you're monitoring</em>. Your answers help improve the algorithm for everyone. When you contribute, the content ID is stored (anonymous & encrypted), but your viewing data never is.
+                        </p>
+
+                        <div class="trigger-submission-note">
+                            <div class="submission-note-icon">💡</div>
+                            <div class="submission-note-content">
+                                <strong>Easily add triggers while viewing:</strong> Spotted something we missed? Click the extension icon to report a new trigger. Only the content ID is stored (anonymous & encrypted) to improve detection. Your privacy remains absolute.
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -667,6 +1424,17 @@
                     <div class="stat-large">100%</div>
                     <div class="stat-label-large">Private & Local</div>
                 </div>
+            </div>
+
+            <!-- Scroll to Categories Button -->
+            <div class="scroll-to-categories-container">
+                <button class="scroll-to-categories-btn"
+                        onclick="document.querySelector('.categories-section').scrollIntoView({behavior: 'smooth'})"
+                        aria-label="Scroll down to view complete list of 28 protected categories">
+                    <span class="scroll-btn-icon">📋</span>
+                    <span class="scroll-btn-text">View All 28 Protected Categories</span>
+                    <span class="scroll-btn-arrow" aria-hidden="true">↓</span>
+                </button>
             </div>
         </div>
     </section>
@@ -793,6 +1561,43 @@
                         Adjust each category to your comfort level—from "off" to "very sensitive." The system learns your preferences and adapts automatically. Your protection, your rules.
                     </p>
                     <a href="#control" class="benefit-link">Try the demo →</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <!-- PRIVACY & ENVIRONMENT - Critical User Concerns (Moved Higher) -->
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <section class="privacy-environment section section-alt">
+        <div class="container">
+            <div class="pe-grid">
+                <!-- Privacy Card -->
+                <div class="pe-card">
+                    <div class="pe-icon">🔒</div>
+                    <h3 class="pe-title">100% Private</h3>
+                    <p class="pe-description">
+                        Everything happens on your device. We never see what you watch. No data is ever sent to our servers. Your viewing habits are your business. Zero tracking, zero collection, zero exceptions.
+                    </p>
+                    <div class="pe-features">
+                        <div class="pe-feature-item">✓ No cloud processing</div>
+                        <div class="pe-feature-item">✓ No data collection</div>
+                        <div class="pe-feature-item">✓ No third-party sharing</div>
+                    </div>
+                </div>
+
+                <!-- Environment Card -->
+                <div class="pe-card">
+                    <div class="pe-icon">🌱</div>
+                    <h3 class="pe-title">Almost Zero Environmental Cost</h3>
+                    <p class="pe-description">
+                        Unlike cloud AI that consumes massive energy, our efficient algorithm runs entirely on your device with minimal power usage. This saves the energy equivalent of thousands of trees per year. Protecting you shouldn't cost the planet.
+                    </p>
+                    <div class="pe-features">
+                        <div class="pe-feature-item">✓ Local processing only</div>
+                        <div class="pe-feature-item">✓ No server infrastructure</div>
+                        <div class="pe-feature-item">✓ Sustainable by design</div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -1061,44 +1866,6 @@
             </div>
         </div>
     </section>
-
-    <!-- ═══════════════════════════════════════════════════════════════ -->
-    <!-- PRIVACY & ENVIRONMENT - Side by Side Cards -->
-    <!-- ═══════════════════════════════════════════════════════════════ -->
-    <section class="privacy-environment section section-alt">
-        <div class="container">
-            <div class="pe-grid">
-                <!-- Privacy Card -->
-                <div class="pe-card">
-                    <div class="pe-icon">🔒</div>
-                    <h3 class="pe-title">100% Private</h3>
-                    <p class="pe-description">
-                        Everything happens on your device. We never see what you watch. No data is ever sent to our servers. Your viewing habits are your business. Zero tracking, zero collection, zero exceptions.
-                    </p>
-                    <div class="pe-features">
-                        <div class="pe-feature-item">✓ No cloud processing</div>
-                        <div class="pe-feature-item">✓ No data collection</div>
-                        <div class="pe-feature-item">✓ No third-party sharing</div>
-                    </div>
-                </div>
-
-                <!-- Environment Card -->
-                <div class="pe-card">
-                    <div class="pe-icon">🌱</div>
-                    <h3 class="pe-title">Zero Environmental Cost</h3>
-                    <p class="pe-description">
-                        Unlike cloud AI that consumes massive energy, our efficient algorithm runs entirely on your device. This saves the energy equivalent of thousands of trees per year. Protecting you shouldn't cost the planet.
-                    </p>
-                    <div class="pe-features">
-                        <div class="pe-feature-item">✓ Local processing only</div>
-                        <div class="pe-feature-item">✓ No server infrastructure</div>
-                        <div class="pe-feature-item">✓ Sustainable by design</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
     <!-- ═══════════════════════════════════════════════════════════════ -->
     <!-- COMMUNITY - Feedback Loop -->
     <!-- ═══════════════════════════════════════════════════════════════ -->
@@ -1228,9 +1995,9 @@
     <section class="night-mode-section section">
         <div class="container">
             <div class="section-header">
-                <h2 class="section-title">Adapts to Your Environment</h2>
+                <h2 class="section-title">Nighttime Protection Mode</h2>
                 <p class="section-subtitle">
-                    Night mode adjusts colors for late-night viewing. Easier on your eyes, still fully functional. Try it now.
+                    Between 10pm-7am, sensitivity automatically increases by 10%. When you're tired or vulnerable, you get extra protection—plus easier-on-the-eyes dark UI.
                 </p>
             </div>
 
@@ -1246,61 +2013,72 @@
                     </div>
 
                     <div class="preview-content">
+                        <div class="sensitivity-boost-indicator" id="sensitivityBoost" style="display: none;">
+                            <div class="boost-icon">🌙</div>
+                            <div class="boost-content">
+                                <strong>Nighttime Mode Active</strong>
+                                <span>Detection sensitivity increased by 10% (10pm-7am)</span>
+                            </div>
+                        </div>
+
                         <div class="preview-setting">
                             <span class="preview-setting-label">Blood & Gore</span>
                             <div class="preview-slider">
-                                <div class="preview-slider-fill" style="width: 80%"></div>
+                                <div class="preview-slider-fill day-fill" style="width: 80%"></div>
+                                <div class="preview-slider-fill night-fill" style="width: 88%; display: none;"></div>
                             </div>
-                            <span class="preview-setting-value">High</span>
+                            <span class="preview-setting-value" id="bloodValue">High (80%)</span>
                         </div>
                         <div class="preview-setting">
                             <span class="preview-setting-label">Violence</span>
                             <div class="preview-slider">
-                                <div class="preview-slider-fill" style="width: 60%"></div>
+                                <div class="preview-slider-fill day-fill" style="width: 60%"></div>
+                                <div class="preview-slider-fill night-fill" style="width: 66%; display: none;"></div>
                             </div>
-                            <span class="preview-setting-value">Medium</span>
+                            <span class="preview-setting-value" id="violenceValue">Medium (60%)</span>
                         </div>
                         <div class="preview-setting">
                             <span class="preview-setting-label">Spiders</span>
                             <div class="preview-slider">
-                                <div class="preview-slider-fill" style="width: 90%"></div>
+                                <div class="preview-slider-fill day-fill" style="width: 90%"></div>
+                                <div class="preview-slider-fill night-fill" style="width: 99%; display: none;"></div>
                             </div>
-                            <span class="preview-setting-value">Very High</span>
+                            <span class="preview-setting-value" id="spidersValue">Very High (90%)</span>
                         </div>
                     </div>
 
                     <div class="preview-footer">
                         <div class="preview-stat">
-                            <span class="preview-stat-num">247</span>
+                            <span class="preview-stat-num" id="warningsNum">247</span>
                             <span class="preview-stat-label">Warnings Shown</span>
                         </div>
                         <div class="preview-stat">
                             <span class="preview-stat-num">96%</span>
-                            <span class="preview-stat-label">Accuracy</span>
+                            <span class="preview-stat-label">Base Accuracy</span>
                         </div>
                     </div>
                 </div>
 
                 <div class="night-mode-features">
                     <div class="nm-feature">
-                        <span class="nm-icon">👁️</span>
+                        <span class="nm-icon">🛡️</span>
                         <div class="nm-content">
-                            <strong>Reduced Eye Strain</strong>
-                            <span>Darker colors reduce blue light for comfortable late-night streaming</span>
+                            <strong>+10% Sensitivity Boost</strong>
+                            <span>Algorithm becomes more cautious between 10pm-7am when you're more vulnerable</span>
                         </div>
                     </div>
                     <div class="nm-feature">
-                        <span class="nm-icon">🎨</span>
+                        <span class="nm-icon">👁️</span>
                         <div class="nm-content">
-                            <strong>Full Functionality</strong>
-                            <span>All features work identically in night mode—just easier to see</span>
+                            <strong>Dark UI Theme</strong>
+                            <span>Reduced eye strain with darker colors and lower blue light for late-night viewing</span>
                         </div>
                     </div>
                     <div class="nm-feature">
                         <span class="nm-icon">⚙️</span>
                         <div class="nm-content">
-                            <strong>Auto-Schedule</strong>
-                            <span>Optional: automatically switch at sunset/sunrise</span>
+                            <strong>Automatic or Manual</strong>
+                            <span>Auto-activates 10pm-7am, or toggle manually anytime for extra protection</span>
                         </div>
                     </div>
                 </div>
@@ -1314,107 +2092,148 @@
     <section class="use-cases-section section section-alt">
         <div class="container">
             <div class="section-header">
-                <h2 class="section-title">Real Scenarios, Real Protection</h2>
+                <h2 class="section-title">Watch It In Action</h2>
                 <p class="section-subtitle">
-                    See how different people use Trigger Warnings to reclaim their streaming experience. Every story represents thousands of real users.
+                    Simulated watching experiences showing exactly what happens when triggers appear on screen.
                 </p>
             </div>
 
             <div class="use-cases-grid">
                 <div class="use-case-card">
                     <div class="use-case-header">
-                        <div class="use-case-avatar" style="background: linear-gradient(135deg, #8b5cf6, #6366f1);">M</div>
+                        <div class="use-case-icon">🎬</div>
                         <div class="use-case-info">
-                            <h4 class="use-case-name">Maya, 28</h4>
-                            <span class="use-case-type">PTSD from accident</span>
+                            <h4 class="use-case-title">Action Movie • 15:32</h4>
+                            <span class="use-case-platform">Netflix • 1080p</span>
                         </div>
                     </div>
                     <div class="use-case-content">
-                        <p class="use-case-story">
-                            "Car accidents were my biggest trigger. I stopped watching shows entirely because unexpected crash scenes would send me into panic attacks. Now I can watch anything—I get 7 seconds warning before car accidents appear. That's enough time to breathe, prepare, or skip ahead. I've finished 12 shows this year."
-                        </p>
-                        <div class="use-case-settings">
-                            <strong>Key Settings:</strong>
-                            <div class="use-case-setting-tags">
-                                <span class="setting-tag high">Car Accidents: Very High</span>
-                                <span class="setting-tag medium">Blood: Medium</span>
-                                <span class="setting-tag low">Violence: Low</span>
+                        <div class="use-case-timeline">
+                            <div class="timeline-event">
+                                <span class="timeline-time">15:25</span>
+                                <span class="timeline-label">Warning appears</span>
                             </div>
+                            <div class="timeline-event highlight">
+                                <span class="timeline-time">15:32</span>
+                                <span class="timeline-label">Car crash scene begins</span>
+                            </div>
+                            <div class="timeline-event">
+                                <span class="timeline-time">15:55</span>
+                                <span class="timeline-label">Scene ends</span>
+                            </div>
+                        </div>
+                        <div class="use-case-behavior">
+                            <p><strong>What happens:</strong> 7 seconds before the crash, a purple warning overlay appears with countdown timer. Options: Skip 23s ahead, Watch with warning, or Adjust sensitivity.</p>
+                        </div>
+                        <div class="use-case-setting-tags">
+                            <span class="setting-tag high">Car Accidents: Very High</span>
+                            <span class="setting-tag medium">Violence: Medium</span>
                         </div>
                     </div>
                 </div>
 
                 <div class="use-case-card">
                     <div class="use-case-header">
-                        <div class="use-case-avatar" style="background: linear-gradient(135deg, #ec4899, #f59e0b);">D</div>
+                        <div class="use-case-icon">🕷️</div>
                         <div class="use-case-info">
-                            <h4 class="use-case-name">David, 42</h4>
-                            <span class="use-case-type">Arachnophobia</span>
+                            <h4 class="use-case-title">Nature Documentary • 23:15</h4>
+                            <span class="use-case-platform">Disney+ • 4K HDR</span>
                         </div>
                     </div>
                     <div class="use-case-content">
-                        <p class="use-case-story">
-                            "I have severe arachnophobia. Even animated spiders on screen make my heart race. I tried watching nature documentaries but would encounter spiders without warning. With this extension, I finally watched Planet Earth II—all 7 episodes. The warnings gave me control. I could prepare mentally or skip those 30 seconds."
-                        </p>
-                        <div class="use-case-settings">
-                            <strong>Key Settings:</strong>
-                            <div class="use-case-setting-tags">
-                                <span class="setting-tag high">Spiders & Insects: Very High</span>
-                                <span class="setting-tag off">Most others: Off</span>
+                        <div class="use-case-timeline">
+                            <div class="timeline-event">
+                                <span class="timeline-time">23:08</span>
+                                <span class="timeline-label">Warning appears</span>
                             </div>
+                            <div class="timeline-event highlight">
+                                <span class="timeline-time">23:15</span>
+                                <span class="timeline-label">Tarantula close-up</span>
+                            </div>
+                            <div class="timeline-event">
+                                <span class="timeline-time">23:42</span>
+                                <span class="timeline-label">Scene ends</span>
+                            </div>
+                        </div>
+                        <div class="use-case-behavior">
+                            <p><strong>What happens:</strong> Spider detected in upcoming footage. Warning appears with thumbnail blur. User skips 27 seconds, continues watching forest scenes seamlessly.</p>
+                        </div>
+                        <div class="use-case-setting-tags">
+                            <span class="setting-tag high">Spiders: Very High</span>
+                            <span class="setting-tag off">Other animals: Off</span>
                         </div>
                     </div>
                 </div>
 
                 <div class="use-case-card">
                     <div class="use-case-header">
-                        <div class="use-case-avatar" style="background: linear-gradient(135deg, #10b981, #3b82f6);">S</div>
+                        <div class="use-case-icon">⚡</div>
                         <div class="use-case-info">
-                            <h4 class="use-case-name">Sarah, 35</h4>
-                            <span class="use-case-type">Photosensitive epilepsy</span>
+                            <h4 class="use-case-title">Horror Series • S2E4 • 08:22</h4>
+                            <span class="use-case-platform">Hulu • 1080p</span>
                         </div>
                     </div>
                     <div class="use-case-content">
-                        <p class="use-case-story">
-                            "Flashing lights can trigger seizures for me. Most streaming services don't warn you—you just encounter strobe effects unexpectedly. This extension detects flashing patterns and gives me time to look away or adjust my screen brightness. It's made streaming safe again."
-                        </p>
-                        <div class="use-case-settings">
-                            <strong>Key Settings:</strong>
-                            <div class="use-case-setting-tags">
-                                <span class="setting-tag high">Flashing Lights: Very High</span>
-                                <span class="setting-tag medium">Loud Noises: Medium</span>
-                                <span class="setting-tag low">Violence: Low</span>
+                        <div class="use-case-timeline">
+                            <div class="timeline-event">
+                                <span class="timeline-time">08:15</span>
+                                <span class="timeline-label">Warning appears</span>
                             </div>
+                            <div class="timeline-event highlight">
+                                <span class="timeline-time">08:22</span>
+                                <span class="timeline-label">Strobe lighting effect</span>
+                            </div>
+                            <div class="timeline-event">
+                                <span class="timeline-time">08:28</span>
+                                <span class="timeline-label">Normal lighting resumes</span>
+                            </div>
+                        </div>
+                        <div class="use-case-behavior">
+                            <p><strong>What happens:</strong> Flashing pattern detected (12Hz, 6 seconds). Critical safety warning appears immediately. Video auto-pauses. User looks away, then resumes after effect ends.</p>
+                        </div>
+                        <div class="use-case-setting-tags">
+                            <span class="setting-tag high">Flashing Lights: Very High</span>
+                            <span class="setting-tag medium">Blood: Medium</span>
                         </div>
                     </div>
                 </div>
 
                 <div class="use-case-card">
                     <div class="use-case-header">
-                        <div class="use-case-avatar" style="background: linear-gradient(135deg, #f59e0b, #ef4444);">J</div>
+                        <div class="use-case-icon">🔞</div>
                         <div class="use-case-info">
-                            <h4 class="use-case-name">James, 19</h4>
-                            <span class="use-case-type">Family-friendly filtering</span>
+                            <h4 class="use-case-title">Drama Series • S1E3 • 32:10</h4>
+                            <span class="use-case-platform">Prime Video • 4K</span>
                         </div>
                     </div>
                     <div class="use-case-content">
-                        <p class="use-case-story">
-                            "I watch a lot of shows with my younger siblings. Sudden sexual content or graphic violence makes everyone uncomfortable. The warnings let me skip those scenes instantly—we can enjoy shows together without awkward moments. It's made family movie night way less stressful."
-                        </p>
-                        <div class="use-case-settings">
-                            <strong>Key Settings:</strong>
-                            <div class="use-case-setting-tags">
-                                <span class="setting-tag high">Sexual Content: High</span>
-                                <span class="setting-tag high">Violence: High</span>
-                                <span class="setting-tag medium">Language: Medium</span>
+                        <div class="use-case-timeline">
+                            <div class="timeline-event">
+                                <span class="timeline-time">32:03</span>
+                                <span class="timeline-label">Warning appears</span>
                             </div>
+                            <div class="timeline-event highlight">
+                                <span class="timeline-time">32:10</span>
+                                <span class="timeline-label">Intimate scene begins</span>
+                            </div>
+                            <div class="timeline-event">
+                                <span class="timeline-time">33:45</span>
+                                <span class="timeline-label">Scene ends</span>
+                            </div>
+                        </div>
+                        <div class="use-case-behavior">
+                            <p><strong>What happens:</strong> Sexual content detected. Family viewing mode active. Warning shows duration (1m 35s). One-click skip jumps to next scene. No awkward pausing needed.</p>
+                        </div>
+                        <div class="use-case-setting-tags">
+                            <span class="setting-tag high">Sexual Content: High</span>
+                            <span class="setting-tag high">Violence: High</span>
                         </div>
                     </div>
                 </div>
             </div>
 
             <div class="use-cases-note">
-                <strong>These scenarios are fictional</strong> but represent real usage patterns from our 89,000+ users. Every sensitivity is valid. Your reasons are your own.
+                <strong>Simulated scenarios</strong> based on real detection patterns from 89,000+ active users across major streaming platforms.
             </div>
         </div>
     </section>
@@ -1456,7 +2275,7 @@
                             <div class="browser-detail">Chrome, Edge, Brave, Opera, Vivaldi</div>
                         </div>
                         <div class="browser-item coming-soon">
-                            <div class="browser-status">Coming in 2025</div>
+                            <div class="browser-status">Coming in 2026</div>
                             <div class="browser-name">Firefox & Safari</div>
                         </div>
                     </div>
@@ -1596,9 +2415,9 @@
                 <div class="innovation-card glass-card">
                     <div class="innovation-number">06</div>
                     <div class="innovation-icon">🌍</div>
-                    <h3 class="innovation-title">Zero Environmental Cost</h3>
+                    <h3 class="innovation-title">Almost Zero Environmental Cost</h3>
                     <p class="innovation-description">
-                        Unlike cloud AI consuming massive energy, our local processing saves the equivalent of 1,000+ trees per year. Protecting you shouldn't cost the planet.
+                        Unlike cloud AI consuming massive energy, our local processing uses minimal power and saves the equivalent of 1,000+ trees per year. Protecting you shouldn't cost the planet.
                     </p>
                     <div class="innovation-detail">
                         <strong>Impact:</strong> Sustainable by design
@@ -1685,9 +2504,13 @@
                     <a href="/privacy.html">Privacy Policy</a>
                     <a href="/technical">Technical Details</a>
                     <a href="https://github.com/lightmyfireadmin/triggerwarnings">GitHub</a>
+                    <a href="/landing/index-static.html" style="border: 2px solid rgba(255, 255, 255, 0.3); padding: 8px 16px; border-radius: 8px;">📄 HTML-Only Version</a>
                 </div>
                 <div class="footer-text">
-                    <p>© 2024 Trigger Warnings. Free forever. Made with care.</p>
+                    <p>© 2026 Trigger Warnings. Free forever. Made with care.</p>
+                    <p style="font-size: 0.95rem; opacity: 0.8; margin-top: 8px;">
+                        <strong>No one should have to pay to be safe.</strong> This extension is 100% free, forever.
+                    </p>
                 </div>
             </div>
         </div>
@@ -3164,9 +3987,57 @@
             padding: 32px;
         }
 
+        .sensitivity-boost-indicator {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 16px 20px;
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.1) 0%, rgba(236, 72, 153, 0.1) 100%);
+            border-left: 4px solid var(--primary);
+            border-radius: 12px;
+            margin-bottom: 24px;
+            transition: all 0.5s ease;
+        }
+
+        .mode-preview.night .sensitivity-boost-indicator {
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.2) 0%, rgba(236, 72, 153, 0.2) 100%);
+            border-left-color: var(--primary-light);
+        }
+
+        .boost-icon {
+            font-size: 2rem;
+            flex-shrink: 0;
+        }
+
+        .boost-content {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .boost-content strong {
+            color: var(--primary);
+            font-size: 1rem;
+            transition: color 0.5s ease;
+        }
+
+        .mode-preview.night .boost-content strong {
+            color: var(--primary-light);
+        }
+
+        .boost-content span {
+            font-size: 0.9rem;
+            color: var(--text-light);
+            transition: color 0.5s ease;
+        }
+
+        .mode-preview.night .boost-content span {
+            color: #a0aec0;
+        }
+
         .preview-setting {
             display: grid;
-            grid-template-columns: 180px 1fr 80px;
+            grid-template-columns: 180px 1fr 120px;
             align-items: center;
             gap: 16px;
             padding: 16px 0;
@@ -3192,6 +4063,7 @@
             background: var(--bg-light);
             border-radius: 4px;
             overflow: hidden;
+            position: relative;
             transition: background 0.5s ease;
         }
 
@@ -3203,13 +4075,27 @@
             height: 100%;
             background: var(--gradient-hero);
             border-radius: 4px;
+            position: absolute;
+            top: 0;
+            left: 0;
+            transition: all 0.5s ease;
+        }
+
+        .day-fill {
+            background: var(--gradient-hero);
+        }
+
+        .night-fill {
+            background: linear-gradient(135deg, #a78bfa 0%, #f472b6 100%);
+            box-shadow: 0 0 8px rgba(167, 139, 250, 0.5);
         }
 
         .preview-setting-value {
             text-align: right;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             font-weight: 600;
             transition: color 0.5s ease;
+            font-family: 'Courier New', monospace;
         }
 
         .mode-preview.night .preview-setting-value {
@@ -3325,16 +4211,15 @@
             background: var(--gradient-light);
         }
 
-        .use-case-avatar {
+        .use-case-icon {
             width: 56px;
             height: 56px;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.8rem;
-            font-weight: 700;
-            color: white;
+            font-size: 2rem;
+            background: var(--gradient-hero);
             flex-shrink: 0;
         }
 
@@ -3344,36 +4229,74 @@
             justify-content: center;
         }
 
-        .use-case-name {
-            font-size: 1.2rem;
+        .use-case-title {
+            font-size: 1.1rem;
             font-weight: 700;
             color: var(--text-dark);
             margin-bottom: 4px;
         }
 
-        .use-case-type {
+        .use-case-platform {
             font-size: 0.85rem;
             color: var(--text-light);
-            font-style: italic;
+            font-weight: 500;
         }
 
         .use-case-content {
             padding: 28px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
         }
 
-        .use-case-story {
+        .use-case-timeline {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            padding: 16px;
+            background: var(--bg-light);
+            border-radius: 12px;
+            border-left: 3px solid var(--primary);
+        }
+
+        .timeline-event {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.9rem;
+        }
+
+        .timeline-event.highlight {
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .timeline-time {
+            font-family: 'Courier New', monospace;
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+        .timeline-label {
+            color: var(--text-light);
+        }
+
+        .timeline-event.highlight .timeline-label {
+            color: var(--primary);
+        }
+
+        .use-case-behavior {
+            line-height: 1.7;
+        }
+
+        .use-case-behavior p {
             font-size: 0.95rem;
             color: var(--text-dark);
-            line-height: 1.7;
-            margin-bottom: 20px;
-            font-style: italic;
+            margin: 0;
         }
 
-        .use-case-settings strong {
-            display: block;
-            font-size: 0.9rem;
-            color: var(--text-dark);
-            margin-bottom: 12px;
+        .use-case-behavior strong {
+            color: var(--primary-dark);
         }
 
         .use-case-setting-tags {
@@ -3756,20 +4679,21 @@
         });
 
         // ═══════════════════════════════════════════════════════════════
-        // CINEMA DEMO - Interactive Warning System
+        // CINEMA DEMO - Interactive Warning System (Fixed for memory leaks)
         // ═══════════════════════════════════════════════════════════════
 
         let demoPlaying = false;
         let demoProgress = 0;
         let demoInterval = null;
+        let countdownInterval = null;
         let currentScenario = 'blood';
         let warningShown = false;
 
         const scenarios = {
-            'blood': { name: 'Blood & Gore', icon: '⚠️', triggerPoint: 30 },
-            'spider': { name: 'Spider Appears', icon: '🕷️', triggerPoint: 30 },
-            'flashing': { name: 'Flashing Lights', icon: '⚡', triggerPoint: 30 },
-            'jumpscare': { name: 'Jump Scare', icon: '😱', triggerPoint: 30 }
+            'blood': { name: 'Blood & Gore', icon: '⚠️', triggerPoint: 21 },
+            'spider': { name: 'Spider Appears', icon: '🕷️', triggerPoint: 21 },
+            'flashing': { name: 'Flashing Lights', icon: '⚡', triggerPoint: 21 },
+            'jumpscare': { name: 'Jump Scare', icon: '😱', triggerPoint: 21 }
         };
 
         function toggleDemo() {
@@ -3781,23 +4705,30 @@
         }
 
         function playDemo() {
+            if (demoPlaying) return; // Prevent multiple intervals
+
             demoPlaying = true;
-            document.getElementById('playIcon').textContent = '⏸';
-            document.getElementById('playBtn').innerHTML = '<span>⏸</span> Pause Demo';
+            const playIcon = document.getElementById('playIcon');
+            const playBtn = document.getElementById('playBtn');
+
+            if (playIcon) playIcon.textContent = '⏸';
+            if (playBtn) playBtn.innerHTML = '<span id="playIcon">⏸</span> Pause Demo';
 
             demoInterval = setInterval(() => {
                 demoProgress += 1;
 
                 // Update progress bar
                 const progressPercent = (demoProgress / 30) * 100;
-                document.getElementById('progressFill').style.width = progressPercent + '%';
+                const progressFill = document.getElementById('progressFill');
+                if (progressFill) progressFill.style.width = progressPercent + '%';
 
                 // Update time display
                 const currentTime = Math.floor(demoProgress);
-                document.getElementById('videoTime').textContent = `0:${currentTime.toString().padStart(2, '0')} / 0:30`;
+                const videoTime = document.getElementById('videoTime');
+                if (videoTime) videoTime.textContent = `0:${currentTime.toString().padStart(2, '0')} / 0:30`;
 
-                // Trigger warning at the appropriate point
-                if (demoProgress >= scenarios[currentScenario].triggerPoint * 0.7 && !warningShown) {
+                // Trigger warning at the appropriate point (7 seconds before trigger)
+                if (demoProgress >= scenarios[currentScenario].triggerPoint && !warningShown) {
                     showWarning();
                 }
 
@@ -3810,17 +4741,26 @@
 
         function pauseDemo() {
             demoPlaying = false;
-            clearInterval(demoInterval);
-            document.getElementById('playIcon').textContent = '▶';
-            document.getElementById('playBtn').innerHTML = '<span>▶</span> Play Demo';
+            if (demoInterval) {
+                clearInterval(demoInterval);
+                demoInterval = null;
+            }
+            const playIcon = document.getElementById('playIcon');
+            const playBtn = document.getElementById('playBtn');
+            if (playIcon) playIcon.textContent = '▶';
+            if (playBtn) playBtn.innerHTML = '<span id="playIcon">▶</span> Play Demo';
         }
 
         function resetDemo() {
             pauseDemo();
             demoProgress = 0;
             warningShown = false;
-            document.getElementById('progressFill').style.width = '0%';
-            document.getElementById('videoTime').textContent = '0:00 / 0:30';
+
+            const progressFill = document.getElementById('progressFill');
+            const videoTime = document.getElementById('videoTime');
+
+            if (progressFill) progressFill.style.width = '0%';
+            if (videoTime) videoTime.textContent = '0:00 / 0:30';
             hideWarning();
         }
 
@@ -3830,21 +4770,39 @@
             const warningType = document.getElementById('warningType');
             const countdown = document.getElementById('warningCountdown');
 
+            if (!overlay || !warningType || !countdown) return;
+
             warningType.textContent = scenarios[currentScenario].name;
             overlay.style.display = 'flex';
 
+            // Clear any existing countdown interval to prevent memory leak
+            if (countdownInterval) {
+                clearInterval(countdownInterval);
+                countdownInterval = null;
+            }
+
             let timeLeft = 7;
-            const countdownInterval = setInterval(() => {
+            countdown.textContent = timeLeft;
+
+            countdownInterval = setInterval(() => {
                 timeLeft--;
                 countdown.textContent = timeLeft;
                 if (timeLeft <= 0) {
                     clearInterval(countdownInterval);
+                    countdownInterval = null;
                 }
             }, 1000);
         }
 
         function hideWarning() {
-            document.getElementById('warningOverlay').style.display = 'none';
+            const overlay = document.getElementById('warningOverlay');
+            if (overlay) overlay.style.display = 'none';
+
+            // Clear countdown interval when hiding warning
+            if (countdownInterval) {
+                clearInterval(countdownInterval);
+                countdownInterval = null;
+            }
         }
 
         function handleSkip() {
@@ -3858,20 +4816,32 @@
             // Continue playing without warning overlay
         }
 
-        function setScenario(scenario) {
-            currentScenario = scenario;
+        function setScenario(scenarioName) {
+            if (!scenarios[scenarioName]) return;
+
+            currentScenario = scenarioName;
             resetDemo();
 
             // Update active button
             document.querySelectorAll('.scenario-btn').forEach(btn => {
                 btn.classList.remove('active');
+                if (btn.onclick && btn.onclick.toString().includes(scenarioName)) {
+                    btn.classList.add('active');
+                }
             });
-            event.target.classList.add('active');
 
             // Update warning marker position based on scenario
             const marker = document.querySelector('.warning-marker');
-            marker.style.left = (scenarios[scenario].triggerPoint / 30 * 100) + '%';
+            if (marker) {
+                marker.style.left = (scenarios[scenarioName].triggerPoint / 30 * 100) + '%';
+            }
         }
+
+        // Clean up intervals when page is unloaded to prevent memory leaks
+        window.addEventListener('beforeunload', function() {
+            if (demoInterval) clearInterval(demoInterval);
+            if (countdownInterval) clearInterval(countdownInterval);
+        });
 
         // Make the existing sliders show visual feedback
         document.addEventListener('DOMContentLoaded', function() {
@@ -3992,17 +4962,54 @@
             const preview = document.getElementById('modePreview');
             const icon = document.getElementById('modeIcon');
             const text = document.getElementById('modeText');
+            const boostIndicator = document.getElementById('sensitivityBoost');
+            const warningsNum = document.getElementById('warningsNum');
+
+            // Get slider elements
+            const dayFills = document.querySelectorAll('.day-fill');
+            const nightFills = document.querySelectorAll('.night-fill');
+            const bloodValue = document.getElementById('bloodValue');
+            const violenceValue = document.getElementById('violenceValue');
+            const spidersValue = document.getElementById('spidersValue');
 
             isNightMode = !isNightMode;
 
             if (isNightMode) {
+                // Enable night mode
                 preview.classList.add('night');
                 icon.textContent = '☀️';
                 text.textContent = 'Day Mode';
+                boostIndicator.style.display = 'flex';
+
+                // Show night sensitivity bars (+10%)
+                dayFills.forEach(fill => fill.style.display = 'none');
+                nightFills.forEach(fill => fill.style.display = 'block');
+
+                // Update value labels to show +10%
+                bloodValue.textContent = 'High (88% +10%)';
+                violenceValue.textContent = 'Medium (66% +10%)';
+                spidersValue.textContent = 'Very High (99% +10%)';
+
+                // Increase warnings count (more sensitive = more warnings)
+                warningsNum.textContent = '272';
             } else {
+                // Disable night mode
                 preview.classList.remove('night');
                 icon.textContent = '🌙';
                 text.textContent = 'Night Mode';
+                boostIndicator.style.display = 'none';
+
+                // Show day sensitivity bars (normal)
+                dayFills.forEach(fill => fill.style.display = 'block');
+                nightFills.forEach(fill => fill.style.display = 'none');
+
+                // Reset value labels
+                bloodValue.textContent = 'High (80%)';
+                violenceValue.textContent = 'Medium (60%)';
+                spidersValue.textContent = 'Very High (90%)';
+
+                // Reset warnings count
+                warningsNum.textContent = '247';
             }
         }
 
@@ -4026,6 +5033,140 @@
                 });
             }
         });
+
+        // ═══════════════════════════════════════════════════════════════
+        // LOW STIMULATION MODE TOGGLE
+        // ═══════════════════════════════════════════════════════════════
+
+        function toggleLowStimulation() {
+            const toggle = document.getElementById('lowStimToggle');
+            const body = document.body;
+            const isActive = body.classList.contains('low-stimulation');
+
+            if (isActive) {
+                // Disable low stimulation mode
+                body.classList.remove('low-stimulation');
+                toggle.setAttribute('aria-pressed', 'false');
+                // Store preference
+                try {
+                    localStorage.setItem('lowStimulationMode', 'false');
+                } catch (e) {
+                    // localStorage might be disabled
+                }
+            } else {
+                // Enable low stimulation mode
+                body.classList.add('low-stimulation');
+                toggle.setAttribute('aria-pressed', 'true');
+                // Store preference
+                try {
+                    localStorage.setItem('lowStimulationMode', 'true');
+                } catch (e) {
+                    // localStorage might be disabled
+                }
+            }
+        }
+
+        // Check for saved preference and prefers-reduced-motion on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            try {
+                const savedPreference = localStorage.getItem('lowStimulationMode');
+                if (savedPreference === 'true') {
+                    document.body.classList.add('low-stimulation');
+                    const toggle = document.getElementById('lowStimToggle');
+                    if (toggle) {
+                        toggle.setAttribute('aria-pressed', 'true');
+                    }
+                }
+            } catch (e) {
+                // localStorage might be disabled
+            }
+
+            // Also respect prefers-reduced-motion
+            if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.body.classList.add('low-stimulation');
+                const toggle = document.getElementById('lowStimToggle');
+                if (toggle) {
+                    toggle.setAttribute('aria-pressed', 'true');
+                }
+            }
+
+            // Animate hero helper question appearing after delay
+            setTimeout(function() {
+                const helperQuestion = document.getElementById('heroHelperQuestion');
+                if (helperQuestion) {
+                    helperQuestion.style.opacity = '1';
+                }
+            }, 2000);
+        });
+
+        // ═══════════════════════════════════════════════════════════════
+        // HERO HELPER MODE DEMO INTERACTION
+        // ═══════════════════════════════════════════════════════════════
+
+        function answerHelperDemo(answer) {
+            const helperQuestion = document.getElementById('heroHelperQuestion');
+            if (!helperQuestion) return;
+
+            // Fade out the question
+            helperQuestion.style.opacity = '0';
+
+            // After animation, show it again with a different question after delay
+            setTimeout(function() {
+                // Cycle through different trigger types
+                const questions = [
+                    'Did this scene contain <strong>spiders or insects</strong>?',
+                    'Did this scene contain <strong>blood or gore</strong>?',
+                    'Did this scene contain <strong>flashing lights</strong>?',
+                    'Did this scene contain <strong>jump scares</strong>?'
+                ];
+
+                const currentText = helperQuestion.querySelector('.helper-question-text');
+                if (currentText) {
+                    const randomQuestion = questions[Math.floor(Math.random() * questions.length)];
+                    currentText.innerHTML = randomQuestion;
+                }
+
+                // Fade back in
+                setTimeout(function() {
+                    helperQuestion.style.opacity = '1';
+                }, 100);
+            }, 2000);
+        }
+        // ═══════════════════════════════════════════════════════════════
+        // BACK TO TOP BUTTON - Show/Hide on Scroll
+        // ═══════════════════════════════════════════════════════════════
+
+        const backToTopBtn = document.getElementById('backToTopBtn');
+
+        window.addEventListener('scroll', function() {
+            if (window.pageYOffset > 500) {
+                if (backToTopBtn) {
+                    backToTopBtn.classList.add('visible');
+                }
+            } else {
+                if (backToTopBtn) {
+                    backToTopBtn.classList.remove('visible');
+                }
+            }
+        });
+
+        function scrollToTop() {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        }
     </script>
+
+    <!-- Back to Top Button (Floating) -->
+    <button class="back-to-top-btn"
+            id="backToTopBtn"
+            onclick="scrollToTop()"
+            aria-label="Scroll back to top of page"
+            title="Back to Top">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <path d="M12 19V5M12 5L5 12M12 5L19 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+    </button>
 </body>
 </html>
