@@ -461,6 +461,180 @@
         }
 
         /* ═══════════════════════════════════════════════════════════════ */
+        /* LOW STIMULATION MODE TOGGLE (Top Right Hero) */
+        /* ═══════════════════════════════════════════════════════════════ */
+
+        .low-stim-toggle {
+            position: absolute;
+            top: 24px;
+            right: 24px;
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 20px;
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 2px solid rgba(255, 255, 255, 0.25);
+            border-radius: 24px;
+            color: white;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .low-stim-toggle:hover {
+            background: rgba(255, 255, 255, 0.25);
+            transform: scale(1.05);
+        }
+
+        .low-stim-toggle:focus {
+            outline: 3px solid rgba(255, 255, 255, 0.6);
+            outline-offset: 2px;
+        }
+
+        .low-stim-toggle[aria-pressed="true"] {
+            background: rgba(255, 255, 255, 0.95);
+            color: var(--primary);
+            border-color: white;
+        }
+
+        .low-stim-toggle svg {
+            width: 20px;
+            height: 20px;
+            transition: transform 0.3s ease;
+        }
+
+        .low-stim-toggle[aria-pressed="true"] svg {
+            transform: rotate(45deg);
+        }
+
+        @media (max-width: 768px) {
+            .low-stim-toggle {
+                top: 16px;
+                right: 16px;
+                padding: 10px 16px;
+                font-size: 0.85rem;
+            }
+
+            .low-stim-label {
+                display: none;
+            }
+
+            .low-stim-toggle svg {
+                width: 18px;
+                height: 18px;
+            }
+        }
+
+        /* ═══════════════════════════════════════════════════════════════ */
+        /* HERO PLATFORMS & BROWSERS INFO */
+        /* ═══════════════════════════════════════════════════════════════ */
+
+        .hero-platforms {
+            font-size: 0.95rem;
+            opacity: 0.9;
+            margin-bottom: 24px;
+            line-height: 1.6;
+        }
+
+        .platforms-label {
+            font-weight: 600;
+            margin-right: 8px;
+        }
+
+        .platform-icons {
+            display: inline;
+        }
+
+        .platform-item {
+            font-weight: 500;
+            opacity: 0.95;
+        }
+
+        .browsers-label {
+            display: inline-block;
+            margin-left: 8px;
+            opacity: 0.85;
+            font-style: italic;
+        }
+
+        @media (max-width: 768px) {
+            .hero-platforms {
+                font-size: 0.85rem;
+                line-height: 1.8;
+            }
+        }
+
+        /* ═══════════════════════════════════════════════════════════════ */
+        /* FREE FOREVER NOTE (Hero Section) */
+        /* ═══════════════════════════════════════════════════════════════ */
+
+        .free-forever-note {
+            margin-top: 24px;
+            padding: 16px 20px;
+            background: rgba(255, 255, 255, 0.12);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border-left: 4px solid rgba(255, 255, 255, 0.6);
+            border-radius: 8px;
+            font-size: 0.95rem;
+            line-height: 1.6;
+            opacity: 0.95;
+        }
+
+        .free-forever-note strong {
+            font-weight: 700;
+            color: white;
+        }
+
+        @media (max-width: 768px) {
+            .free-forever-note {
+                font-size: 0.85rem;
+                padding: 14px 16px;
+            }
+        }
+
+        /* ═══════════════════════════════════════════════════════════════ */
+        /* LOW STIMULATION MODE - Global Styles (Applied to body) */
+        /* ═══════════════════════════════════════════════════════════════ */
+
+        body.low-stimulation {
+            /* Reduce color saturation and intensity */
+            filter: saturate(0.7) brightness(0.95);
+        }
+
+        body.low-stimulation * {
+            /* Disable all animations and transitions */
+            animation-duration: 0s !important;
+            transition-duration: 0s !important;
+        }
+
+        body.low-stimulation .hero::before,
+        body.low-stimulation .hero::after {
+            /* Remove hero decorative elements */
+            opacity: 0 !important;
+        }
+
+        body.low-stimulation .glass-card::before {
+            /* Disable shimmer effects */
+            display: none !important;
+        }
+
+        body.low-stimulation .orbit-ring {
+            /* Stop orbit animations */
+            animation: none !important;
+        }
+
+        /* Ensure accessibility features still work in low stim mode */
+        body.low-stimulation :focus {
+            outline: 3px solid var(--primary) !important;
+            outline-offset: 2px !important;
+        }
+
+        /* ═══════════════════════════════════════════════════════════════ */
         /* STATS SECTION */
         /* ═══════════════════════════════════════════════════════════════ */
 
@@ -660,6 +834,20 @@
     <!-- HERO SECTION -->
     <!-- ═══════════════════════════════════════════════════════════════ -->
     <section class="hero" role="banner">
+        <!-- Low Stimulation Mode Toggle (Top Right) -->
+        <button class="low-stim-toggle"
+                id="lowStimToggle"
+                onclick="toggleLowStimulation()"
+                aria-label="Toggle low stimulation mode to reduce colors and animations"
+                aria-pressed="false"
+                title="Low Stimulation Mode: Reduces color intensity and animation strength">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <circle cx="12" cy="12" r="5" stroke="currentColor" stroke-width="2"/>
+                <path d="M12 1v6m0 6v6m10-11h-6m-6 0H4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+            <span class="low-stim-label">Low Stimulation</span>
+        </button>
+
         <div class="container">
             <div class="hero-content">
                 <div class="hero-text">
@@ -671,16 +859,32 @@
                     </div>
                     <h1>Take Control of Your Streaming</h1>
                     <p class="hero-subtitle">
-                        Block what you don't want to see. Enjoy what you do. Get 5-10 seconds of advance warning before sensitive content appears. Your safety. Your choice. Always private, always free.
+                        Block what you don't want to see. Enjoy what you do. Get 5-10 seconds of advance warning before sensitive content appears. <strong>Your safety. Your choice. Always private, always free.</strong>
+                    </p>
+                    <p class="hero-platforms" role="region" aria-label="Supported platforms and browsers">
+                        <span class="platforms-label">Works on:</span>
+                        <span class="platform-icons">
+                            <span class="platform-item" title="Netflix">Netflix</span> •
+                            <span class="platform-item" title="Disney+">Disney+</span> •
+                            <span class="platform-item" title="Prime Video">Prime</span> •
+                            <span class="platform-item" title="Hulu">Hulu</span> •
+                            <span class="platform-item" title="HBO Max">HBO</span> •
+                            <span class="platform-item" title="YouTube">YouTube</span> •
+                            <span class="platform-item" title="Apple TV+">Apple TV+</span>
+                        </span>
+                        <span class="browsers-label">in Chrome, Edge, Brave</span>
                     </p>
                     <div class="cta-buttons">
-                        <a href="#install" class="btn btn-primary" aria-label="Install extension for free">
-                            Get Protected - Install for Free
+                        <a href="#install" class="btn btn-primary" aria-label="Install extension completely free forever">
+                            Get Protected - 100% Free Forever
                         </a>
                         <a href="#how-it-works" class="btn btn-secondary">
                             See How It Works
                         </a>
                     </div>
+                    <p class="free-forever-note" role="status" aria-live="polite">
+                        <strong>No one should have to pay to be safe.</strong> This extension is completely free, forever. No trials, no premium tiers, no hidden costs.
+                    </p>
                 </div>
 
                 <!-- Protection Visualization -->
@@ -4347,6 +4551,63 @@
                         helperStatus.style.color = 'var(--text-light)';
                     }
                 });
+            }
+        });
+
+        // ═══════════════════════════════════════════════════════════════
+        // LOW STIMULATION MODE TOGGLE
+        // ═══════════════════════════════════════════════════════════════
+
+        function toggleLowStimulation() {
+            const toggle = document.getElementById('lowStimToggle');
+            const body = document.body;
+            const isActive = body.classList.contains('low-stimulation');
+
+            if (isActive) {
+                // Disable low stimulation mode
+                body.classList.remove('low-stimulation');
+                toggle.setAttribute('aria-pressed', 'false');
+                // Store preference
+                try {
+                    localStorage.setItem('lowStimulationMode', 'false');
+                } catch (e) {
+                    // localStorage might be disabled
+                }
+            } else {
+                // Enable low stimulation mode
+                body.classList.add('low-stimulation');
+                toggle.setAttribute('aria-pressed', 'true');
+                // Store preference
+                try {
+                    localStorage.setItem('lowStimulationMode', 'true');
+                } catch (e) {
+                    // localStorage might be disabled
+                }
+            }
+        }
+
+        // Check for saved preference and prefers-reduced-motion on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            try {
+                const savedPreference = localStorage.getItem('lowStimulationMode');
+                if (savedPreference === 'true') {
+                    document.body.classList.add('low-stimulation');
+                    const toggle = document.getElementById('lowStimToggle');
+                    if (toggle) {
+                        toggle.setAttribute('aria-pressed', 'true');
+                    }
+                }
+            } catch (e) {
+                // localStorage might be disabled
+            }
+
+            // Also respect prefers-reduced-motion
+            if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.body.classList.add('low-stimulation');
+                const toggle = document.getElementById('lowStimToggle');
+                if (toggle) {
+                    toggle.setAttribute('aria-pressed', 'true');
+                }
             }
         });
     </script>
