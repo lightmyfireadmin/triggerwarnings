@@ -37,9 +37,9 @@
             --primary-dark: #7c3aed;
             --primary-light: #a78bfa;
             --secondary: #6366f1;
-            --accent: #ec4899;
-            --accent-dark: #db2777;
-            --accent-light: #f472b6;
+            --accent: #c026d3;
+            --accent-dark: #a21caf;
+            --accent-light: #d946ef;
             --text-dark: #1e1b4b;
             --text-light: #64748b;
             --text-lighter: #94a3b8;
@@ -48,11 +48,11 @@
             --bg-white: #ffffff;
             --success: #10b981;
             --warning: #f59e0b;
-            --gradient-hero: linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%);
-            --gradient-calm: linear-gradient(135deg, #a78bfa 0%, #f472b6 100%);
-            --gradient-accent: linear-gradient(135deg, #ec4899 0%, #f59e0b 100%);
+            --gradient-hero: linear-gradient(135deg, #8b5cf6 0%, #a855f7 50%, #c026d3 100%);
+            --gradient-calm: linear-gradient(135deg, #a78bfa 0%, #c084fc 100%);
+            --gradient-accent: linear-gradient(135deg, #c026d3 0%, #9333ea 100%);
             --gradient-light: linear-gradient(135deg, #faf5ff 0%, #f8f9ff 100%);
-            --gradient-glass: linear-gradient(135deg, rgba(139, 92, 246, 0.1) 0%, rgba(236, 72, 153, 0.1) 100%);
+            --gradient-glass: linear-gradient(135deg, rgba(139, 92, 246, 0.1) 0%, rgba(192, 38, 211, 0.1) 100%);
             --shadow-sm: 0 2px 8px rgba(139, 92, 246, 0.1);
             --shadow-md: 0 4px 16px rgba(139, 92, 246, 0.15);
             --shadow-lg: 0 8px 32px rgba(139, 92, 246, 0.2);
@@ -1085,9 +1085,9 @@
                 <!-- Environment Card -->
                 <div class="pe-card">
                     <div class="pe-icon">🌱</div>
-                    <h3 class="pe-title">Zero Environmental Cost</h3>
+                    <h3 class="pe-title">Almost Zero Environmental Cost</h3>
                     <p class="pe-description">
-                        Unlike cloud AI that consumes massive energy, our efficient algorithm runs entirely on your device. This saves the energy equivalent of thousands of trees per year. Protecting you shouldn't cost the planet.
+                        Unlike cloud AI that consumes massive energy, our efficient algorithm runs entirely on your device with minimal power usage. This saves the energy equivalent of thousands of trees per year. Protecting you shouldn't cost the planet.
                     </p>
                     <div class="pe-features">
                         <div class="pe-feature-item">✓ Local processing only</div>
@@ -1648,9 +1648,9 @@
                 <div class="innovation-card glass-card">
                     <div class="innovation-number">06</div>
                     <div class="innovation-icon">🌍</div>
-                    <h3 class="innovation-title">Zero Environmental Cost</h3>
+                    <h3 class="innovation-title">Almost Zero Environmental Cost</h3>
                     <p class="innovation-description">
-                        Unlike cloud AI consuming massive energy, our local processing saves the equivalent of 1,000+ trees per year. Protecting you shouldn't cost the planet.
+                        Unlike cloud AI consuming massive energy, our local processing uses minimal power and saves the equivalent of 1,000+ trees per year. Protecting you shouldn't cost the planet.
                     </p>
                     <div class="innovation-detail">
                         <strong>Impact:</strong> Sustainable by design
@@ -3908,20 +3908,21 @@
         });
 
         // ═══════════════════════════════════════════════════════════════
-        // CINEMA DEMO - Interactive Warning System
+        // CINEMA DEMO - Interactive Warning System (Fixed for memory leaks)
         // ═══════════════════════════════════════════════════════════════
 
         let demoPlaying = false;
         let demoProgress = 0;
         let demoInterval = null;
+        let countdownInterval = null;
         let currentScenario = 'blood';
         let warningShown = false;
 
         const scenarios = {
-            'blood': { name: 'Blood & Gore', icon: '⚠️', triggerPoint: 30 },
-            'spider': { name: 'Spider Appears', icon: '🕷️', triggerPoint: 30 },
-            'flashing': { name: 'Flashing Lights', icon: '⚡', triggerPoint: 30 },
-            'jumpscare': { name: 'Jump Scare', icon: '😱', triggerPoint: 30 }
+            'blood': { name: 'Blood & Gore', icon: '⚠️', triggerPoint: 21 },
+            'spider': { name: 'Spider Appears', icon: '🕷️', triggerPoint: 21 },
+            'flashing': { name: 'Flashing Lights', icon: '⚡', triggerPoint: 21 },
+            'jumpscare': { name: 'Jump Scare', icon: '😱', triggerPoint: 21 }
         };
 
         function toggleDemo() {
@@ -3933,23 +3934,30 @@
         }
 
         function playDemo() {
+            if (demoPlaying) return; // Prevent multiple intervals
+
             demoPlaying = true;
-            document.getElementById('playIcon').textContent = '⏸';
-            document.getElementById('playBtn').innerHTML = '<span>⏸</span> Pause Demo';
+            const playIcon = document.getElementById('playIcon');
+            const playBtn = document.getElementById('playBtn');
+
+            if (playIcon) playIcon.textContent = '⏸';
+            if (playBtn) playBtn.innerHTML = '<span id="playIcon">⏸</span> Pause Demo';
 
             demoInterval = setInterval(() => {
                 demoProgress += 1;
 
                 // Update progress bar
                 const progressPercent = (demoProgress / 30) * 100;
-                document.getElementById('progressFill').style.width = progressPercent + '%';
+                const progressFill = document.getElementById('progressFill');
+                if (progressFill) progressFill.style.width = progressPercent + '%';
 
                 // Update time display
                 const currentTime = Math.floor(demoProgress);
-                document.getElementById('videoTime').textContent = `0:${currentTime.toString().padStart(2, '0')} / 0:30`;
+                const videoTime = document.getElementById('videoTime');
+                if (videoTime) videoTime.textContent = `0:${currentTime.toString().padStart(2, '0')} / 0:30`;
 
-                // Trigger warning at the appropriate point
-                if (demoProgress >= scenarios[currentScenario].triggerPoint * 0.7 && !warningShown) {
+                // Trigger warning at the appropriate point (7 seconds before trigger)
+                if (demoProgress >= scenarios[currentScenario].triggerPoint && !warningShown) {
                     showWarning();
                 }
 
@@ -3962,17 +3970,26 @@
 
         function pauseDemo() {
             demoPlaying = false;
-            clearInterval(demoInterval);
-            document.getElementById('playIcon').textContent = '▶';
-            document.getElementById('playBtn').innerHTML = '<span>▶</span> Play Demo';
+            if (demoInterval) {
+                clearInterval(demoInterval);
+                demoInterval = null;
+            }
+            const playIcon = document.getElementById('playIcon');
+            const playBtn = document.getElementById('playBtn');
+            if (playIcon) playIcon.textContent = '▶';
+            if (playBtn) playBtn.innerHTML = '<span id="playIcon">▶</span> Play Demo';
         }
 
         function resetDemo() {
             pauseDemo();
             demoProgress = 0;
             warningShown = false;
-            document.getElementById('progressFill').style.width = '0%';
-            document.getElementById('videoTime').textContent = '0:00 / 0:30';
+
+            const progressFill = document.getElementById('progressFill');
+            const videoTime = document.getElementById('videoTime');
+
+            if (progressFill) progressFill.style.width = '0%';
+            if (videoTime) videoTime.textContent = '0:00 / 0:30';
             hideWarning();
         }
 
@@ -3982,21 +3999,39 @@
             const warningType = document.getElementById('warningType');
             const countdown = document.getElementById('warningCountdown');
 
+            if (!overlay || !warningType || !countdown) return;
+
             warningType.textContent = scenarios[currentScenario].name;
             overlay.style.display = 'flex';
 
+            // Clear any existing countdown interval to prevent memory leak
+            if (countdownInterval) {
+                clearInterval(countdownInterval);
+                countdownInterval = null;
+            }
+
             let timeLeft = 7;
-            const countdownInterval = setInterval(() => {
+            countdown.textContent = timeLeft;
+
+            countdownInterval = setInterval(() => {
                 timeLeft--;
                 countdown.textContent = timeLeft;
                 if (timeLeft <= 0) {
                     clearInterval(countdownInterval);
+                    countdownInterval = null;
                 }
             }, 1000);
         }
 
         function hideWarning() {
-            document.getElementById('warningOverlay').style.display = 'none';
+            const overlay = document.getElementById('warningOverlay');
+            if (overlay) overlay.style.display = 'none';
+
+            // Clear countdown interval when hiding warning
+            if (countdownInterval) {
+                clearInterval(countdownInterval);
+                countdownInterval = null;
+            }
         }
 
         function handleSkip() {
@@ -4010,20 +4045,32 @@
             // Continue playing without warning overlay
         }
 
-        function setScenario(scenario) {
-            currentScenario = scenario;
+        function setScenario(scenarioName) {
+            if (!scenarios[scenarioName]) return;
+
+            currentScenario = scenarioName;
             resetDemo();
 
             // Update active button
             document.querySelectorAll('.scenario-btn').forEach(btn => {
                 btn.classList.remove('active');
+                if (btn.onclick && btn.onclick.toString().includes(scenarioName)) {
+                    btn.classList.add('active');
+                }
             });
-            event.target.classList.add('active');
 
             // Update warning marker position based on scenario
             const marker = document.querySelector('.warning-marker');
-            marker.style.left = (scenarios[scenario].triggerPoint / 30 * 100) + '%';
+            if (marker) {
+                marker.style.left = (scenarios[scenarioName].triggerPoint / 30 * 100) + '%';
+            }
         }
+
+        // Clean up intervals when page is unloaded to prevent memory leaks
+        window.addEventListener('beforeunload', function() {
+            if (demoInterval) clearInterval(demoInterval);
+            if (countdownInterval) clearInterval(countdownInterval);
+        });
 
         // Make the existing sliders show visual feedback
         document.addEventListener('DOMContentLoaded', function() {
