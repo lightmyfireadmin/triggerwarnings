@@ -34,12 +34,16 @@ import type { Warning, TriggerCategory } from '@shared/types/Warning.types';
 import type { Profile } from '@shared/types/Profile.types';
 import { Logger } from '@shared/utils/logger';
 
-// Algorithm 3.0 Innovations
+// Algorithm 3.0 Innovations (Phase 1)
 import { detectionRouter, type MultiModalInput, type Detection } from '../routing/DetectionRouter';
 import { modalityAttentionMechanism, type AttentionContext, type ModalityReliability } from '../attention/ModalityAttentionMechanism';
 import { temporalCoherenceRegularizer, type RegularizedDetection } from '../temporal/TemporalCoherenceRegularizer';
 import { hybridFusionPipeline, type FusionResult } from '../fusion/HybridFusionPipeline';
 import { personalizedDetector, type UserProfile } from '../personalization/PersonalizedDetector';
+
+// Algorithm 3.0 Innovations (Phase 2)
+import { hierarchicalDetector, type HierarchicalResult } from '../routing/HierarchicalDetector';
+import { conditionalValidator, type ValidationResult, VALIDATION_THRESHOLDS } from '../validation/ConditionalValidator';
 
 const logger = new Logger('Algorithm3Integrator');
 
@@ -70,7 +74,7 @@ export interface EnhancedDetection {
   originalConfidence: number;
   originalSource: string;
 
-  // Algorithm 3.0 enhancements
+  // Algorithm 3.0 enhancements (Phase 1)
   routedPipeline: string;
   attentionWeights: {
     visual: number;
@@ -79,6 +83,11 @@ export interface EnhancedDetection {
   };
   regularizedConfidence: number;
   fusedConfidence: number;
+
+  // Algorithm 3.0 enhancements (Phase 2)
+  hierarchicalResult?: HierarchicalResult;
+  validationResult?: ValidationResult;
+  validatedConfidence: number;
 
   // User personalization
   userThreshold: number;
@@ -96,10 +105,13 @@ export interface EnhancedDetection {
  */
 interface IntegrationStats {
   totalDetections: number;
+  hierarchicalEarlyExits: number;
   routedDetections: number;
   attentionAdjustments: number;
   temporalRegularizations: number;
   fusionOperations: number;
+  validationChecks: number;
+  validationFailures: number;
   personalizationApplied: number;
   warningsEmitted: number;
   warningsSuppressed: number;
@@ -126,10 +138,13 @@ export class Algorithm3Integrator {
   // Statistics
   private stats: IntegrationStats = {
     totalDetections: 0,
+    hierarchicalEarlyExits: 0,
     routedDetections: 0,
     attentionAdjustments: 0,
     temporalRegularizations: 0,
     fusionOperations: 0,
+    validationChecks: 0,
+    validationFailures: 0,
     personalizationApplied: 0,
     warningsEmitted: 0,
     warningsSuppressed: 0,
@@ -179,8 +194,37 @@ export class Algorithm3Integrator {
     }
     categoryHistory.push(detection);
 
-    // STEP 1: Route through DetectionRouter (Innovation #13)
+    // STEP 0: Hierarchical Detection (Innovation #14) - EARLY EXIT FOR SAFE CONTENT
     const multiModalInput = this.convertToMultiModalInput(detection, categoryHistory);
+    const hierarchicalResult = hierarchicalDetector.detect(multiModalInput, detection.timestamp);
+
+    if (hierarchicalResult.isSafe) {
+      // Early exit - content ruled safe by hierarchical detector
+      this.stats.hierarchicalEarlyExits++;
+      reasoning.push(
+        `⚡ EARLY EXIT: Hierarchical detector ruled content safe in ${hierarchicalResult.totalProcessingTimeMs.toFixed(2)}ms ` +
+        `(stage: ${hierarchicalResult.earlyExitStage}, saved ~${(20 - hierarchicalResult.totalProcessingTimeMs).toFixed(0)}ms)`
+      );
+
+      logger.debug(
+        `[Algorithm3Integrator] ⚡ EARLY EXIT | ` +
+        `Content ruled safe by hierarchical detector | ` +
+        `Stage: ${hierarchicalResult.earlyExitStage} | ` +
+        `Time: ${hierarchicalResult.totalProcessingTimeMs.toFixed(2)}ms | ` +
+        `Performance gain: ${((20 / hierarchicalResult.totalProcessingTimeMs) || 1).toFixed(1)}x`
+      );
+
+      return null; // Don't process further
+    }
+
+    // Content is suspicious - continue with full analysis
+    reasoning.push(
+      `🔍 Hierarchical detector flagged ${hierarchicalResult.suspectedCategories.length} categories: ` +
+      `${hierarchicalResult.suspectedCategories.join(', ')} | ` +
+      `Time: ${hierarchicalResult.totalProcessingTimeMs.toFixed(2)}ms`
+    );
+
+    // STEP 1: Route through DetectionRouter (Innovation #13)
     const routed = detectionRouter.route(detection.category, multiModalInput);
     this.stats.routedDetections++;
 
@@ -248,7 +292,58 @@ export class Algorithm3Integrator {
     );
 
     // Use the maximum of regularized or fused confidence
-    const finalConfidence = Math.max(regularized.regularizedConfidence, fusionResult.finalConfidence);
+    const fusedConfidence = Math.max(regularized.regularizedConfidence, fusionResult.finalConfidence);
+
+    // STEP 4.5: Apply conditional validation (Innovation #15)
+    const detectionForValidation = {
+      category: detection.category,
+      confidence: fusedConfidence,
+      timestamp: detection.timestamp,
+      source: detection.source === 'subtitle' ? 'text' as const :
+              (detection.source === 'visual' ? 'visual' as const : 'audio' as const),
+      modalityContributions: {
+        visual: multiModalInput.visual?.confidence || 0,
+        audio: multiModalInput.audio?.confidence || 0,
+        text: multiModalInput.text?.confidence || 0
+      }
+    };
+
+    const validationResult = conditionalValidator.validate(detectionForValidation, categoryHistory.map(d => ({
+      category: d.category,
+      confidence: d.confidence,
+      timestamp: d.timestamp,
+      source: d.source === 'subtitle' ? 'text' as const :
+              (d.source === 'visual' ? 'visual' as const : 'audio' as const)
+    })));
+    this.stats.validationChecks++;
+
+    if (!validationResult.passed) {
+      // Validation failed - reject detection
+      this.stats.validationFailures++;
+      reasoning.push(
+        `❌ VALIDATION FAILED: ${validationResult.reasoning.join(' | ')} | ` +
+        `Final confidence: ${validationResult.adjustedConfidence.toFixed(1)}% < threshold ${VALIDATION_THRESHOLDS[validationResult.validationLevel]}%`
+      );
+
+      logger.info(
+        `[Algorithm3Integrator] ❌ VALIDATION FAILED | ` +
+        `${detection.category} at ${detection.timestamp.toFixed(1)}s | ` +
+        `Level: ${validationResult.validationLevel} | ` +
+        `Confidence: ${validationResult.originalConfidence.toFixed(1)}% → ${validationResult.adjustedConfidence.toFixed(1)}% | ` +
+        `Modalities: ${validationResult.modalitiesPresent}/${validationResult.modalitiesRequired}`
+      );
+
+      return null; // Reject detection
+    }
+
+    // Validation passed - use validated confidence
+    const finalConfidence = validationResult.adjustedConfidence;
+
+    reasoning.push(
+      `✅ Validation passed: Level=${validationResult.validationLevel}, ` +
+      `Modalities=${validationResult.modalitiesPresent}, ` +
+      `Confidence=${validationResult.originalConfidence.toFixed(1)}% → ${validationResult.adjustedConfidence.toFixed(1)}%`
+    );
 
     // STEP 5: Apply user personalization (Innovation #30)
     const personalizedResult = personalizedDetector.shouldWarn(
@@ -279,6 +374,9 @@ export class Algorithm3Integrator {
       },
       regularizedConfidence: regularized.regularizedConfidence,
       fusedConfidence: fusionResult.finalConfidence,
+      hierarchicalResult,
+      validationResult,
+      validatedConfidence: finalConfidence,
       userThreshold: personalizedResult.threshold,
       shouldWarn: personalizedResult.shouldWarn,
       warning: this.createEnhancedWarning(detection, finalConfidence, reasoning),
@@ -529,6 +627,8 @@ export class Algorithm3Integrator {
     attention: any;
     temporal: any;
     personalization: any;
+    hierarchical: any;
+    validation: any;
   } {
     // Calculate averages
     const avgBoost = this.confidenceBoosts.length > 0
@@ -547,7 +647,9 @@ export class Algorithm3Integrator {
       routing: detectionRouter.getStats(),
       attention: modalityAttentionMechanism.getSystemStats(),
       temporal: temporalCoherenceRegularizer.getStats(),
-      personalization: personalizedDetector.getStats()
+      personalization: personalizedDetector.getStats(),
+      hierarchical: hierarchicalDetector.getStats(),
+      validation: conditionalValidator.getStats()
     };
   }
 

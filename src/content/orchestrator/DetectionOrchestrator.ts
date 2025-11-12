@@ -657,17 +657,28 @@ export class DetectionOrchestrator {
     }
 
     if (stats.algorithm3) {
-      logger.info('🚀 ALGORITHM 3.0 INTEGRATION:');
+      logger.info('🚀 ALGORITHM 3.0 INTEGRATION (Phase 1 + Phase 2):');
       logger.info(`  - Total Detections: ${stats.algorithm3.totalDetections}`);
+      logger.info(`  - Hierarchical Early Exits: ${stats.algorithm3.hierarchicalEarlyExits} (Phase 2)`);
       logger.info(`  - Routed Through Pipelines: ${stats.algorithm3.routedDetections}`);
       logger.info(`  - Attention Adjustments: ${stats.algorithm3.attentionAdjustments}`);
       logger.info(`  - Temporal Regularizations: ${stats.algorithm3.temporalRegularizations}`);
       logger.info(`  - Fusion Operations: ${stats.algorithm3.fusionOperations}`);
+      logger.info(`  - Validation Checks: ${stats.algorithm3.validationChecks} (Phase 2)`);
+      logger.info(`  - Validation Failures: ${stats.algorithm3.validationFailures} (Phase 2)`);
       logger.info(`  - Personalization Applied: ${stats.algorithm3.personalizationApplied}`);
       logger.info(`  - Warnings Emitted: ${stats.algorithm3.warningsEmitted}`);
       logger.info(`  - Warnings Suppressed: ${stats.algorithm3.warningsSuppressed}`);
       logger.info(`  - Avg Confidence Boost: +${stats.algorithm3.avgConfidenceBoost.toFixed(1)}%`);
       logger.info(`  - Avg False Positive Reduction: -${stats.algorithm3.avgFalsePositiveReduction.toFixed(1)}%`);
+      if (stats.algorithm3.hierarchical) {
+        logger.info(`  - Hierarchical Performance: ${stats.algorithm3.hierarchical.performanceGain} faster (Phase 2)`);
+        logger.info(`  - Early Exit Rate: ${stats.algorithm3.hierarchical.earlyExitRate.toFixed(1)}% (Phase 2)`);
+      }
+      if (stats.algorithm3.validation) {
+        logger.info(`  - Validation Pass Rate: ${stats.algorithm3.validation.passRate.toFixed(1)}% (Phase 2)`);
+        logger.info(`  - Multi-Modal Detection Rate: ${stats.algorithm3.validation.multiModalRate.toFixed(1)}% (Phase 2)`);
+      }
       logger.info('');
     }
 
