@@ -145,8 +145,11 @@ export class AudioWaveformAnalyzer {
     // Get time domain data (waveform)
     this.analyser.getByteTimeDomainData(this.dataArray);
 
+    // Create a copy to avoid SharedArrayBuffer issues if running in a context where that matters
+    const safeData = new Uint8Array(this.dataArray);
+
     // Calculate RMS (Root Mean Square) amplitude
-    const rms = this.calculateRMS(this.dataArray);
+    const rms = this.calculateRMS(safeData);
 
     // Current timestamp
     const currentTime = this.video.currentTime;

@@ -4,6 +4,28 @@
  */
 
 import browser from 'webextension-polyfill';
+// Extend the browser type to include offscreen since webextension-polyfill might be missing it
+declare module 'webextension-polyfill' {
+  export namespace offscreen {
+    export enum Reason {
+      DOM_PARSER = 'DOM_PARSER',
+      BLOBS = 'BLOBS',
+      IFRAME_SCRIPTING = 'IFRAME_SCRIPTING',
+      USER_MEDIA = 'USER_MEDIA',
+      DISPLAY_MEDIA = 'DISPLAY_MEDIA',
+      AUDIO_PLAYBACK = 'AUDIO_PLAYBACK',
+    }
+    export interface CreateParameters {
+      reasons: Reason[];
+      url: string;
+      justification: string;
+    }
+    export function createDocument(parameters: CreateParameters): Promise<void>;
+    export function hasDocument(): Promise<boolean>;
+    export function closeDocument(): Promise<void>;
+  }
+}
+
 import { SupabaseClient } from '@core/api/SupabaseClient';
 import { ProfileManager } from '@core/profiles/ProfileManager';
 import { StorageAdapter } from '@core/storage/StorageAdapter';
@@ -245,5 +267,29 @@ browser.alarms.onAlarm.addListener(handleAlarm);
 
 browser.runtime.onInstalled.addListener(handleInstalled);
 
+/**
+ * Create the offscreen document
+ */
+async function createOffscreenDocument() {
+  const OFFSCREEN_PATH = 'offscreen.html';
+
+  if (await browser.offscreen.hasDocument()) {
+    console.log('[TW Background] Offscreen document already exists');
+    return;
+  }
+
+  console.log('[TW Background] Creating offscreen document...');
+  await browser.offscreen.createDocument({
+    url: OFFSCREEN_PATH,
+    reasons: [browser.offscreen.Reason.DOM_PARSER],
+    justification: 'Parsing and analyzing visual content for trigger warnings',
+  });
+  console.log('[TW Background] Offscreen document created');
+}
+
 // Initialize on startup
-initialize();
+initialize().then(() => {
+  createOffscreenDocument().catch((err) => {
+    console.error('[TW Background] Failed to create offscreen document:', err);
+  });
+});

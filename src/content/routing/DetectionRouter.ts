@@ -177,6 +177,13 @@ export const CATEGORY_ROUTE_CONFIG: Record<TriggerCategory, RouteConfig> = {
     temporalPattern: 'instant'
   },
 
+  'spiders_snakes': {
+    route: 'visual-primary',
+    modalityWeights: { visual: 0.85, audio: 0.05, text: 0.10 },
+    validationLevel: 'standard',
+    temporalPattern: 'instant'
+  },
+
   'needles_injections': {
     route: 'visual-primary',
     modalityWeights: { visual: 0.75, audio: 0.10, text: 0.15 },
@@ -440,6 +447,50 @@ export const CATEGORY_ROUTE_CONFIG: Record<TriggerCategory, RouteConfig> = {
     modalityWeights: { visual: 0.40, audio: 0.50, text: 0.10 },
     validationLevel: 'standard',
     temporalPattern: 'instant'
+  },
+
+  // NEW CATEGORIES
+  'substance_abuse': {
+    route: 'multi-modal-balanced',
+    modalityWeights: { visual: 0.40, audio: 0.20, text: 0.40 },
+    validationLevel: 'standard',
+    temporalPattern: 'gradual-onset'
+  },
+  'alcohol': {
+    route: 'multi-modal-balanced',
+    modalityWeights: { visual: 0.40, audio: 0.20, text: 0.40 },
+    validationLevel: 'standard',
+    temporalPattern: 'gradual-onset'
+  },
+  'fire': {
+    route: 'visual-primary',
+    modalityWeights: { visual: 0.80, audio: 0.10, text: 0.10 },
+    validationLevel: 'standard',
+    temporalPattern: 'escalation'
+  },
+  'drowning': {
+    route: 'multi-modal-balanced',
+    modalityWeights: { visual: 0.50, audio: 0.30, text: 0.20 },
+    validationLevel: 'high-sensitivity',
+    temporalPattern: 'sustained'
+  },
+  'kidnapping': {
+    route: 'multi-modal-balanced',
+    modalityWeights: { visual: 0.30, audio: 0.30, text: 0.40 },
+    validationLevel: 'high-sensitivity',
+    temporalPattern: 'sustained'
+  },
+  'stalking': {
+    route: 'temporal-pattern',
+    modalityWeights: { visual: 0.30, audio: 0.30, text: 0.40 },
+    validationLevel: 'standard',
+    temporalPattern: 'sustained'
+  },
+  'harassment': {
+    route: 'text-primary',
+    modalityWeights: { visual: 0.10, audio: 0.20, text: 0.70 },
+    validationLevel: 'standard',
+    temporalPattern: 'sustained'
   }
 };
 

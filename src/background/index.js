@@ -204,6 +204,27 @@ browser.runtime.onMessage.addListener((message, sender) => {
 });
 browser.alarms.onAlarm.addListener(handleAlarm);
 browser.runtime.onInstalled.addListener(handleInstalled);
+/**
+ * Create the offscreen document
+ */
+async function createOffscreenDocument() {
+    const OFFSCREEN_PATH = 'offscreen.html';
+    if (await browser.offscreen.hasDocument()) {
+        console.log('[TW Background] Offscreen document already exists');
+        return;
+    }
+    console.log('[TW Background] Creating offscreen document...');
+    await browser.offscreen.createDocument({
+        url: OFFSCREEN_PATH,
+        reasons: [browser.offscreen.Reason.DOM_PARSER],
+        justification: 'Parsing and analyzing visual content for trigger warnings',
+    });
+    console.log('[TW Background] Offscreen document created');
+}
 // Initialize on startup
-initialize();
+initialize().then(() => {
+    createOffscreenDocument().catch((err) => {
+        console.error('[TW Background] Failed to create offscreen document:', err);
+    });
+});
 //# sourceMappingURL=index.js.map

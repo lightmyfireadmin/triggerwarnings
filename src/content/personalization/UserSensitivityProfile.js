@@ -88,7 +88,14 @@ export const DEFAULT_SENSITIVITY_PROFILE = {
         'natural_disasters': 'medium',
         'cannibalism': 'high',
         'photosensitivity': 'high',
-        'death_dying': 'high'
+        'death_dying': 'high',
+        'substance_abuse': 'medium',
+        'alcohol': 'medium',
+        'fire': 'high',
+        'drowning': 'high',
+        'kidnapping': 'high',
+        'stalking': 'medium',
+        'harassment': 'medium'
     },
     advancedSettings: {
         nighttimeMode: false,

@@ -46,7 +46,14 @@ export type TriggerCategory =
   | 'claustrophobia_triggers'
   | 'physical_violence'
   | 'car_crashes'
-  | 'snakes_reptiles';
+  | 'snakes_reptiles'
+  | 'substance_abuse' // Added missing category found in errors
+  | 'alcohol'
+  | 'fire'
+  | 'drowning'
+  | 'kidnapping'
+  | 'stalking'
+  | 'harassment';
 
 export type WarningAction = 'warn' | 'mute' | 'hide' | 'mute-and-hide';
 

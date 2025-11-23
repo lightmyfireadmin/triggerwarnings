@@ -309,6 +309,55 @@ export const TRIGGER_CATEGORIES = {
         description: 'Vehicle accidents or collisions',
         icon: '🚗',
         severity: 'medium',
+    },
+    substance_abuse: {
+        key: 'substance_abuse',
+        name: 'Substance Abuse',
+        description: 'Drug addiction or abuse',
+        icon: '💉',
+        severity: 'medium',
+    },
+    alcohol: {
+        key: 'alcohol',
+        name: 'Alcohol',
+        description: 'Excessive alcohol consumption',
+        icon: '🍺',
+        severity: 'medium',
+    },
+    fire: {
+        key: 'fire',
+        name: 'Fire',
+        description: 'Fire or burning',
+        icon: '🔥',
+        severity: 'high',
+    },
+    drowning: {
+        key: 'drowning',
+        name: 'Drowning',
+        description: 'Drowning or underwater distress',
+        icon: '🌊',
+        severity: 'high',
+    },
+    kidnapping: {
+        key: 'kidnapping',
+        name: 'Kidnapping',
+        description: 'Abduction or kidnapping',
+        icon: '🚐',
+        severity: 'high',
+    },
+    stalking: {
+        key: 'stalking',
+        name: 'Stalking',
+        description: 'Stalking or obsessive behavior',
+        icon: '👣',
+        severity: 'medium',
+    },
+    harassment: {
+        key: 'harassment',
+        name: 'Harassment',
+        description: 'Harassment or bullying',
+        icon: '📢',
+        severity: 'medium',
     }
 };
 export const CATEGORY_KEYS = Object.keys(TRIGGER_CATEGORIES);

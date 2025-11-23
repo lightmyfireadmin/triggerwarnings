@@ -183,8 +183,11 @@ export class AudioFrequencyAnalyzer {
     this.analyser.getByteFrequencyData(this.frequencyData);
 
     // Send to worker
+    // Copy data to avoid SharedArrayBuffer issues if polyfills are involved
+    const safeData = new Uint8Array(this.frequencyData);
+
     const payload: AnalyzeAudioPayload = {
-      frequencyData: this.frequencyData, // Cloned automatically
+      frequencyData: safeData,
       timestamp: this.video.currentTime,
       sampleRate: this.analyser.context.sampleRate,
       binCount: this.analyser.frequencyBinCount
@@ -193,7 +196,7 @@ export class AudioFrequencyAnalyzer {
     this.worker.postMessage({
       type: 'analyze_audio',
       payload
-    });
+    }, [safeData.buffer]); // Transferable
   }
 
   /**

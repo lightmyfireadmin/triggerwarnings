@@ -65,7 +65,14 @@ export const CATEGORY_ICON_FILES: Record<TriggerCategory, string> = {
   death_dying: 'death_dying',
   claustrophobia_triggers: 'claustrophobia_triggers',
   physical_violence: 'physical_violence',
-  car_crashes: 'car_crashes'
+  car_crashes: 'car_crashes',
+  substance_abuse: 'substance_abuse',
+  alcohol: 'alcohol',
+  fire: 'fire',
+  drowning: 'drowning',
+  kidnapping: 'kidnapping',
+  stalking: 'stalking',
+  harassment: 'harassment'
 };
 
 /**

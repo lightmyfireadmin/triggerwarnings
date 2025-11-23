@@ -12,7 +12,7 @@
  * Refactored for Web Worker: Jules
  */
 
-import type { Warning } from '@shared/types/Warning.types';
+import type { Warning, WarningStatus } from '@shared/types/Warning.types';
 import type { AnalyzeFramePayload, DetectionPayload } from '@shared/types/analysis.types';
 import { Logger } from '@shared/utils/logger';
 import { PerformanceGovernor } from '../performance/PerformanceGovernor';
@@ -83,7 +83,8 @@ export class VisualColorAnalyzer {
           // Ensure dates are Date objects
           createdAt: new Date(payload.createdAt),
           updatedAt: new Date(payload.updatedAt),
-          categoryKey: payload.categoryKey as any
+          categoryKey: payload.categoryKey as any,
+          status: 'approved' as WarningStatus
       };
 
       // Update stats based on category (simple approximation)
