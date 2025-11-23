@@ -171,17 +171,20 @@
             --primary: #5b21b6;
             --secondary: #831843;
             --accent: #92400e;
-            filter: sepia(10%) saturate(60%);
+            filter: sepia(30%) saturate(70%);
         }
         body.low-stim * {
             animation: none !important;
             transition: none !important;
-            box-shadow: none !important;
-            backdrop-filter: none !important;
-            background-image: none !important;
         }
-        body.low-stim .hero-blob { display: none; }
-        body.low-stim .navbar { background: var(--bg-dark); } /* Remove glass effect */
+        body.low-stim .hero-blob,
+        body.low-stim .hero-bg {
+            display: none !important;
+        }
+        body.low-stim .navbar {
+            background: var(--bg-dark);
+            backdrop-filter: none;
+        }
 
         /* Static / No JS Mode */
         body.static-view .hero-visual,
@@ -896,7 +899,7 @@
                 Trigger Warnings
             </a>
             <div class="nav-links">
-                <a href="#demo" class="nav-link">Demo</a>
+                <a href="#how-it-works" class="nav-link">Demo</a>
                 <a href="#how-it-works" class="nav-link">How it works</a>
                 <a href="#triggers" class="nav-link">Triggers</a>
                 <a href="#helper" class="nav-link">Community</a>
@@ -939,7 +942,7 @@
                         <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
                         Add to Browser - Free
                     </a>
-                    <a href="#demo" class="btn btn-glass">
+                    <a href="#how-it-works" class="btn btn-glass">
                         See the Demo
                     </a>
                 </div>
@@ -1004,49 +1007,6 @@
         </div>
     </div>
 
-    <!-- DEMO SECTION -->
-    <section class="section" id="demo">
-        <div class="container">
-            <div class="section-header reveal">
-                <h2 class="section-title">See it in Action</h2>
-                <p class="section-desc">Experience how Trigger Warnings keeps you safe without interrupting your flow.</p>
-            </div>
-
-            <div class="demo-container reveal">
-                <div class="demo-video-bg" id="demoBg">
-                    🎬 Watching Movie...
-                </div>
-
-                <div class="demo-status" id="demoStatus">BLURRED</div>
-
-                <div class="demo-overlay-banner" id="demoBanner">
-                    <div style="display:flex; align-items:center; gap:15px;">
-                        <span style="font-size:1.5rem;">⚠️</span>
-                        <div>
-                            <div style="font-weight:700; color:white;">Spiders / Snakes Detected</div>
-                            <div style="font-size:0.8rem; color:rgba(255,255,255,0.8);">Starting in 5 seconds</div>
-                        </div>
-                    </div>
-                    <div style="display:flex; gap:10px;">
-                        <button class="btn-primary mini-btn" onclick="triggerAction('skip')">Skip Scene</button>
-                        <button class="btn-glass mini-btn" onclick="triggerAction('blur')">Blur Screen</button>
-                        <button class="btn-glass mini-btn" onclick="triggerAction('dismiss')">Dismiss</button>
-                    </div>
-                </div>
-
-                <div class="demo-progress" id="demoProgress"></div>
-
-                <div class="demo-controls">
-                    <button class="btn btn-primary" id="playDemoBtn" onclick="startDemo()">▶ Play Simulation</button>
-                </div>
-            </div>
-
-            <div class="demo-static-fallback">
-                <h3 style="margin-bottom:10px;">Interactive Demo</h3>
-                <p style="color:var(--text-muted);">In static mode, the interactive demonstration is disabled to provide a simplified experience.</p>
-            </div>
-        </div>
-    </section>
 
     <!-- Features -->
     <section class="section" id="features">
@@ -1138,6 +1098,41 @@
             <div class="section-header reveal">
                 <h2 class="section-title">How it works</h2>
                 <p class="section-desc">Seamlessly integrated, fully customizable, and community-driven.</p>
+            </div>
+
+            <!-- Interactive Demo inside How It Works -->
+            <div class="demo-container reveal" style="margin-bottom: 60px;">
+                <div class="demo-video-bg" id="demoBg">
+                    🎬 Watching Movie...
+                </div>
+
+                <div class="demo-status" id="demoStatus">BLURRED</div>
+
+                <div class="demo-overlay-banner" id="demoBanner">
+                    <div style="display:flex; align-items:center; gap:15px;">
+                        <span style="font-size:1.5rem;">⚠️</span>
+                        <div>
+                            <div style="font-weight:700; color:white;">Spiders / Snakes Detected</div>
+                            <div style="font-size:0.8rem; color:rgba(255,255,255,0.8);">Starting in 5 seconds</div>
+                        </div>
+                    </div>
+                    <div style="display:flex; gap:10px;">
+                        <button class="btn-primary mini-btn" onclick="triggerAction('skip')">Skip Scene</button>
+                        <button class="btn-glass mini-btn" onclick="triggerAction('blur')">Blur Screen</button>
+                        <button class="btn-glass mini-btn" onclick="triggerAction('dismiss')">Dismiss</button>
+                    </div>
+                </div>
+
+                <div class="demo-progress" id="demoProgress"></div>
+
+                <div class="demo-controls">
+                    <button class="btn btn-primary" id="playDemoBtn" onclick="startDemo()">▶ Play Simulation</button>
+                </div>
+            </div>
+
+            <div class="demo-static-fallback">
+                <h3 style="margin-bottom:10px;">Interactive Demo</h3>
+                <p style="color:var(--text-muted);">In static mode, the interactive demonstration is disabled to provide a simplified experience.</p>
             </div>
 
             <div class="hiw-tabs reveal">
