@@ -8,12 +8,33 @@ const target = process.env.TARGET_BROWSER || 'chrome';
 function generateManifest() {
   const manifest = readJsonFile('src/manifest/manifest.json');
   const pkg = readJsonFile('package.json');
-  return {
+
+  const manifestResult = {
     name: pkg.name,
     description: pkg.description,
     version: pkg.version,
     ...manifest,
   };
+
+  if (process.env.TARGET_BROWSER === 'firefox') {
+    // Firefox uses background.scripts instead of background.service_worker in MV3
+    if (manifestResult.background && manifestResult.background.service_worker) {
+      manifestResult.background = {
+        scripts: [manifestResult.background.service_worker],
+        type: 'module',
+      };
+    }
+
+    // Firefox requires browser_specific_settings for ID
+    manifestResult.browser_specific_settings = {
+      gecko: {
+        id: 'trigger-warnings@example.com',
+        strict_min_version: '109.0',
+      },
+    };
+  }
+
+  return manifestResult;
 }
 
 export default defineConfig({
