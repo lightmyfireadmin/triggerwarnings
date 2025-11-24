@@ -11,6 +11,7 @@ import { ProviderFactory } from './providers/ProviderFactory';
 import { WarningManager } from '@core/warning-system/WarningManager';
 import { BannerManager } from './banner/BannerManager';
 import { ActiveIndicatorManager } from './indicator/ActiveIndicatorManager';
+import AnalysisOverlay from './overlay/AnalysisOverlay.svelte';
 import { createLogger } from '@shared/utils/logger';
 const logger = createLogger('Content');
 class TriggerWarningsContent {
@@ -55,6 +56,11 @@ class TriggerWarningsContent {
             // Initialize active indicator
             this.indicatorManager = new ActiveIndicatorManager(this.provider);
             await this.indicatorManager.initialize();
+            // Initialize Analysis Overlay (Debug)
+            const overlayDiv = document.createElement('div');
+            overlayDiv.id = 'tw-analysis-overlay-root';
+            document.body.appendChild(overlayDiv);
+            new AnalysisOverlay({ target: overlayDiv });
             // Connect warning manager to banner manager and indicator
             this.warningManager.onWarning((warning) => {
                 this.bannerManager?.showWarning(warning);
@@ -77,13 +83,24 @@ class TriggerWarningsContent {
             });
             this.bannerManager.onVote(async (warningId, voteType) => {
                 try {
+                    // 1. Send to background (optional, for remote sync)
                     const response = await browser.runtime.sendMessage({
                         type: 'VOTE_WARNING',
                         triggerId: warningId,
                         voteType,
                     });
-                    if (response.success) {
-                        logger.info(`Vote ${voteType} recorded for warning ${warningId}`);
+                    // 2. Record Locally (LocalConsensusEngine) - Feature 2
+                    const warning = this.activeWarningsMap.get(warningId);
+                    if (warning) {
+                        const { LocalConsensusEngine } = await import('./consensus/LocalConsensusEngine');
+                        const engine = LocalConsensusEngine.getInstance();
+                        // Map 'up'/'down' to 'confirm'/'wrong'
+                        const localVote = voteType === 'up' ? 'confirm' : 'wrong';
+                        await engine.recordVote(warning.videoId, warning.categoryKey, warning.startTime, localVote);
+                        logger.info(`Local vote recorded: ${localVote} for ${warning.categoryKey}`);
+                    }
+                    if (response && response.success) {
+                        logger.info(`Remote Vote ${voteType} recorded for warning ${warningId}`);
                     }
                 }
                 catch (error) {

@@ -23,6 +23,7 @@
 
 import type { Warning } from '@shared/types/Warning.types';
 import { Logger } from '@shared/utils/logger';
+import { analysisStore } from '../store/AnalysisStore'; // Added import
 
 const logger = new Logger('AudioWaveformAnalyzer');
 
@@ -145,6 +146,12 @@ export class AudioWaveformAnalyzer {
 
     // Get time domain data (waveform)
     this.analyser.getByteTimeDomainData(this.dataArray);
+
+    // Update debug store with waveform
+    // We update this via AudioFrequencyAnalyzer for Frequency, but here we could also update
+    // But since AnalysisStore expects FrequencyData interface, we might skip or adapt.
+    // For now, let's keep it simple and only FrequencyAnalyzer updates store for Spectrum.
+    // If we wanted Waveform visualization, we'd add `waveformData` to the store.
 
     // Calculate RMS (Root Mean Square) amplitude
     // Ensure we are working with a standard Uint8Array to avoid SharedArrayBuffer type issues

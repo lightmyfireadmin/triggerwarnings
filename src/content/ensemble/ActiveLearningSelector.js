@@ -60,8 +60,9 @@ export class ActiveLearningSelector {
             // Combined score (weighted)
             const score = uncertaintyScore * 0.6 + diversityScore * 0.4;
             // Select strategy based on highest individual score
+            // Note: 'committee' and 'expected-change' are not calculated in this simple pass
+            // so we only choose between 'diversity' and 'uncertainty'
             let strategy;
-            // Simple logic for strategy assignment to match types
             if (diversityScore > uncertaintyScore) {
                 strategy = 'diversity';
             }

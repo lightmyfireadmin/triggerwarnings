@@ -51,6 +51,11 @@ function analyzeFrame(bitmap, timestamp) {
     bitmap.close();
     stats.totalFramesAnalyzed++;
     const analysis = analyzeColors(imageData);
+    // Send analysis result back if needed (for overlay)
+    self.postMessage({
+        type: 'analysis_result',
+        payload: analysis
+    });
     // Run detections
     detectBlood(timestamp, analysis);
     detectGore(timestamp, analysis);

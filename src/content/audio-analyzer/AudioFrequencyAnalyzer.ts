@@ -16,6 +16,7 @@ import type { Warning } from '@shared/types/Warning.types';
 import type { AnalyzeAudioPayload, DetectionPayload } from '@shared/types/analysis.types';
 import { Logger } from '@shared/utils/logger';
 import { PerformanceGovernor } from '../performance/PerformanceGovernor';
+import { analysisStore } from '../store/AnalysisStore';
 // @ts-ignore - Query params for worker import
 import AudioAnalyzerWorker from './AudioAnalyzer.worker?worker';
 
@@ -183,12 +184,26 @@ export class AudioFrequencyAnalyzer {
     // Get frequency data (FFT output)
     this.analyser.getByteFrequencyData(this.frequencyData);
 
+    // Debug Mode: Update Store
+    // We do this BEFORE copying/worker dispatch to minimize latency for the UI
+    // Using a throttled update or just raw update? Svelte store might choke if 60fps
+    // We'll update the store with a COPY to prevent reference issues
+    analysisStore.isVisible.subscribe(visible => {
+      if (visible && this.frequencyData && this.analyser) {
+        analysisStore.audioData.set({
+          frequencyData: new Uint8Array(this.frequencyData) as any, // Copy
+          sampleRate: this.analyser.context.sampleRate,
+          binCount: this.analyser.frequencyBinCount
+        });
+      }
+    })();
+
     // Send to worker
     // Copy the frequency data to a regular array buffer to avoid SharedArrayBuffer issues
     const dataCopy = new Uint8Array(this.frequencyData);
 
     const payload: AnalyzeAudioPayload = {
-      frequencyData: dataCopy.buffer as ArrayBuffer, // Convert to ArrayBuffer
+      frequencyData: (dataCopy.buffer as unknown) as ArrayBuffer,
       timestamp: this.video.currentTime,
       sampleRate: this.analyser.context.sampleRate,
       binCount: this.analyser.frequencyBinCount

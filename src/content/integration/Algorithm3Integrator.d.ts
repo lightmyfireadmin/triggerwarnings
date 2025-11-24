@@ -48,6 +48,7 @@ import { type TransferLearningResult } from '../crossmodal/SelfSupervisedPretrai
 import { type PolicyResult } from '../rl/RLPolicy';
 import { type BanditSelection } from '../rl/BanditSelector';
 import { type DriftDetection } from '../rl/OnlineLearner';
+import { type ConsensusState } from '../consensus/BayesianConsensusSystem';
 /**
  * Detection input from existing systems
  */
@@ -62,6 +63,7 @@ export interface LegacyDetection {
         audioFeatures?: any;
         textFeatures?: any;
     };
+    _contentId?: string;
 }
 /**
  * Enhanced detection after Algorithm 3.0 processing
@@ -99,6 +101,7 @@ export interface EnhancedDetection {
     banditSelection?: BanditSelection;
     onlineLearningPrediction?: number;
     driftDetection?: DriftDetection;
+    consensusState?: ConsensusState;
     userThreshold: number;
     shouldWarn: boolean;
     warning: Warning;
@@ -149,6 +152,8 @@ interface IntegrationStats {
     driftsDetected: number;
     avgBanditRegret: number;
     avgOnlineLearningLoss: number;
+    consensusChecks: number;
+    consensusAvailable: number;
 }
 /**
  * Algorithm 3.0 Integrator
@@ -258,6 +263,10 @@ export declare class Algorithm3Integrator {
      * Extract text embedding from subtitle (Phase 8)
      */
     private extractTextEmbedding;
+    /**
+     * Simple string hash for content identification
+     */
+    private hashString;
     /**
      * Get comprehensive statistics
      */

@@ -13,6 +13,7 @@
  */
 import { Logger } from '@shared/utils/logger';
 import { PerformanceGovernor } from '../performance/PerformanceGovernor';
+import { analysisStore } from '../store/AnalysisStore';
 // @ts-ignore - Query params for worker import
 import VisualAnalyzerWorker from './VisualAnalyzer.worker?worker';
 const logger = new Logger('VisualColorAnalyzer');
@@ -58,6 +59,10 @@ export class VisualColorAnalyzer {
         const { type, payload } = e.data;
         if (type === 'detection') {
             this.handleDetection(payload);
+        }
+        else if (type === 'analysis_result') {
+            // Store the detailed analysis for the overlay
+            analysisStore.visualData.set(payload);
         }
         else if (type === 'stats') {
             // Update local stats if worker sends them

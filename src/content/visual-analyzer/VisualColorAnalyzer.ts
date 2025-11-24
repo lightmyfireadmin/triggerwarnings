@@ -16,6 +16,7 @@ import type { Warning } from '@shared/types/Warning.types';
 import type { AnalyzeFramePayload, DetectionPayload } from '@shared/types/analysis.types';
 import { Logger } from '@shared/utils/logger';
 import { PerformanceGovernor } from '../performance/PerformanceGovernor';
+import { analysisStore } from '../store/AnalysisStore';
 // @ts-ignore - Query params for worker import
 import VisualAnalyzerWorker from './VisualAnalyzer.worker?worker';
 
@@ -69,6 +70,9 @@ export class VisualColorAnalyzer {
 
     if (type === 'detection') {
         this.handleDetection(payload as DetectionPayload);
+    } else if (type === 'analysis_result') {
+        // Store the detailed analysis for the overlay
+        analysisStore.visualData.set(payload);
     } else if (type === 'stats') {
         // Update local stats if worker sends them
         // this.stats = { ...this.stats, ...payload };
