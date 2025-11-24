@@ -337,7 +337,7 @@ export const CATEGORY_ROUTE_CONFIG: Record<TriggerCategory, RouteConfig> = {
       modalityWeights: { visual: 0.10, audio: 0.10, text: 0.80 },
       validationLevel: 'standard',
       temporalPattern: 'sustained'
-  } as any,
+  } as RouteConfig,
 
   'violence': {
     route: 'temporal-pattern',
