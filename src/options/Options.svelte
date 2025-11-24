@@ -18,27 +18,45 @@
   });
 
   async function loadData() {
+    // Failsafe: Force loading to false after 5 seconds
+    const failsafeTimer = setTimeout(() => {
+      if (loading) {
+        console.warn('Options: Load timeout failsafe triggered');
+        loading = false;
+        toast.error('Loading timed out - showing default view');
+      }
+    }, 5000);
+
     try {
       loading = true;
 
-      const activeResponse = await browser.runtime.sendMessage({
-        type: 'GET_ACTIVE_PROFILE',
-      });
+      // Add timeout to requests
+      const timeoutPromise = new Promise((_, reject) =>
+        setTimeout(() => reject(new Error('Request timeout')), 2000)
+      );
 
-      if (activeResponse.success) {
+      const activeResponse = (await Promise.race([
+        browser.runtime.sendMessage({ type: 'GET_ACTIVE_PROFILE' }),
+        timeoutPromise,
+      ])) as any;
+
+      if (activeResponse && activeResponse.success) {
         activeProfile = activeResponse.data;
       }
 
-      const profilesResponse = await browser.runtime.sendMessage({
-        type: 'GET_ALL_PROFILES',
-      });
+      const profilesResponse = (await Promise.race([
+        browser.runtime.sendMessage({ type: 'GET_ALL_PROFILES' }),
+        timeoutPromise,
+      ])) as any;
 
-      if (profilesResponse.success) {
+      if (profilesResponse && profilesResponse.success) {
         allProfiles = profilesResponse.data;
       }
     } catch (error) {
       console.error('Error loading data:', error);
+      toast.error('Failed to load settings');
     } finally {
+      clearTimeout(failsafeTimer);
       loading = false;
     }
   }
@@ -66,10 +84,12 @@
       enabledCategories: newCategories,
     }).catch(() => {
       // Rollback on error
-      activeProfile = activeProfile ? {
-        ...activeProfile,
-        enabledCategories: previousCategories,
-      } : null;
+      activeProfile = activeProfile
+        ? {
+            ...activeProfile,
+            enabledCategories: previousCategories,
+          }
+        : null;
       toast.error('Failed to update category');
     });
   }
@@ -200,8 +220,9 @@
         <section class="section">
           <h2 class="section-title">Active Profile</h2>
           <p class="section-description">
-            📋 <strong>What are profiles?</strong> Profiles let you create different trigger warning configurations for different situations.
-            For example, you might want stricter warnings when watching alone versus with friends, or different settings for different family members.
+            📋 <strong>What are profiles?</strong> Profiles let you create different trigger warning
+            configurations for different situations. For example, you might want stricter warnings when
+            watching alone versus with friends, or different settings for different family members.
           </p>
           <div class="profile-selector">
             {#each allProfiles as profile}
@@ -229,21 +250,21 @@
           <button
             class="tab"
             class:active={activeTab === 'categories'}
-            on:click={() => activeTab = 'categories'}
+            on:click={() => (activeTab = 'categories')}
           >
             Categories
           </button>
           <button
             class="tab"
             class:active={activeTab === 'settings'}
-            on:click={() => activeTab = 'settings'}
+            on:click={() => (activeTab = 'settings')}
           >
             Settings
           </button>
           <button
             class="tab"
             class:active={activeTab === 'stats'}
-            on:click={() => activeTab = 'stats'}
+            on:click={() => (activeTab = 'stats')}
           >
             Stats
           </button>
@@ -251,374 +272,397 @@
 
         <!-- Categories Tab -->
         {#if activeTab === 'categories'}
-        <section class="section">
-          <h2 class="section-title">Trigger Warning Categories</h2>
-          <p class="section-description">
-            Select which trigger warnings you want to see. Click on any category to enable or disable it.
-          </p>
+          <section class="section">
+            <h2 class="section-title">Trigger Warning Categories</h2>
+            <p class="section-description">
+              Select which trigger warnings you want to see. Click on any category to enable or
+              disable it.
+            </p>
 
-          <div class="categories-grid">
-            {#each CATEGORY_KEYS as categoryKey}
-              {@const category = TRIGGER_CATEGORIES[categoryKey]}
-              {@const enabled = isCategoryEnabled(categoryKey)}
-              <button
-                class="category-card"
-                class:enabled
-                on:click={() => toggleCategory(categoryKey)}
-              >
-                <div class="category-icon">{category.icon}</div>
-                <div class="category-info">
-                  <div class="category-name">{category.name}</div>
-                  <div class="category-severity severity-{category.severity}">
-                    {category.severity}
+            <div class="categories-grid">
+              {#each CATEGORY_KEYS as categoryKey}
+                {@const category = TRIGGER_CATEGORIES[categoryKey]}
+                {@const enabled = isCategoryEnabled(categoryKey)}
+                <button
+                  class="category-card"
+                  class:enabled
+                  on:click={() => toggleCategory(categoryKey)}
+                >
+                  <div class="category-icon">{category.icon}</div>
+                  <div class="category-info">
+                    <div class="category-name">{category.name}</div>
+                    <div class="category-severity severity-{category.severity}">
+                      {category.severity}
+                    </div>
                   </div>
-                </div>
-                <div class="category-toggle">
-                  {#if enabled}
-                    ✓
-                  {/if}
-                </div>
-              </button>
-            {/each}
-          </div>
+                  <div class="category-toggle">
+                    {#if enabled}
+                      ✓
+                    {/if}
+                  </div>
+                </button>
+              {/each}
+            </div>
 
-          <!-- Info -->
-          <div class="info-box" style="margin-top: 32px;">
-            <h3>How It Works</h3>
-            <ul>
-              <li>Enable the categories you want to be warned about</li>
-              <li>Warnings will appear when watching content on supported platforms</li>
-              <li>You can vote on warning accuracy to improve the community database</li>
-              <li>Create multiple profiles for different viewing situations</li>
-            </ul>
-          </div>
-        </section>
+            <!-- Info -->
+            <div class="info-box" style="margin-top: 32px;">
+              <h3>How It Works</h3>
+              <ul>
+                <li>Enable the categories you want to be warned about</li>
+                <li>Warnings will appear when watching content on supported platforms</li>
+                <li>You can vote on warning accuracy to improve the community database</li>
+                <li>Create multiple profiles for different viewing situations</li>
+              </ul>
+            </div>
+          </section>
         {/if}
 
         <!-- Settings Tab -->
         {#if activeTab === 'settings'}
-        <section class="section">
-          <h2 class="section-title">Banner Appearance</h2>
+          <section class="section">
+            <h2 class="section-title">Banner Appearance</h2>
 
-          <!-- Position -->
-          <div class="setting-group">
-            <div class="setting-label" role="heading" aria-level="3">Banner Position</div>
-            <div class="position-grid" role="group" aria-label="Banner Position">
-              <button
-                class="position-btn"
-                class:active={activeProfile.display.position === 'top-left'}
-                on:click={() => updateDisplay('position', 'top-left')}
-              >
-                <div class="position-preview top-left"></div>
-                Top Left
-              </button>
-              <button
-                class="position-btn"
-                class:active={activeProfile.display.position === 'top-right'}
-                on:click={() => updateDisplay('position', 'top-right')}
-              >
-                <div class="position-preview top-right"></div>
-                Top Right
-              </button>
-              <button
-                class="position-btn"
-                class:active={activeProfile.display.position === 'bottom-left'}
-                on:click={() => updateDisplay('position', 'bottom-left')}
-              >
-                <div class="position-preview bottom-left"></div>
-                Bottom Left
-              </button>
-              <button
-                class="position-btn"
-                class:active={activeProfile.display.position === 'bottom-right'}
-                on:click={() => updateDisplay('position', 'bottom-right')}
-              >
-                <div class="position-preview bottom-right"></div>
-                Bottom Right
-              </button>
-            </div>
-          </div>
-
-          <!-- Font Size -->
-          <div class="setting-group">
-            <div class="setting-label" role="heading" aria-level="3">
-              Font Size: {activeProfile.display.fontSize}px
-            </div>
-            <input
-              type="range"
-              min="12"
-              max="24"
-              value={activeProfile.display.fontSize}
-              on:input={(e) => updateDisplay('fontSize', Number(e.currentTarget.value))}
-              class="slider"
-            />
-          </div>
-
-          <!-- Transparency -->
-          <div class="setting-group">
-            <div class="setting-label" role="heading" aria-level="3">
-              Transparency: {activeProfile.display.transparency}%
-            </div>
-            <input
-              type="range"
-              min="0"
-              max="100"
-              value={activeProfile.display.transparency}
-              on:input={(e) => updateDisplay('transparency', Number(e.currentTarget.value))}
-              class="slider"
-            />
-          </div>
-
-          <!-- Spoiler-Free Mode -->
-          <div class="setting-group">
-            <label class="setting-checkbox">
-              <input
-                type="checkbox"
-                checked={activeProfile.display.spoilerFreeMode}
-                on:change={(e) => updateDisplay('spoilerFreeMode', e.currentTarget.checked)}
-              />
-              <span>Spoiler-Free Mode (hide specific timing details)</span>
-            </label>
-          </div>
-
-          <h2 class="section-title" style="margin-top: 48px;">Behavior Settings</h2>
-
-          <!-- Lead Time -->
-          <div class="setting-group">
-            <div class="setting-label" role="heading" aria-level="3">
-              Warning Lead Time: {activeProfile.leadTime} seconds
-            </div>
-            <p class="setting-hint">How early before the trigger to show the warning</p>
-            <input
-              type="range"
-              min="5"
-              max="60"
-              value={activeProfile.leadTime}
-              on:input={(e) => updateLeadTime(Number(e.currentTarget.value))}
-              class="slider"
-            />
-          </div>
-
-          <!-- Sound -->
-          <div class="setting-group">
-            <label class="setting-checkbox">
-              <input
-                type="checkbox"
-                checked={activeProfile.soundEnabled}
-                on:change={toggleSound}
-              />
-              <span>Sound Alerts</span>
-            </label>
-          </div>
-
-          <!-- Theme -->
-          <div class="setting-group">
-            <div class="setting-label" role="heading" aria-level="3">Theme</div>
-            <div class="theme-selector" role="group" aria-label="Theme Selection">
-              <button
-                class="theme-btn"
-                class:active={activeProfile.theme === 'light'}
-                on:click={() => updateTheme('light')}
-              >
-                ☀️ Light
-              </button>
-              <button
-                class="theme-btn"
-                class:active={activeProfile.theme === 'dark'}
-                on:click={() => updateTheme('dark')}
-              >
-                🌙 Dark
-              </button>
-              <button
-                class="theme-btn"
-                class:active={activeProfile.theme === 'system'}
-                on:click={() => updateTheme('system')}
-              >
-                💻 System
-              </button>
-            </div>
-          </div>
-
-          <h2 class="section-title" style="margin-top: 48px;">🎨 Overlay Customization</h2>
-          <p class="section-description">
-            Customize the "TW" overlay button appearance and behavior
-          </p>
-
-          <!-- Overlay Button Color -->
-          <div class="setting-group">
-            <div class="setting-label" role="heading" aria-level="3">Button Color</div>
-            <input
-              type="color"
-              value={activeProfile.display.overlaySettings?.buttonColor || '#8b5cf6'}
-              on:change={(e) => updateDisplay('overlaySettings', {
-                ...(activeProfile.display.overlaySettings || {}),
-                buttonColor: e.currentTarget.value
-              })}
-              class="color-picker"
-            />
-          </div>
-
-          <!-- Overlay Opacity -->
-          <div class="setting-group">
-            <div class="setting-label" role="heading" aria-level="3">
-              Overlay Opacity: {Math.round((activeProfile.display.overlaySettings?.buttonOpacity || 0.45) * 100)}%
-            </div>
-            <input
-              type="range"
-              min="0.1"
-              max="1"
-              step="0.05"
-              value={activeProfile.display.overlaySettings?.buttonOpacity || 0.45}
-              on:input={(e) => updateDisplay('overlaySettings', {
-                ...(activeProfile.display.overlaySettings || {}),
-                buttonOpacity: Number(e.currentTarget.value)
-              })}
-              class="slider"
-            />
-          </div>
-
-          <h2 class="section-title" style="margin-top: 48px;">🤝 Helper Mode</h2>
-          <p class="section-description">
-            Enable Helper Mode to help improve warning accuracy for the entire community. When enabled, you'll see "Confirm" and "Wrong" buttons on active warnings, allowing you to vote on their accuracy.
-          </p>
-
-          <!-- Helper Mode Toggle -->
-          <div class="setting-group">
-            <button
-              class="helper-mode-toggle"
-              class:active={activeProfile.helperMode}
-              on:click={() => updateHelperMode(!activeProfile.helperMode)}
-            >
-              <div class="helper-mode-content">
-                <div class="helper-mode-header">
-                  <span class="helper-mode-icon">{activeProfile.helperMode ? '✅' : '⬜'}</span>
-                  <span class="helper-mode-label">Helper Mode</span>
-                  <span class="helper-mode-status">{activeProfile.helperMode ? 'Enabled' : 'Disabled'}</span>
-                </div>
-                <div class="helper-mode-description">
-                  {#if activeProfile.helperMode}
-                    <span class="helper-mode-desc-text">You're helping build a safer community! Vote on warnings to improve accuracy.</span>
-                  {:else}
-                    <span class="helper-mode-desc-text">Enable to show voting buttons on warnings and contribute to the community database.</span>
-                  {/if}
-                </div>
+            <!-- Position -->
+            <div class="setting-group">
+              <div class="setting-label" role="heading" aria-level="3">Banner Position</div>
+              <div class="position-grid" role="group" aria-label="Banner Position">
+                <button
+                  class="position-btn"
+                  class:active={activeProfile.display.position === 'top-left'}
+                  on:click={() => updateDisplay('position', 'top-left')}
+                >
+                  <div class="position-preview top-left"></div>
+                  Top Left
+                </button>
+                <button
+                  class="position-btn"
+                  class:active={activeProfile.display.position === 'top-right'}
+                  on:click={() => updateDisplay('position', 'top-right')}
+                >
+                  <div class="position-preview top-right"></div>
+                  Top Right
+                </button>
+                <button
+                  class="position-btn"
+                  class:active={activeProfile.display.position === 'bottom-left'}
+                  on:click={() => updateDisplay('position', 'bottom-left')}
+                >
+                  <div class="position-preview bottom-left"></div>
+                  Bottom Left
+                </button>
+                <button
+                  class="position-btn"
+                  class:active={activeProfile.display.position === 'bottom-right'}
+                  on:click={() => updateDisplay('position', 'bottom-right')}
+                >
+                  <div class="position-preview bottom-right"></div>
+                  Bottom Right
+                </button>
               </div>
-            </button>
-          </div>
-
-          <div class="info-box" style="margin-top: 16px;">
-            <strong>How it works:</strong> When Helper Mode is enabled, active warnings will show "Confirm ✓" and "Wrong ✕" buttons. Your votes help verify warning accuracy and improve the experience for all users. High-quality voters gain reputation, making their votes more impactful.
-          </div>
-
-          <h2 class="section-title" style="margin-top: 48px;">🛡️ Protection Settings</h2>
-          <p class="section-description">
-            Choose what happens during active trigger warnings (after the lead time has passed)
-          </p>
-
-          <!-- Default Protection -->
-          <div class="setting-group">
-            <div class="setting-label" role="heading" aria-level="3">Default Protection</div>
-            <p class="setting-hint">This will apply to all triggers unless you set a category-specific override below</p>
-            <div class="protection-selector" role="group" aria-label="Default Protection Mode">
-              <button
-                class="protection-btn"
-                class:active={activeProfile.defaultProtection === 'none'}
-                on:click={() => updateDefaultProtection('none')}
-              >
-                <div class="protection-icon">👁️</div>
-                <div class="protection-info">
-                  <div class="protection-name">None</div>
-                  <div class="protection-desc">Show warning banner only</div>
-                </div>
-              </button>
-              <button
-                class="protection-btn"
-                class:active={activeProfile.defaultProtection === 'blackout'}
-                on:click={() => updateDefaultProtection('blackout')}
-              >
-                <div class="protection-icon">⬛</div>
-                <div class="protection-info">
-                  <div class="protection-name">Blackout</div>
-                  <div class="protection-desc">Hide video content</div>
-                </div>
-              </button>
-              <button
-                class="protection-btn"
-                class:active={activeProfile.defaultProtection === 'mute'}
-                on:click={() => updateDefaultProtection('mute')}
-              >
-                <div class="protection-icon">🔇</div>
-                <div class="protection-info">
-                  <div class="protection-name">Mute</div>
-                  <div class="protection-desc">Mute audio only</div>
-                </div>
-              </button>
-              <button
-                class="protection-btn"
-                class:active={activeProfile.defaultProtection === 'both'}
-                on:click={() => updateDefaultProtection('both')}
-              >
-                <div class="protection-icon">🛡️</div>
-                <div class="protection-info">
-                  <div class="protection-name">Both</div>
-                  <div class="protection-desc">Blackout + mute</div>
-                </div>
-              </button>
             </div>
-          </div>
 
-          <!-- Category-Specific Protections -->
-          <details class="advanced-section" style="margin-top: 24px;">
-            <summary class="advanced-summary">
-              <span class="advanced-title">⚙️ Per-Category Overrides</span>
-              <span class="advanced-hint">(Optional)</span>
-            </summary>
-            <div class="advanced-content">
-              <p class="section-description">
-                Set different protection levels for specific categories. Leave as "Use Default" to use the default protection setting above.
-              </p>
-              <div class="category-protections">
-                {#each CATEGORY_KEYS as categoryKey}
-                  {@const category = TRIGGER_CATEGORIES[categoryKey]}
-                  {@const enabled = isCategoryEnabled(categoryKey)}
-                  {#if enabled}
-                    {@const currentProtection = activeProfile.categoryProtections?.[categoryKey] || null}
-                    <div class="category-protection-item">
-                      <div class="category-protection-header">
-                        <span class="category-protection-icon">{category.icon}</span>
-                        <span class="category-protection-name">{category.name}</span>
-                      </div>
-                      <select
-                        class="protection-select"
-                        value={currentProtection || 'default'}
-                        on:change={(e) => {
-                          const value = e.currentTarget.value;
-                          updateCategoryProtection(categoryKey, value === 'default' ? null : value);
-                        }}
+            <!-- Font Size -->
+            <div class="setting-group">
+              <div class="setting-label" role="heading" aria-level="3">
+                Font Size: {activeProfile.display.fontSize}px
+              </div>
+              <input
+                type="range"
+                min="12"
+                max="24"
+                value={activeProfile.display.fontSize}
+                on:input={(e) => updateDisplay('fontSize', Number(e.currentTarget.value))}
+                class="slider"
+              />
+            </div>
+
+            <!-- Transparency -->
+            <div class="setting-group">
+              <div class="setting-label" role="heading" aria-level="3">
+                Transparency: {activeProfile.display.transparency}%
+              </div>
+              <input
+                type="range"
+                min="0"
+                max="100"
+                value={activeProfile.display.transparency}
+                on:input={(e) => updateDisplay('transparency', Number(e.currentTarget.value))}
+                class="slider"
+              />
+            </div>
+
+            <!-- Spoiler-Free Mode -->
+            <div class="setting-group">
+              <label class="setting-checkbox">
+                <input
+                  type="checkbox"
+                  checked={activeProfile.display.spoilerFreeMode}
+                  on:change={(e) => updateDisplay('spoilerFreeMode', e.currentTarget.checked)}
+                />
+                <span>Spoiler-Free Mode (hide specific timing details)</span>
+              </label>
+            </div>
+
+            <h2 class="section-title" style="margin-top: 48px;">Behavior Settings</h2>
+
+            <!-- Lead Time -->
+            <div class="setting-group">
+              <div class="setting-label" role="heading" aria-level="3">
+                Warning Lead Time: {activeProfile.leadTime} seconds
+              </div>
+              <p class="setting-hint">How early before the trigger to show the warning</p>
+              <input
+                type="range"
+                min="5"
+                max="60"
+                value={activeProfile.leadTime}
+                on:input={(e) => updateLeadTime(Number(e.currentTarget.value))}
+                class="slider"
+              />
+            </div>
+
+            <!-- Sound -->
+            <div class="setting-group">
+              <label class="setting-checkbox">
+                <input
+                  type="checkbox"
+                  checked={activeProfile.soundEnabled}
+                  on:change={toggleSound}
+                />
+                <span>Sound Alerts</span>
+              </label>
+            </div>
+
+            <!-- Theme -->
+            <div class="setting-group">
+              <div class="setting-label" role="heading" aria-level="3">Theme</div>
+              <div class="theme-selector" role="group" aria-label="Theme Selection">
+                <button
+                  class="theme-btn"
+                  class:active={activeProfile.theme === 'light'}
+                  on:click={() => updateTheme('light')}
+                >
+                  ☀️ Light
+                </button>
+                <button
+                  class="theme-btn"
+                  class:active={activeProfile.theme === 'dark'}
+                  on:click={() => updateTheme('dark')}
+                >
+                  🌙 Dark
+                </button>
+                <button
+                  class="theme-btn"
+                  class:active={activeProfile.theme === 'system'}
+                  on:click={() => updateTheme('system')}
+                >
+                  💻 System
+                </button>
+              </div>
+            </div>
+
+            <h2 class="section-title" style="margin-top: 48px;">🎨 Overlay Customization</h2>
+            <p class="section-description">
+              Customize the "TW" overlay button appearance and behavior
+            </p>
+
+            <!-- Overlay Button Color -->
+            <div class="setting-group">
+              <div class="setting-label" role="heading" aria-level="3">Button Color</div>
+              <input
+                type="color"
+                value={activeProfile.display.overlaySettings?.buttonColor || '#8b5cf6'}
+                on:change={(e) =>
+                  updateDisplay('overlaySettings', {
+                    ...(activeProfile.display.overlaySettings || {}),
+                    buttonColor: e.currentTarget.value,
+                  })}
+                class="color-picker"
+              />
+            </div>
+
+            <!-- Overlay Opacity -->
+            <div class="setting-group">
+              <div class="setting-label" role="heading" aria-level="3">
+                Overlay Opacity: {Math.round(
+                  (activeProfile.display.overlaySettings?.buttonOpacity || 0.45) * 100
+                )}%
+              </div>
+              <input
+                type="range"
+                min="0.1"
+                max="1"
+                step="0.05"
+                value={activeProfile.display.overlaySettings?.buttonOpacity || 0.45}
+                on:input={(e) =>
+                  updateDisplay('overlaySettings', {
+                    ...(activeProfile.display.overlaySettings || {}),
+                    buttonOpacity: Number(e.currentTarget.value),
+                  })}
+                class="slider"
+              />
+            </div>
+
+            <h2 class="section-title" style="margin-top: 48px;">🤝 Helper Mode</h2>
+            <p class="section-description">
+              Enable Helper Mode to help improve warning accuracy for the entire community. When
+              enabled, you'll see "Confirm" and "Wrong" buttons on active warnings, allowing you to
+              vote on their accuracy.
+            </p>
+
+            <!-- Helper Mode Toggle -->
+            <div class="setting-group">
+              <button
+                class="helper-mode-toggle"
+                class:active={activeProfile.helperMode}
+                on:click={() => updateHelperMode(!activeProfile.helperMode)}
+              >
+                <div class="helper-mode-content">
+                  <div class="helper-mode-header">
+                    <span class="helper-mode-icon">{activeProfile.helperMode ? '✅' : '⬜'}</span>
+                    <span class="helper-mode-label">Helper Mode</span>
+                    <span class="helper-mode-status"
+                      >{activeProfile.helperMode ? 'Enabled' : 'Disabled'}</span
+                    >
+                  </div>
+                  <div class="helper-mode-description">
+                    {#if activeProfile.helperMode}
+                      <span class="helper-mode-desc-text"
+                        >You're helping build a safer community! Vote on warnings to improve
+                        accuracy.</span
                       >
-                        <option value="default">Use Default</option>
-                        <option value="none">None (Warning only)</option>
-                        <option value="blackout">Blackout</option>
-                        <option value="mute">Mute</option>
-                        <option value="both">Both</option>
-                      </select>
-                    </div>
-                  {/if}
-                {/each}
+                    {:else}
+                      <span class="helper-mode-desc-text"
+                        >Enable to show voting buttons on warnings and contribute to the community
+                        database.</span
+                      >
+                    {/if}
+                  </div>
+                </div>
+              </button>
+            </div>
+
+            <div class="info-box" style="margin-top: 16px;">
+              <strong>How it works:</strong> When Helper Mode is enabled, active warnings will show "Confirm
+              ✓" and "Wrong ✕" buttons. Your votes help verify warning accuracy and improve the experience
+              for all users. High-quality voters gain reputation, making their votes more impactful.
+            </div>
+
+            <h2 class="section-title" style="margin-top: 48px;">🛡️ Protection Settings</h2>
+            <p class="section-description">
+              Choose what happens during active trigger warnings (after the lead time has passed)
+            </p>
+
+            <!-- Default Protection -->
+            <div class="setting-group">
+              <div class="setting-label" role="heading" aria-level="3">Default Protection</div>
+              <p class="setting-hint">
+                This will apply to all triggers unless you set a category-specific override below
+              </p>
+              <div class="protection-selector" role="group" aria-label="Default Protection Mode">
+                <button
+                  class="protection-btn"
+                  class:active={activeProfile.defaultProtection === 'none'}
+                  on:click={() => updateDefaultProtection('none')}
+                >
+                  <div class="protection-icon">👁️</div>
+                  <div class="protection-info">
+                    <div class="protection-name">None</div>
+                    <div class="protection-desc">Show warning banner only</div>
+                  </div>
+                </button>
+                <button
+                  class="protection-btn"
+                  class:active={activeProfile.defaultProtection === 'blackout'}
+                  on:click={() => updateDefaultProtection('blackout')}
+                >
+                  <div class="protection-icon">⬛</div>
+                  <div class="protection-info">
+                    <div class="protection-name">Blackout</div>
+                    <div class="protection-desc">Hide video content</div>
+                  </div>
+                </button>
+                <button
+                  class="protection-btn"
+                  class:active={activeProfile.defaultProtection === 'mute'}
+                  on:click={() => updateDefaultProtection('mute')}
+                >
+                  <div class="protection-icon">🔇</div>
+                  <div class="protection-info">
+                    <div class="protection-name">Mute</div>
+                    <div class="protection-desc">Mute audio only</div>
+                  </div>
+                </button>
+                <button
+                  class="protection-btn"
+                  class:active={activeProfile.defaultProtection === 'both'}
+                  on:click={() => updateDefaultProtection('both')}
+                >
+                  <div class="protection-icon">🛡️</div>
+                  <div class="protection-info">
+                    <div class="protection-name">Both</div>
+                    <div class="protection-desc">Blackout + mute</div>
+                  </div>
+                </button>
               </div>
             </div>
-          </details>
-        </section>
+
+            <!-- Category-Specific Protections -->
+            <details class="advanced-section" style="margin-top: 24px;">
+              <summary class="advanced-summary">
+                <span class="advanced-title">⚙️ Per-Category Overrides</span>
+                <span class="advanced-hint">(Optional)</span>
+              </summary>
+              <div class="advanced-content">
+                <p class="section-description">
+                  Set different protection levels for specific categories. Leave as "Use Default" to
+                  use the default protection setting above.
+                </p>
+                <div class="category-protections">
+                  {#each CATEGORY_KEYS as categoryKey}
+                    {@const category = TRIGGER_CATEGORIES[categoryKey]}
+                    {@const enabled = isCategoryEnabled(categoryKey)}
+                    {#if enabled}
+                      {@const currentProtection =
+                        activeProfile.categoryProtections?.[categoryKey] || null}
+                      <div class="category-protection-item">
+                        <div class="category-protection-header">
+                          <span class="category-protection-icon">{category.icon}</span>
+                          <span class="category-protection-name">{category.name}</span>
+                        </div>
+                        <select
+                          class="protection-select"
+                          value={currentProtection || 'default'}
+                          on:change={(e) => {
+                            const value = e.currentTarget.value;
+                            updateCategoryProtection(
+                              categoryKey,
+                              value === 'default' ? null : value
+                            );
+                          }}
+                        >
+                          <option value="default">Use Default</option>
+                          <option value="none">None (Warning only)</option>
+                          <option value="blackout">Blackout</option>
+                          <option value="mute">Mute</option>
+                          <option value="both">Both</option>
+                        </select>
+                      </div>
+                    {/if}
+                  {/each}
+                </div>
+              </div>
+            </details>
+          </section>
         {/if}
 
         <!-- Stats Tab -->
         {#if activeTab === 'stats'}
-        <section class="section">
-          <h2 class="section-title">Community Statistics</h2>
-          <Stats />
-        </section>
+          <section class="section">
+            <h2 class="section-title">Community Statistics</h2>
+            <Stats />
+          </section>
         {/if}
-
       </div>
     {:else}
       <div class="error">Failed to load settings</div>
@@ -632,7 +676,8 @@
   .options {
     min-height: 100vh;
     background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    font-family:
+      -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
   }
 
   .options-header {
@@ -687,7 +732,8 @@
   }
 
   @keyframes iconBounce {
-    0%, 100% {
+    0%,
+    100% {
       transform: translateY(0);
     }
     50% {
@@ -780,7 +826,11 @@
 
   .profile-btn.active {
     border-color: #667eea;
-    background: linear-gradient(135deg, rgba(102, 126, 234, 0.12) 0%, rgba(118, 75, 162, 0.12) 100%);
+    background: linear-gradient(
+      135deg,
+      rgba(102, 126, 234, 0.12) 0%,
+      rgba(118, 75, 162, 0.12) 100%
+    );
     box-shadow: 0 4px 16px rgba(102, 126, 234, 0.25);
   }
 
@@ -841,7 +891,11 @@
   .category-card.enabled {
     border-color: #667eea;
     border-width: 3px;
-    background: linear-gradient(135deg, rgba(102, 126, 234, 0.15) 0%, rgba(118, 75, 162, 0.15) 100%);
+    background: linear-gradient(
+      135deg,
+      rgba(102, 126, 234, 0.15) 0%,
+      rgba(118, 75, 162, 0.15) 100%
+    );
     box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
     transform: translateY(-2px);
     animation: enablePulse 0.3s ease-out;
@@ -1120,7 +1174,7 @@
     border-color: #667eea;
   }
 
-  .setting-checkbox input[type="checkbox"] {
+  .setting-checkbox input[type='checkbox'] {
     width: 20px;
     height: 20px;
     cursor: pointer;
@@ -1133,12 +1187,12 @@
     transition: all 0.2s;
   }
 
-  .setting-checkbox input[type="checkbox"]:checked {
+  .setting-checkbox input[type='checkbox']:checked {
     background: #667eea;
     border-color: #667eea;
   }
 
-  .setting-checkbox input[type="checkbox"]:checked::after {
+  .setting-checkbox input[type='checkbox']:checked::after {
     content: '✓';
     position: absolute;
     top: 50%;
@@ -1149,11 +1203,11 @@
     font-weight: bold;
   }
 
-  .setting-checkbox input[type="checkbox"]:hover {
+  .setting-checkbox input[type='checkbox']:hover {
     border-color: #667eea;
   }
 
-  .setting-checkbox input[type="checkbox"]:focus {
+  .setting-checkbox input[type='checkbox']:focus {
     outline: none;
     box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
   }

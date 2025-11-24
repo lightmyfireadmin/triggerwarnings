@@ -14,7 +14,12 @@ export class StorageAdapter {
    */
   static async get<K extends StorageKey>(key: K): Promise<StorageSchema[K] | null> {
     try {
-      const result = await browser.storage.sync.get(key);
+      // Add timeout to storage call
+      const timeout = new Promise((_, reject) =>
+        setTimeout(() => reject(new Error('Storage timeout')), 2000)
+      );
+      const result = (await Promise.race([browser.storage.sync.get(key), timeout])) as any;
+
       return result[key] ?? null;
     } catch (error) {
       console.error(`[TW Storage] Error getting ${key}:`, error);
@@ -64,9 +69,7 @@ export class StorageAdapter {
   /**
    * Get multiple values from storage
    */
-  static async getMultiple<K extends StorageKey>(
-    keys: K[]
-  ): Promise<Partial<StorageSchema>> {
+  static async getMultiple<K extends StorageKey>(keys: K[]): Promise<Partial<StorageSchema>> {
     try {
       const result = await browser.storage.sync.get(keys);
       return result as Partial<StorageSchema>;

@@ -23,31 +23,109 @@
     await checkCurrentVideo();
   });
 
+  // Helper to timeout promises
+  const timeout = (ms: number) =>
+    new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), ms));
+
   async function loadData() {
+    console.log('Popup: loadData started');
+
+    // Failsafe: Force loading to false after 5 seconds
+    const failsafeTimer = setTimeout(() => {
+      if (loading) {
+        console.warn('Popup: Load timeout failsafe triggered');
+        loading = false;
+        // Ensure we have a default profile if everything failed
+        if (!activeProfile) {
+          activeProfile = {
+            id: 'default',
+            name: 'Default Profile',
+            isDefault: true,
+            enabledCategories: [],
+            categoryActions: {},
+            display: {
+              position: 'top-right',
+              fontSize: 16,
+              transparency: 85,
+              spoilerFreeMode: false,
+              theme: 'dark',
+              overlaySettings: {
+                buttonColor: '#8b5cf6',
+                buttonOpacity: 0.45,
+                appearingMode: 'always',
+                fadeOutDelay: 3000,
+              },
+            },
+            leadTime: 15,
+            soundEnabled: false,
+            autoHideTime: 10,
+            createdAt: new Date(),
+            updatedAt: new Date(),
+          };
+        }
+      }
+    }, 5000);
+
     try {
       loading = true;
 
-      // Get active profile
-      const activeResponse = await browser.runtime.sendMessage({
-        type: 'GET_ACTIVE_PROFILE',
-      });
+      // Get active profile with timeout
+      console.log('Popup: requesting active profile');
+      const activeResponse = (await Promise.race([
+        browser.runtime.sendMessage({ type: 'GET_ACTIVE_PROFILE' }),
+        timeout(2000), // Increased to 2s
+      ])) as any;
+      console.log('Popup: active profile response', activeResponse);
 
-      if (activeResponse.success) {
+      if (activeResponse && activeResponse.success) {
         activeProfile = activeResponse.data;
       }
 
-      // Get all profiles
-      const profilesResponse = await browser.runtime.sendMessage({
-        type: 'GET_ALL_PROFILES',
-      });
+      // Get all profiles with timeout
+      console.log('Popup: requesting all profiles');
+      const profilesResponse = (await Promise.race([
+        browser.runtime.sendMessage({ type: 'GET_ALL_PROFILES' }),
+        timeout(2000), // Increased to 2s
+      ])) as any;
+      console.log('Popup: all profiles response', profilesResponse);
 
-      if (profilesResponse.success) {
+      if (profilesResponse && profilesResponse.success) {
         allProfiles = profilesResponse.data;
       }
     } catch (error) {
       console.error('Error loading data:', error);
+      // Fallback to defaults so UI shows up
+      if (!activeProfile) {
+        activeProfile = {
+          id: 'default',
+          name: 'Default Profile',
+          isDefault: true,
+          enabledCategories: [],
+          categoryActions: {},
+          display: {
+            position: 'top-right',
+            fontSize: 16,
+            transparency: 85,
+            spoilerFreeMode: false,
+            theme: 'dark',
+            overlaySettings: {
+              buttonColor: '#8b5cf6',
+              buttonOpacity: 0.45,
+              appearingMode: 'always',
+              fadeOutDelay: 3000,
+            },
+          },
+          leadTime: 15,
+          soundEnabled: false,
+          autoHideTime: 10,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        };
+      }
     } finally {
+      clearTimeout(failsafeTimer);
       loading = false;
+      console.log('Popup: loadData finished, loading =', loading);
     }
   }
 
@@ -242,11 +320,19 @@
             </span>
           </div>
           <div class="profile-actions">
-            <button class="btn-icon-small" on:click={() => openRenameProfile(activeProfile)} title="Rename profile">
+            <button
+              class="btn-icon-small"
+              on:click={() => openRenameProfile(activeProfile)}
+              title="Rename profile"
+            >
               ✏️
             </button>
             {#if allProfiles.length > 1}
-              <button class="btn-icon-small" on:click={() => openDeleteProfile(activeProfile)} title="Delete profile">
+              <button
+                class="btn-icon-small"
+                on:click={() => openDeleteProfile(activeProfile)}
+                title="Delete profile"
+              >
                 🗑️
               </button>
             {/if}
@@ -261,10 +347,7 @@
           <div class="profile-list">
             {#each allProfiles as profile}
               {#if profile.id !== activeProfile.id}
-                <button
-                  class="profile-card"
-                  on:click={() => switchProfile(profile.id)}
-                >
+                <button class="profile-card" on:click={() => switchProfile(profile.id)}>
                   <div class="profile-info">
                     <span class="profile-name">{profile.name}</span>
                     <span class="profile-stats">
@@ -295,7 +378,9 @@
       <!-- Info -->
       <footer class="popup-footer">
         <p class="popup-info">
-          Extension is active and monitoring for trigger warnings on {currentVideoId ? 'this video' : 'supported platforms'}.
+          Extension is active and monitoring for trigger warnings on {currentVideoId
+            ? 'this video'
+            : 'supported platforms'}.
         </p>
       </footer>
     </div>
@@ -316,11 +401,7 @@
     >
       <!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
       <div class="modal-content" role="document" on:click|stopPropagation>
-        <SubmitWarning
-          onClose={closeSubmitForm}
-          videoId={currentVideoId}
-          currentTime={currentTime}
-        />
+        <SubmitWarning onClose={closeSubmitForm} videoId={currentVideoId} {currentTime} />
       </div>
     </div>
   {/if}
@@ -364,7 +445,7 @@
           onClose={closeRenameProfile}
           onSuccess={handleProfileChange}
           profile={profileToEdit}
-          allProfiles={allProfiles}
+          {allProfiles}
         />
       </div>
     </div>
@@ -398,7 +479,8 @@
     width: 320px;
     max-height: 600px;
     overflow-y: auto;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    font-family:
+      -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
     background: #f8f9fa;
   }
 
@@ -600,8 +682,12 @@
   }
 
   @keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
   }
 
   .modal-content {

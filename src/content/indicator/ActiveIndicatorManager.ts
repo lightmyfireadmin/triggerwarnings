@@ -33,31 +33,54 @@ export class ActiveIndicatorManager {
     // Extract overlay customization from profile (with fallback defaults)
     const overlaySettings = profile.display?.overlaySettings || {};
     const buttonColor = overlaySettings.buttonColor || '#8b5cf6';
-    const buttonOpacity = overlaySettings.buttonOpacity !== undefined ? overlaySettings.buttonOpacity : 0.45;
+    const buttonOpacity =
+      overlaySettings.buttonOpacity !== undefined ? overlaySettings.buttonOpacity : 0.45;
     const appearingMode = overlaySettings.appearingMode || 'always';
     const fadeOutDelay = overlaySettings.fadeOutDelay || 3000;
 
-    logger.info('Overlay customization:', { buttonColor, buttonOpacity, appearingMode, fadeOutDelay });
+    logger.info('Overlay customization:', {
+      buttonColor,
+      buttonOpacity,
+      appearingMode,
+      fadeOutDelay,
+    });
 
     // Create container for indicator
     this.container = createContainer('tw-indicator-container', 'tw-indicator-root');
 
     // Inject into DOM
-    const injectionPoint = this.provider.getInjectionPoint();
-    injectContainer(this.container, injectionPoint || undefined);
+    try {
+      const injectionPoint = this.provider.getInjectionPoint();
+      logger.info(
+        'Injection point lookup result:',
+        injectionPoint ? injectionPoint.tagName : 'null'
+      );
 
-    // Mount Svelte component with customization
-    this.indicatorComponent = new ActiveIndicator({
-      target: this.container,
-      props: {
-        onQuickAdd: () => this.handleQuickAdd(),
-        activeWarnings: this.activeWarnings,
-        buttonColor,
-        buttonOpacity,
-        appearingMode,
-        fadeOutDelay,
-      },
-    });
+      if (injectionPoint) {
+        logger.info('Injection point found:', injectionPoint.tagName, injectionPoint.className);
+        injectContainer(this.container, injectionPoint);
+        logger.info('Container injected into DOM');
+      } else {
+        logger.error('Failed to find injection point for overlay');
+      }
+
+      // Mount Svelte component with customization
+      logger.info('Mounting Svelte component...');
+      this.indicatorComponent = new ActiveIndicator({
+        target: this.container,
+        props: {
+          onQuickAdd: () => this.handleQuickAdd(),
+          activeWarnings: this.activeWarnings || [],
+          buttonColor: buttonColor || '#8b5cf6',
+          buttonOpacity: buttonOpacity !== undefined ? buttonOpacity : 0.45,
+          appearingMode: appearingMode || 'always',
+          fadeOutDelay: fadeOutDelay || 3000,
+        },
+      });
+      logger.info('Svelte component mounted successfully');
+    } catch (error) {
+      logger.error('Error initializing indicator:', error);
+    }
 
     logger.info('Active indicator initialized with custom settings');
   }

@@ -58,9 +58,13 @@ function generateManifest() {
     }
 
     // 5. Convert CSP
-    if (manifestResult.content_security_policy && manifestResult.content_security_policy.extension_pages) {
+    if (
+      manifestResult.content_security_policy &&
+      manifestResult.content_security_policy.extension_pages
+    ) {
       // Use the extension_pages CSP as the main CSP for MV2
-      manifestResult.content_security_policy = manifestResult.content_security_policy.extension_pages;
+      manifestResult.content_security_policy =
+        manifestResult.content_security_policy.extension_pages;
     }
 
     // 6. Firefox specific settings
@@ -76,6 +80,7 @@ function generateManifest() {
 }
 
 export default defineConfig({
+  base: './',
   plugins: [
     svelte(),
     webExtension({

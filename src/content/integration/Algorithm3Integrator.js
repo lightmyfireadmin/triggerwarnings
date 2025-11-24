@@ -402,7 +402,7 @@ export class Algorithm3Integrator {
             `Modalities=${validationResult.modalitiesPresent}, ` +
             `Confidence=${validationResult.originalConfidence.toFixed(1)}% → ${validationResult.adjustedConfidence.toFixed(1)}%`);
         // STEP 5: Apply user personalization (Innovation #30)
-        const personalizedResult = personalizedDetector.shouldWarn(detection.category,
+        const personalizedResult = personalizedDetector.shouldWarn(detection.category, 
         // Use a context object instead of just context string if required by updated signature
         undefined // Context is optional
         );

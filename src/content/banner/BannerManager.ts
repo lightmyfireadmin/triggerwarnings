@@ -56,12 +56,13 @@ export class BannerManager {
         warnings: [],
         onIgnoreThisTime: (warningId: string) => this.handleIgnoreThisTime(warningId),
         onIgnoreForVideo: (categoryKey: string) => this.handleIgnoreForVideo(categoryKey),
-        onVote: (warningId: string, voteType: 'up' | 'down') => this.handleVote(warningId, voteType),
-        position: this.position,
-        fontSize: this.fontSize,
-        transparency: this.transparency,
-        spoilerFreeMode: this.spoilerFreeMode,
-        helperMode: this.helperMode,
+        onVote: (warningId: string, voteType: 'up' | 'down') =>
+          this.handleVote(warningId, voteType),
+        position: this.position || 'top-right',
+        fontSize: this.fontSize || 16,
+        transparency: this.transparency || 85,
+        spoilerFreeMode: this.spoilerFreeMode || false,
+        helperMode: this.helperMode || false,
       },
     });
     logger.info('[TW BannerManager] ✅ Banner component mounted');
@@ -114,7 +115,9 @@ export class BannerManager {
   }
 
   showWarning(warning: ActiveWarning): void {
-    logger.info(`[TW BannerManager] 📥 Received warning to show: ${warning.categoryKey} (${warning.isActive ? 'ACTIVE' : 'UPCOMING'})`);
+    logger.info(
+      `[TW BannerManager] 📥 Received warning to show: ${warning.categoryKey} (${warning.isActive ? 'ACTIVE' : 'UPCOMING'})`
+    );
     console.log('[TW BannerManager] Full warning details:', warning);
 
     this.activeWarnings.set(warning.id, warning);
@@ -147,7 +150,10 @@ export class BannerManager {
 
     logger.info(`[TW BannerManager] 🎨 Updating banner with ${warnings.length} warning(s)`);
     if (warnings.length > 0) {
-      console.log('[TW BannerManager] Warning categories being displayed:', warnings.map(w => w.categoryKey));
+      console.log(
+        '[TW BannerManager] Warning categories being displayed:',
+        warnings.map((w) => w.categoryKey)
+      );
     } else {
       console.log('[TW BannerManager] No warnings to display');
     }

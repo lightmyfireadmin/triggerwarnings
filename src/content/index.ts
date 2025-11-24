@@ -72,10 +72,11 @@ class TriggerWarningsContent {
       await this.indicatorManager.initialize();
 
       // Initialize Analysis Overlay (Debug)
-      const overlayDiv = document.createElement('div');
-      overlayDiv.id = 'tw-analysis-overlay-root';
-      document.body.appendChild(overlayDiv);
-      new AnalysisOverlay({ target: overlayDiv });
+      // TODO: Fix Svelte 5 compatibility issue with AnalysisOverlay
+      // const overlayDiv = document.createElement('div');
+      // overlayDiv.id = 'tw-analysis-overlay-root';
+      // document.body.appendChild(overlayDiv);
+      // new AnalysisOverlay({ target: overlayDiv });
 
       // Connect warning manager to banner manager and indicator
       this.warningManager.onWarning((warning: ActiveWarning) => {
@@ -115,19 +116,19 @@ class TriggerWarningsContent {
           // 2. Record Locally (LocalConsensusEngine) - Feature 2
           const warning = this.activeWarningsMap.get(warningId);
           if (warning) {
-             const { LocalConsensusEngine } = await import('./consensus/LocalConsensusEngine');
-             const engine = LocalConsensusEngine.getInstance();
+            const { LocalConsensusEngine } = await import('./consensus/LocalConsensusEngine');
+            const engine = LocalConsensusEngine.getInstance();
 
-             // Map 'up'/'down' to 'confirm'/'wrong'
-             const localVote = voteType === 'up' ? 'confirm' : 'wrong';
+            // Map 'up'/'down' to 'confirm'/'wrong'
+            const localVote = voteType === 'up' ? 'confirm' : 'wrong';
 
-             await engine.recordVote(
-               warning.videoId,
-               warning.categoryKey,
-               warning.startTime,
-               localVote
-             );
-             logger.info(`Local vote recorded: ${localVote} for ${warning.categoryKey}`);
+            await engine.recordVote(
+              warning.videoId,
+              warning.categoryKey,
+              warning.startTime,
+              localVote
+            );
+            logger.info(`Local vote recorded: ${localVote} for ${warning.categoryKey}`);
           }
 
           if (response && response.success) {
@@ -139,6 +140,7 @@ class TriggerWarningsContent {
       });
 
       // Set up indicator callbacks
+      // TODO: Re-enable when ActiveIndicator Svelte 5 compatibility is fixed
       this.indicatorManager.onQuickAdd(() => {
         this.handleQuickAddTrigger();
       });
@@ -151,7 +153,7 @@ class TriggerWarningsContent {
       console.error('💥 [TW] Error details:', {
         message: error instanceof Error ? error.message : String(error),
         stack: error instanceof Error ? error.stack : undefined,
-        type: typeof error
+        type: typeof error,
       });
       logger.error('Initialization error:', error);
     }
@@ -202,17 +204,21 @@ class TriggerWarningsContent {
 
       // Send message to background to store current timestamp and video info
       // This will be used when the user opens the popup or trigger submission UI
-      await browser.runtime.sendMessage({
-        type: 'STORE_QUICK_ADD_CONTEXT',
-        videoId,
-        timestamp: currentTime,
-      }).catch(error => {
-        logger.error('Failed to store quick add context:', error);
-      });
+      await browser.runtime
+        .sendMessage({
+          type: 'STORE_QUICK_ADD_CONTEXT',
+          videoId,
+          timestamp: currentTime,
+        })
+        .catch((error) => {
+          logger.error('Failed to store quick add context:', error);
+        });
 
       // For now, alert the user - later this will open a proper submission UI
       // TODO: Implement proper trigger submission UI in the content script or popup
-      alert(`Quick Add Trigger\n\nCurrent timestamp: ${Math.floor(currentTime)}s\n\nPlease use the extension popup to complete the trigger submission.\n\n(Timestamp has been saved)`);
+      alert(
+        `Quick Add Trigger\n\nCurrent timestamp: ${Math.floor(currentTime)}s\n\nPlease use the extension popup to complete the trigger submission.\n\n(Timestamp has been saved)`
+      );
     } catch (error) {
       logger.error('Failed to get current timestamp:', error);
     }
@@ -275,13 +281,13 @@ if (document.readyState === 'loading') {
   console.log('⏳ [TW] DOM still loading, waiting for DOMContentLoaded...');
   document.addEventListener('DOMContentLoaded', () => {
     console.log('✅ [TW] DOMContentLoaded fired, initializing...');
-    app.initialize().catch(err => {
+    app.initialize().catch((err) => {
       console.error('💥 [TW] Fatal error during initialization:', err);
     });
   });
 } else {
   console.log('✅ [TW] DOM already ready, initializing immediately...');
-  app.initialize().catch(err => {
+  app.initialize().catch((err) => {
     console.error('💥 [TW] Fatal error during initialization:', err);
   });
 }

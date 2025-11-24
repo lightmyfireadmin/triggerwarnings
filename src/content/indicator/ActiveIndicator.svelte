@@ -1,3 +1,23 @@
+<script context="module" lang="ts">
+  function getplatformName(): string {
+    const hostname = window.location.hostname;
+    if (hostname.includes('youtube')) return 'YouTube';
+    if (hostname.includes('netflix')) return 'Netflix';
+    if (hostname.includes('prime')) return 'Prime Video';
+    if (hostname.includes('hulu')) return 'Hulu';
+    if (hostname.includes('disney')) return 'Disney+';
+    if (hostname.includes('max.')) return 'Max';
+    if (hostname.includes('peacock')) return 'Peacock';
+    return 'this platform';
+  }
+
+  function formatTime(seconds: number): string {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins}:${String(secs).padStart(2, '0')}`;
+  }
+</script>
+
 <script lang="ts">
   import { onMount, onDestroy } from 'svelte';
   import type { ActiveWarning, TriggerCategory } from '@shared/types/Warning.types';
@@ -55,22 +75,36 @@
   let mouseOverOverlay = false; // Track if mouse is over overlay
   let manuallyExpanded = false; // Track if user manually expanded
 
-  // Fade in after a short delay
+  // Fade in immediately
   onMount(() => {
-    setTimeout(() => {
-      visible = true;
-    }, 500);
+    console.log('[TW ActiveIndicator] Component mounted, setting visible = true');
+    console.log('[TW ActiveIndicator] Props:', {
+      appearingMode,
+      buttonColor,
+      buttonOpacity,
+      fadeOutDelay,
+    });
+    visible = true;
+
+    // Find video element and container
 
     // Find video element and container
     videoElement = document.querySelector('video');
-    playerContainer = videoElement?.closest('.html5-video-container, .video-stream, [data-player]') as HTMLElement;
+    playerContainer = videoElement?.closest(
+      '.html5-video-container, .video-stream, [data-player]'
+    ) as HTMLElement;
 
     // Update timestamp every second
     updateTimestamp();
     intervalId = window.setInterval(() => {
       updateTimestamp();
       // If form is showing and video is playing, auto-update endTime to follow current time
-      if (showAddTriggerForm && isVideoPlaying && videoElement && !isNaN(videoElement.currentTime)) {
+      if (
+        showAddTriggerForm &&
+        isVideoPlaying &&
+        videoElement &&
+        !isNaN(videoElement.currentTime)
+      ) {
         // Only auto-update endTime if it's close to current time (within 10 seconds)
         const currentVideoTime = Math.floor(videoElement.currentTime);
         if (Math.abs(endTime - currentVideoTime) < 10) {
@@ -113,27 +147,49 @@
     if (overlayElement) {
       // Capture ALL events and stop propagation
       const stopEvents = [
-        'click', 'mousedown', 'mouseup', 'mousemove', 'mouseenter', 'mouseleave',
-        'touchstart', 'touchmove', 'touchend', 'pointerdown', 'pointerup', 'pointermove',
-        'wheel', 'keydown', 'keyup', 'keypress', 'contextmenu'
+        'click',
+        'mousedown',
+        'mouseup',
+        'mousemove',
+        'mouseenter',
+        'mouseleave',
+        'touchstart',
+        'touchmove',
+        'touchend',
+        'pointerdown',
+        'pointerup',
+        'pointermove',
+        'wheel',
+        'keydown',
+        'keyup',
+        'keypress',
+        'contextmenu',
       ];
 
-      stopEvents.forEach(eventType => {
-        overlayElement.addEventListener(eventType, (e) => {
-          e.stopPropagation();
-          e.stopImmediatePropagation();
-        }, { capture: true });
+      stopEvents.forEach((eventType) => {
+        overlayElement.addEventListener(
+          eventType,
+          (e) => {
+            e.stopPropagation();
+            e.stopImmediatePropagation();
+          },
+          { capture: true }
+        );
       });
 
       // Force visibility with MutationObserver
       const visibilityObserver = new MutationObserver((mutations) => {
         mutations.forEach((mutation) => {
-          if (mutation.type === 'attributes' &&
-              (mutation.attributeName === 'style' || mutation.attributeName === 'class')) {
+          if (
+            mutation.type === 'attributes' &&
+            (mutation.attributeName === 'style' || mutation.attributeName === 'class')
+          ) {
             const target = mutation.target as HTMLElement;
-            if (target.style.display === 'none' ||
-                target.style.visibility === 'hidden' ||
-                target.style.opacity === '0') {
+            if (
+              target.style.display === 'none' ||
+              target.style.visibility === 'hidden' ||
+              target.style.opacity === '0'
+            ) {
               // Player tried to hide us - restore visibility!
               target.style.display = '';
               target.style.visibility = 'visible';
@@ -145,7 +201,7 @@
 
       visibilityObserver.observe(overlayElement, {
         attributes: true,
-        attributeFilter: ['style', 'class']
+        attributeFilter: ['style', 'class'],
       });
 
       // Periodic visibility check - force overlay to stay visible
@@ -316,7 +372,7 @@
         start: startTime,
         end: endTime,
         desc: description,
-        timestamp: Date.now()
+        timestamp: Date.now(),
       };
     }
   }
@@ -401,7 +457,8 @@
           manuallyExpanded = false;
         }, 2500);
       } else {
-        formError = 'Failed to submit trigger. Please check your internet connection and try again.';
+        formError =
+          'Failed to submit trigger. Please check your internet connection and try again.';
         console.error('[TW Overlay] ❌ Submit returned false');
       }
     } catch (error) {
@@ -441,7 +498,9 @@
 
   function getVideoTitle(): string | undefined {
     // Try to get video title from page
-    const titleElement = document.querySelector('h1.title, h1[class*="title"], meta[property="og:title"]');
+    const titleElement = document.querySelector(
+      'h1.title, h1[class*="title"], meta[property="og:title"]'
+    );
     if (titleElement) {
       if (titleElement.tagName === 'META') {
         return (titleElement as HTMLMetaElement).content;
@@ -522,7 +581,9 @@
 
   $: hasActiveWarnings = activeWarnings.length > 0;
   $: triggerCount = activeWarnings.length;
-  $: shouldShowAlways = appearingMode === 'always' || isExpanded || isVideoPaused || isVideoStarting;
+  $: effectiveAppearingMode = appearingMode || 'always';
+  $: shouldShowAlways =
+    effectiveAppearingMode === 'always' || isExpanded || isVideoPaused || isVideoStarting;
 </script>
 
 {#if visible && shouldShowAlways}
@@ -549,12 +610,19 @@
       >
         <!-- Status badge -->
         <div class="tw-overlay-badge">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
             {#if hasActiveWarnings}
-              <circle cx="12" cy="12" r="3" fill="currentColor"/>
+              <circle cx="12" cy="12" r="3" fill="currentColor" />
             {:else}
-              <path d="M12 8v4M12 16h.01"/>
+              <path d="M12 8v4M12 16h.01" />
             {/if}
           </svg>
         </div>
@@ -573,9 +641,16 @@
             title="Add trigger warning"
             aria-label="Add trigger warning"
           >
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-              <line x1="12" y1="5" x2="12" y2="19"/>
-              <line x1="5" y1="12" x2="19" y2="12"/>
+            <svg
+              width="14"
+              height="14"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.5"
+            >
+              <line x1="12" y1="5" x2="12" y2="19" />
+              <line x1="5" y1="12" x2="19" y2="12" />
             </svg>
           </button>
         {/if}
@@ -593,7 +668,8 @@
               </div>
               {#if triggerCount > 0}
                 <div class="tw-welcome-triggers">
-                  Users have flagged <strong>{triggerCount}</strong> {triggerCount === 1 ? 'trigger' : 'triggers'} on this content.
+                  Users have flagged <strong>{triggerCount}</strong>
+                  {triggerCount === 1 ? 'trigger' : 'triggers'} on this content.
                 </div>
               {:else}
                 <div class="tw-welcome-triggers">
@@ -612,9 +688,15 @@
               </div>
               {#each activeWarnings as warning}
                 <div class="tw-warning-item">
-                  <span class="tw-warning-icon">{TRIGGER_CATEGORIES[warning.categoryKey]?.icon || '⚠️'}</span>
-                  <span class="tw-warning-name">{TRIGGER_CATEGORIES[warning.categoryKey]?.name || warning.categoryKey}</span>
-                  <span class="tw-warning-time">{formatTime(warning.startTime)} - {formatTime(warning.endTime)}</span>
+                  <span class="tw-warning-icon"
+                    >{TRIGGER_CATEGORIES[warning.categoryKey]?.icon || '⚠️'}</span
+                  >
+                  <span class="tw-warning-name"
+                    >{TRIGGER_CATEGORIES[warning.categoryKey]?.name || warning.categoryKey}</span
+                  >
+                  <span class="tw-warning-time"
+                    >{formatTime(warning.startTime)} - {formatTime(warning.endTime)}</span
+                  >
                 </div>
               {/each}
             </div>
@@ -627,9 +709,16 @@
               on:click={handleQuickAdd}
               title="Add trigger warning at current timestamp"
             >
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                <line x1="12" y1="5" x2="12" y2="19"/>
-                <line x1="5" y1="12" x2="19" y2="12"/>
+              <svg
+                width="14"
+                height="14"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2.5"
+              >
+                <line x1="12" y1="5" x2="12" y2="19" />
+                <line x1="5" y1="12" x2="19" y2="12" />
               </svg>
               <span>Add Trigger</span>
             </button>
@@ -640,13 +729,13 @@
             <div class="tw-overlay-form">
               <div class="tw-form-header">
                 <span>🎯 Add Trigger Warning</span>
-                <button class="tw-form-close" on:click={() => showAddTriggerForm = false}>✕</button>
+                <button class="tw-form-close" on:click={() => (showAddTriggerForm = false)}
+                  >✕</button
+                >
               </div>
 
               {#if formSuccess}
-                <div class="tw-form-success">
-                  ✓ Trigger submitted successfully!
-                </div>
+                <div class="tw-form-success">✓ Trigger submitted successfully!</div>
               {:else}
                 <div class="tw-form-content">
                   <!-- Category selection -->
@@ -658,7 +747,7 @@
                           type="button"
                           class="tw-category-btn"
                           class:selected={selectedCategory === key}
-                          on:click={() => selectedCategory = key}
+                          on:click={() => (selectedCategory = key)}
                           title={TRIGGER_CATEGORIES[key].name}
                         >
                           <span class="tw-cat-icon">{TRIGGER_CATEGORIES[key].icon}</span>
@@ -697,9 +786,9 @@
                           />
                           <button
                             class="tw-capture-btn"
-                            on:click={() => startTime = captureCurrentTime()}
-                            title="Capture current time"
-                          >📍</button>
+                            on:click={() => (startTime = captureCurrentTime())}
+                            title="Capture current time">📍</button
+                          >
                         </div>
                         <span class="tw-time-display">{formatTime(startTime)}</span>
                       </div>
@@ -717,9 +806,9 @@
                           />
                           <button
                             class="tw-capture-btn"
-                            on:click={() => endTime = captureCurrentTime()}
-                            title="Capture current time"
-                          >📍</button>
+                            on:click={() => (endTime = captureCurrentTime())}
+                            title="Capture current time">📍</button
+                          >
                         </div>
                         <span class="tw-time-display">{formatTime(endTime)}</span>
                       </div>
@@ -790,26 +879,6 @@
   </div>
 {/if}
 
-<script context="module" lang="ts">
-  function getplatformName(): string {
-    const hostname = window.location.hostname;
-    if (hostname.includes('youtube')) return 'YouTube';
-    if (hostname.includes('netflix')) return 'Netflix';
-    if (hostname.includes('prime')) return 'Prime Video';
-    if (hostname.includes('hulu')) return 'Hulu';
-    if (hostname.includes('disney')) return 'Disney+';
-    if (hostname.includes('max.')) return 'Max';
-    if (hostname.includes('peacock')) return 'Peacock';
-    return 'this platform';
-  }
-
-  function formatTime(seconds: number): string {
-    const mins = Math.floor(seconds / 60);
-    const secs = seconds % 60;
-    return `${mins}:${String(secs).padStart(2, '0')}`;
-  }
-</script>
-
 <style>
   .tw-overlay {
     position: absolute !important;
@@ -817,7 +886,8 @@
     left: 50% !important;
     transform: translateX(-50%) !important;
     z-index: 2147483647 !important; /* Maximum z-index for absolute priority */
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    font-family:
+      -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
     animation: tw-overlay-fade-in 0.5s ease-out;
     transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     max-width: 90vw;
@@ -1591,7 +1661,11 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+    background: linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.1) 0%,
+      rgba(255, 255, 255, 0.05) 100%
+    );
     border-radius: 24px;
     pointer-events: none;
   }
