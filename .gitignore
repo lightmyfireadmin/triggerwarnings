@@ -27,6 +27,7 @@ pnpm-lock.yaml
 !591.js
 !node_modules_ws_browser_js.offscreen.bundle.js
 
+
 # Environment variables with API keys
 scripts/.env
 .env
