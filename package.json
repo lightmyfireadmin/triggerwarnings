@@ -22,7 +22,7 @@
   "devDependencies": {
     "@sveltejs/vite-plugin-svelte": "^3.1.2",
     "@tsconfig/svelte": "^5.0.2",
-    "@types/chrome": "^0.0.256",
+    "@types/chrome": "^0.1.0",
     "@types/node": "^20.10.6",
     "@types/webextension-polyfill": "^0.10.7",
     "@typescript-eslint/eslint-plugin": "^6.17.0",
