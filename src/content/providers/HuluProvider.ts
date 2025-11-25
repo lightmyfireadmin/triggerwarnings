@@ -9,18 +9,10 @@ export class HuluProvider extends BaseProvider {
   readonly name = 'Hulu';
   readonly domains = ['hulu.com'];
 
-  private videoElement: HTMLVideoElement | null = null;
   private lastSeekTime = 0;
 
   async initialize(): Promise<void> {
-    const video = await this.waitForElement<HTMLVideoElement>('video');
-    if (!video) {
-      console.error('Hulu video element not found');
-      return;
-    }
-
-    this.videoElement = video;
-    this.setupVideoListeners();
+    super.initialize();
     this.monitorURLChanges();
 
     const media = await this.getCurrentMedia();
@@ -44,15 +36,6 @@ export class HuluProvider extends BaseProvider {
     };
   }
 
-  getVideoElement(): HTMLVideoElement | null {
-    if (this.videoElement && document.contains(this.videoElement)) {
-      return this.videoElement;
-    }
-
-    this.videoElement = document.querySelector('video');
-    return this.videoElement;
-  }
-
   getInjectionPoint(): HTMLElement | null {
     return (
       document.querySelector('.PlayerPresentationView') ||
@@ -62,11 +45,10 @@ export class HuluProvider extends BaseProvider {
     );
   }
 
-  private setupVideoListeners(): void {
-    const video = this.videoElement;
-    if (!video) return;
+  protected setupVideoListeners(): void {
+    if (!this.videoElement) return;
 
-    this.addEventListener(video, 'play', () => {
+    this.addEventListener(this.videoElement, 'play', () => {
       this.triggerPlayCallbacks();
     });
 
