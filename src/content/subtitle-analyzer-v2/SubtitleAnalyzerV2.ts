@@ -8,15 +8,18 @@
  * ✅ Temporal pattern recognition (escalation sequences)
  * ✅ Audio descriptor analysis (500+ patterns vs. 7)
  * ✅ Confidence adjustment based on context
+ * ✅ NEW: Sentiment Analysis with Transformers.js to reduce false positives
  *
  * Expected Performance:
  * - Detection rate: 92% (vs. 65%)
- * - False positive rate: 10% (vs. 40%)
+ * - False positive rate: 10% (vs. 40%) -> Now aiming for <5%
  *
  * Created by: Claude Code (Legendary Session)
  * Date: 2024-11-11
+ * Upgraded by: Jules with Transformers.js
  */
 
+import { pipeline, type Pipeline } from '@xenova/transformers';
 import type { Warning } from '@shared/types/Warning.types';
 import { Logger } from '@shared/utils/logger';
 import { SubtitleTranslator } from '../subtitle-analyzer/SubtitleTranslator';
@@ -30,6 +33,10 @@ import { ContextAnalyzer } from './ContextAnalyzer';
 import { TemporalPatternDetector } from './TemporalPatternDetector';
 
 const logger = new Logger('SubtitleAnalyzerV2');
+
+// --- Model Configuration ---
+const SENTIMENT_MODEL = 'Xenova/distilbert-base-uncased-finetuned-sst-2-english';
+const POSITIVE_SENTIMENT_THRESHOLD = 0.9; // Require high confidence to suppress a warning
 
 interface DetectionResult {
   warning: Warning;
@@ -51,13 +58,18 @@ export class SubtitleAnalyzerV2 {
   private video: HTMLVideoElement | null = null;
   private prefetchInterval: number | null = null;
 
+  // --- Transformers.js Integration ---
+  private sentimentClassifier: Pipeline | null = null;
+  private isModelLoading: boolean = false;
+
   // Statistics
   private stats = {
     totalCuesAnalyzed: 0,
     detectionsV2: 0,
     detectionsFromPatterns: 0,
     falsePositivesAvoided: 0,
-    contextAdjustments: 0
+    contextAdjustments: 0,
+    sentimentSuppressions: 0,
   };
 
   constructor() {
@@ -71,6 +83,9 @@ export class SubtitleAnalyzerV2 {
       `Version: ${KEYWORD_DICTIONARY_VERSION}`
     );
 
+    // Initialize the sentiment analysis model
+    this.initializeSentimentModel();
+
     // Register temporal pattern detection callback
     this.temporalDetector.onDetection((warning) => {
       this.stats.detectionsFromPatterns++;
@@ -82,6 +97,28 @@ export class SubtitleAnalyzerV2 {
         this.onTriggerDetected(warning);
       }
     });
+  }
+
+  /**
+   * Loads and caches the sentiment analysis model.
+   */
+  private async initializeSentimentModel(): Promise<void> {
+    if (this.sentimentClassifier || this.isModelLoading) {
+      return;
+    }
+    this.isModelLoading = true;
+    try {
+      logger.info('[TW SubtitleAnalyzerV2] 🧠 Loading sentiment analysis model...');
+      // Transformers.js will automatically cache the model in IndexedDB/Cache API
+      this.sentimentClassifier = await pipeline('sentiment-analysis', SENTIMENT_MODEL, {
+        quantized: true, // Use a smaller, faster model
+      });
+      logger.info('[TW SubtitleAnalyzerV2] ✅ Sentiment analysis model loaded and ready.');
+    } catch (error) {
+      logger.error('[TW SubtitleAnalyzerV2] ❌ Failed to load sentiment analysis model:', error);
+    } finally {
+      this.isModelLoading = false;
+    }
   }
 
   /**
@@ -221,15 +258,15 @@ export class SubtitleAnalyzerV2 {
       // Add to temporal detector (for pattern recognition)
       this.temporalDetector.addCue(textToAnalyze, cue.startTime);
 
-      // Analyze text with V2 algorithm
-      this.analyzeTextV2(textToAnalyze, cue.startTime, cue.endTime);
+      // Analyze text with V2 algorithm (now async)
+      await this.analyzeTextV2(textToAnalyze, cue.startTime, cue.endTime);
     }
   }
 
   /**
    * V2 ALGORITHM: Analyze text with enhanced pattern matching and context awareness
    */
-  private analyzeTextV2(text: string, startTime: number, endTime: number): void {
+  private async analyzeTextV2(text: string, startTime: number, endTime: number): Promise<void> {
     const lowerText = text.toLowerCase();
 
     // Iterate through all enhanced patterns
@@ -273,6 +310,22 @@ export class SubtitleAnalyzerV2 {
             `(word boundary or context rejection)`
           );
           continue;
+        }
+
+        // --- SENTIMENT ANALYSIS STEP ---
+        if (this.sentimentClassifier) {
+            const sentimentResult = await this.sentimentClassifier(text);
+            const sentiment = sentimentResult[0]; // The pipeline returns an array
+
+            if (sentiment.label === 'POSITIVE' && sentiment.score > POSITIVE_SENTIMENT_THRESHOLD) {
+                this.stats.sentimentSuppressions++;
+                logger.info(
+                  `[TW SubtitleAnalyzerV2] 😊 SUPPRESSED WARNING: Keyword "${keyword}" found in positive context. ` +
+                  `Text: "${text.substring(0, 60)}..." | ` +
+                  `Sentiment: ${sentiment.label} (${(sentiment.score * 100).toFixed(1)}%)`
+                );
+                continue; // Skip creating a warning for this positive phrase
+            }
         }
 
         // If confidence was adjusted, log it
@@ -364,7 +417,8 @@ export class SubtitleAnalyzerV2 {
       detectionsV2: 0,
       detectionsFromPatterns: 0,
       falsePositivesAvoided: 0,
-      contextAdjustments: 0
+      contextAdjustments: 0,
+      sentimentSuppressions: 0,
     };
   }
 
@@ -382,6 +436,9 @@ export class SubtitleAnalyzerV2 {
     this.detectedTriggers.clear();
     this.temporalDetector.clear();
     this.onTriggerDetected = null;
+
+    // Dispose of the model if possible (Transformers.js doesn't have a formal dispose API)
+    this.sentimentClassifier = null;
   }
 
   /**
@@ -395,6 +452,8 @@ export class SubtitleAnalyzerV2 {
     detectionsFromPatterns: number;
     falsePositivesAvoided: number;
     contextAdjustments: number;
+    sentimentSuppressions: number;
+    modelLoading: boolean;
     translationEnabled: boolean;
     translationStats: ReturnType<SubtitleTranslator['getCacheStats']>;
     temporalStats: ReturnType<TemporalPatternDetector['getStats']>;
@@ -407,6 +466,8 @@ export class SubtitleAnalyzerV2 {
       detectionsFromPatterns: this.stats.detectionsFromPatterns,
       falsePositivesAvoided: this.stats.falsePositivesAvoided,
       contextAdjustments: this.stats.contextAdjustments,
+      sentimentSuppressions: this.stats.sentimentSuppressions,
+      modelLoading: this.isModelLoading,
       translationEnabled: this.needsTranslation,
       translationStats: this.translator.getCacheStats(),
       temporalStats: this.temporalDetector.getStats()
